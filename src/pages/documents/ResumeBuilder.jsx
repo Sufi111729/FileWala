@@ -1,5 +1,3 @@
-import html2canvas from 'html2canvas';
-import { jsPDF } from 'jspdf';
 import { Download } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import ToolPageLayout from '../../components/layouts/ToolPageLayout.jsx';
@@ -47,6 +45,10 @@ export default function ResumeBuilder() {
     if (!previewRef.current) return;
     setStatus(text.resume.preparing);
 
+    const [{ default: html2canvas }, { jsPDF }] = await Promise.all([
+      import('html2canvas'),
+      import('jspdf'),
+    ]);
     const canvas = await html2canvas(previewRef.current, {
       scale: 2,
       backgroundColor: '#ffffff',

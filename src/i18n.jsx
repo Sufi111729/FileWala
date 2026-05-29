@@ -146,6 +146,24 @@ const en = {
     fileTooLarge: 'File is larger than 10MB. Please upload a smaller image.',
     tryAnotherFile: 'Invalid image. Please try another file.',
   },
+  toolPage: {
+    allTools: 'All Tools',
+    steps: [
+      'Upload your file using the secure drag and drop area.',
+      'Choose a processing mode that fits quality or file size.',
+      'Process the file and download the finished result.',
+    ],
+    about: 'About this tool',
+    cleaner: 'A cleaner way to use',
+    aboutText: 'Use this FileWalaTool workspace to prepare files for common upload and conversion tasks without leaving the main app flow.',
+    bullets: [
+      'Works directly in your browser.',
+      'Designed for fast file upload requirements.',
+      'Keeps the tool simple on mobile and desktop.',
+    ],
+    related: 'Related tools',
+    more: 'More',
+  },
   resume: {
     details: 'Resume details',
     livePreview: 'Live resume preview',
