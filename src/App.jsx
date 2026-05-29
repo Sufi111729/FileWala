@@ -1,5 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
+import { Analytics } from '@vercel/analytics/react';
 import MainLayout from './layouts/MainLayout.jsx';
 
 const Home = lazy(() => import('./pages/Home.jsx'));
@@ -79,6 +80,7 @@ export default function App() {
           <Route path="/tools/:slug" element={<ToolPage />} />
         </Route>
       </Routes>
+      <Analytics />
     </Suspense>
   );
 }
