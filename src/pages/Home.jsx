@@ -1,0 +1,92 @@
+import { MonitorSmartphone, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import Hero from '../components/Hero.jsx';
+import ToolGrid from '../components/ToolGrid.jsx';
+import { useLanguage } from '../i18n.jsx';
+
+const validTabs = ['All Tools', 'Resize', 'Compress', 'Convert', 'PDF Tools', 'Image Tools', 'Documents'];
+
+const features = [
+  {
+    title: 'Fast Processing',
+    description: 'Optimized flows keep every tool quick and lightweight.',
+    icon: Zap,
+  },
+  {
+    title: 'Secure File Handling',
+    description: 'Clear upload states and privacy-minded file workflows.',
+    icon: ShieldCheck,
+  },
+  {
+    title: 'No Signup Required',
+    description: 'Start editing, converting, and resizing without friction.',
+    icon: Sparkles,
+  },
+  {
+    title: 'Works on Mobile/Desktop',
+    description: 'Responsive layouts feel natural on every screen size.',
+    icon: MonitorSmartphone,
+  },
+];
+
+export default function Home() {
+  const { text } = useLanguage();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState('All Tools');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    document.title = 'FileWalaTool - PDF & Image Tools';
+  }, []);
+
+  useEffect(() => {
+    const category = searchParams.get('category');
+    if (category && validTabs.includes(category)) {
+      setActiveTab(category);
+    }
+  }, [searchParams]);
+
+  const handleTabChange = (tab) => {
+    setActiveTab(tab);
+    setSearchParams(tab === 'All Tools' ? {} : { category: tab }, { replace: true });
+  };
+
+  return (
+    <>
+      <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+      <ToolGrid searchTerm={searchTerm} activeTab={activeTab} onTabChange={handleTabChange} />
+      <section className="bg-white py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 max-w-2xl">
+            <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.home.eyebrow}</p>
+            <h2 className="mt-2 text-3xl font-black tracking-tight text-black">
+              {text.home.title}
+            </h2>
+            <p className="mt-3 text-base leading-7 text-black/60">
+              {text.home.description}
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              const translatedFeature = text.home.features[index] ?? [feature.title, feature.description];
+              return (
+                <article
+                  key={feature.title}
+                  className="rounded-md border border-black/10 bg-white p-5 shadow-sm transition-colors duration-150 hover:border-black/20"
+                >
+                  <span className="flex h-10 w-10 items-center justify-center rounded-md bg-white text-brand-red ring-1 ring-black/10">
+                    <Icon className="h-5 w-5 text-brand-red" />
+                  </span>
+                  <h2 className="mt-5 text-base font-black text-black">{translatedFeature[0]}</h2>
+                  <p className="mt-2 text-sm leading-6 text-black/60">{translatedFeature[1]}</p>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </>
+  );
+}

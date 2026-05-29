@@ -1,0 +1,102 @@
+export const passportPhotoConfig = {
+  title: 'Passport Photo Maker',
+  description: 'Create passport-size photos for online applications.',
+  editorType: 'fixed-frame',
+  requirementsTitle: 'Passport Photo Requirements',
+  fields: [
+    { name: 'website', label: 'Application Website', options: ['UTI', 'NSDL'] },
+    { name: 'type', label: 'Photo type', options: ['Photograph'] },
+    { name: 'resize', label: 'Resize', options: ['Resize Original', 'Resize Selected Area'] },
+  ],
+  defaultValues: { website: 'NSDL', type: 'Photograph', resize: 'Resize Selected Area' },
+  requirements: [
+    'Dimensions: 3.5 cm × 2.5 cm',
+    'Resolution: 200 DPI',
+    'File Format: JPEG',
+    'File Size: Maximum 50 KB',
+    'Background: Plain white or light background',
+    'Appearance: Color photo, recent, and taken with a neutral expression',
+  ],
+  cropAspect: 2.5 / 3.5,
+  outputWidth: 250,
+  outputHeight: 350,
+  targetKB: 50,
+  output: { filename: 'passport-photo.jpg' },
+};
+
+export const signatureResizeConfig = {
+  title: 'Signature Resize',
+  description: 'Resize and compress signatures for online forms.',
+  fields: [
+    { name: 'website', label: 'Application Website', options: ['UTI', 'NSDL'] },
+    { name: 'type', label: 'Type', options: ['Signature'] },
+    { name: 'resize', label: 'Resize', options: ['Resize Original', 'Resize Selected Area'] },
+  ],
+  defaultValues: { website: 'NSDL', type: 'Signature', resize: 'Resize Selected Area' },
+  requirements: ['2 cm × 4.5 cm', 'White background', 'Black signature', 'JPEG format', 'Under 10KB'],
+  cropAspect: 4.5 / 2,
+  outputWidth: 450,
+  outputHeight: 200,
+  targetKB: 10,
+  showMakeWhite: true,
+  output: { filename: 'signature.jpg' },
+};
+
+export const aadhaarPhotoConfig = {
+  title: 'Aadhaar Photo Resize',
+  description: 'Resize Aadhaar card photos for online upload.',
+  editorType: 'fixed-frame',
+  requirementsTitle: 'Aadhaar Photo Requirements',
+  fields: [{ name: 'resize', label: 'Resize', options: ['Resize Selected Area', 'Resize Original'] }],
+  defaultValues: { resize: 'Resize Selected Area' },
+  requirements: [
+    'Dimensions: 213 × 213 px',
+    'File Format: JPEG',
+    'File Size: 10 KB to 100 KB',
+    'Background: Plain white or light background',
+    'Appearance: Clear recent color photo',
+  ],
+  cropAspect: 1,
+  outputWidth: 213,
+  outputHeight: 213,
+  targetKB: 100,
+  output: { filename: 'aadhaar-photo.jpg' },
+};
+
+export const panPhotoConfig = {
+  title: 'PAN Photo Resize',
+  description: 'Resize PAN card photos for online upload.',
+  editorType: 'fixed-frame',
+  requirementsTitle: 'PAN Photo Requirements',
+  fields: [{ name: 'resize', label: 'Resize', options: ['Resize Selected Area', 'Resize Original'] }],
+  defaultValues: { resize: 'Resize Selected Area' },
+  requirements: [
+    'Dimensions: 213 × 213 px',
+    'File Format: JPEG',
+    'File Size: Maximum 50 KB',
+    'Background: Plain white or light background',
+    'Appearance: Clear recent color photo',
+  ],
+  cropAspect: 1,
+  outputWidth: 213,
+  outputHeight: 213,
+  targetKB: 50,
+  output: { filename: 'pan-photo.jpg' },
+};
+
+export const documentScannerConfig = {
+  title: 'Document Scanner',
+  description: 'Scan, clean, resize, and download documents.',
+  fields: [
+    { name: 'documentType', label: 'Document Type', options: ['Aadhaar', 'PAN', 'Passport', 'General Document'] },
+    { name: 'resize', label: 'Resize', options: ['Resize Original', 'Resize Selected Area'] },
+  ],
+  defaultValues: { documentType: 'General Document', resize: 'Resize Selected Area' },
+  requirements: ['Adjustable crop area', 'JPEG output', 'Clean scanner filters', 'Ready to download'],
+  cropAspect: 1.414,
+  outputWidth: 1240,
+  outputHeight: 877,
+  targetKB: null,
+  showScannerFilters: true,
+  output: { filename: 'scanned-document.jpg' },
+};

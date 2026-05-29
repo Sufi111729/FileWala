@@ -1,0 +1,103 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color: #000000;
+  background: #081a34;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #081a34;
+  color: #000000;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+button,
+a {
+  -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+::selection {
+  background: #000000;
+  color: #ffffff;
+}
+
+.focus-ring {
+  @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-black focus-visible:ring-offset-2;
+}
+
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  background: rgba(255, 255, 255, 0.78);
+}
+
+.app-shell::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background:
+    radial-gradient(circle at 9% 20%, rgba(41, 219, 244, 0.78) 0 8%, transparent 14%),
+    radial-gradient(circle at 21% 18%, rgba(55, 216, 244, 0.72) 0 9%, transparent 15%),
+    radial-gradient(circle at 32% 41%, rgba(26, 210, 230, 0.62) 0 6%, transparent 12%),
+    radial-gradient(circle at 46% 7%, rgba(107, 102, 206, 0.56) 0 10%, transparent 17%),
+    radial-gradient(circle at 50% 37%, rgba(79, 181, 235, 0.58) 0 8%, transparent 14%),
+    radial-gradient(circle at 72% 29%, rgba(68, 115, 214, 0.58) 0 12%, transparent 19%),
+    radial-gradient(circle at 83% 18%, rgba(40, 215, 242, 0.78) 0 11%, transparent 18%),
+    radial-gradient(circle at 95% 38%, rgba(22, 194, 232, 0.68) 0 9%, transparent 15%),
+    radial-gradient(circle at 70% 61%, rgba(86, 106, 211, 0.48) 0 9%, transparent 16%),
+    radial-gradient(circle at 35% 72%, rgba(20, 191, 207, 0.58) 0 11%, transparent 18%),
+    radial-gradient(circle at 64% 96%, rgba(23, 205, 228, 0.72) 0 10%, transparent 17%),
+    radial-gradient(circle at 88% 87%, rgba(92, 113, 213, 0.54) 0 12%, transparent 19%),
+    linear-gradient(125deg, #093f45 0%, #104a67 25%, #30265c 55%, #264a8d 77%, #02bdd8 100%);
+  background-size: cover;
+}
+
+.app-shell::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(255, 255, 255, 0.78) 42%, rgba(255, 255, 255, 0.86) 100%),
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.34), transparent 38%);
+}
+
+.app-shell > main > section.bg-white,
+.app-shell > main > section.bg-slate-50,
+.app-shell > main > main.bg-white,
+.app-shell > main > main.bg-slate-50 {
+  background-color: transparent;
+}
+
+.app-shell header,
+.app-shell footer {
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(14px);
+}
