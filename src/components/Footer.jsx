@@ -31,15 +31,18 @@ export default function Footer() {
         <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
             <Link to="/" className="focus-ring inline-flex rounded-lg" aria-label="FileWalaTool home">
-              <img
-                src="/assets/logofilewalatoo-538.png"
-                alt="FileWalaTool"
-                width="538"
-                height="140"
-                loading="lazy"
-                decoding="async"
-                className="h-[18px] w-auto max-w-[90px] object-contain"
-              />
+              <picture>
+                <source srcSet="/assets/logofilewalatoo-538.webp" type="image/webp" />
+                <img
+                  src="/assets/logofilewalatoo-538.png"
+                  alt="FileWalaTool"
+                  width="538"
+                  height="140"
+                  loading="lazy"
+                  decoding="async"
+                  className="h-[18px] w-auto max-w-[90px] object-contain"
+                />
+              </picture>
             </Link>
             <p className="mt-4 max-w-md text-sm leading-6 text-black/60">
               {text.footer.description}

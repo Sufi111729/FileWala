@@ -1,4 +1,4 @@
-import { absoluteUrl, BRAND_ALIASES, BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
+import { absoluteUrl, BRAND_ALIASES, BRAND_LOGO_URL, BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
 
 export function organizationSchema() {
   return {
@@ -7,7 +7,7 @@ export function organizationSchema() {
     name: BRAND_NAME,
     alternateName: BRAND_ALIASES,
     url: SITE_URL,
-    logo: `${SITE_URL}/assets/logofilewalatoo.png`,
+    logo: BRAND_LOGO_URL,
   };
 }
 
@@ -56,6 +56,7 @@ export function toolSchemas(seo) {
         '@type': 'Organization',
         name: BRAND_NAME,
         url: SITE_URL,
+        logo: BRAND_LOGO_URL,
       },
     },
     {

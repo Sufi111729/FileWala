@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
+import { BRAND_ICON_URL, BRAND_LOGO_URL, BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
 
 const managedAttribute = 'data-filewala-seo';
 
@@ -48,7 +48,7 @@ export default function SeoHelmet({
   canonical = SITE_URL,
   keywords = [],
   robots = 'index, follow',
-  image = `${SITE_URL}/assets/logofilewalatoo.png`,
+  image = BRAND_LOGO_URL,
   type = 'website',
   jsonLd = [],
 }) {
@@ -68,6 +68,7 @@ export default function SeoHelmet({
     if (description) upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
     upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonical });
     upsertMeta('meta[property="og:image"]', { property: 'og:image', content: image });
+    upsertMeta('meta[property="og:logo"]', { property: 'og:logo', content: BRAND_ICON_URL });
 
     upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' });
     upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
