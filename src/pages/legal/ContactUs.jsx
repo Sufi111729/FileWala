@@ -37,6 +37,7 @@ export default function ContactUs() {
       metaDescription="Contact FileWalaTool for support, feedback, business inquiries, tool issues, and product suggestions."
       ctaTitle="Need a tool first?"
       ctaDescription="Most file tasks can be handled directly from the tools library."
+      canonicalPath="/contact-us"
     >
       <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr]">
         <form onSubmit={handleSubmit} className="grid gap-4">

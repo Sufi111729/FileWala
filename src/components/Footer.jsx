@@ -32,13 +32,18 @@ export default function Footer() {
           <div>
             <Link to="/" className="focus-ring inline-flex rounded-lg" aria-label="FileWalaTool home">
               <img
-                src="/assets/logofilewalatoo.png"
+                src="/assets/logofilewalatoo-538.png"
                 alt="FileWalaTool"
+                width="538"
+                height="140"
+                loading="lazy"
+                decoding="async"
                 className="h-[18px] w-auto max-w-[90px] object-contain"
               />
             </Link>
             <p className="mt-4 max-w-md text-sm leading-6 text-black/60">
               {text.footer.description}
+              {' '}FileWalaTool, also searched as File Wala Tool or Filewala, keeps PDF, image, and document utilities in one place.
             </p>
           </div>
 

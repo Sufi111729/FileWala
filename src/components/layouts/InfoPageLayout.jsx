@@ -1,6 +1,7 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
-import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
+import SeoHelmet from '../seo/SeoHelmet.jsx';
+import { absoluteUrl } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
 
 export default function InfoPageLayout({
@@ -12,16 +13,19 @@ export default function InfoPageLayout({
   ctaDescription,
   ctaLabel,
   ctaHref = '/#tools',
+  canonicalPath,
   children,
 }) {
   const { text } = useLanguage();
 
   return (
     <>
-      <Helmet>
-        <title>{metaTitle ?? `${title} - FileWalaTool`}</title>
-        <meta name="description" content={metaDescription ?? description} />
-      </Helmet>
+      <SeoHelmet
+        title={metaTitle ?? `${title} - FileWalaTool`}
+        description={metaDescription ?? description}
+        canonical={absoluteUrl(canonicalPath ?? `/${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`)}
+        keywords={['FileWalaTool', 'File Wala Tool', title]}
+      />
 
       <main className="bg-white py-10 sm:py-14">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

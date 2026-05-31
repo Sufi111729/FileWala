@@ -10,6 +10,10 @@ import {
   UploadCloud,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
+import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
+import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
+import { toolSchemas } from '../../components/seo/schema.js';
+import { absoluteUrl, getToolSeoBySlug } from '../../data/toolsSeoData.js';
 import { downloadBlob, formatFileSize, mergePdfFiles } from '../../utils/pdfUtils.js';
 
 function fileId(file) {
@@ -17,6 +21,7 @@ function fileId(file) {
 }
 
 export default function MergePdf() {
+  const seo = getToolSeoBySlug('merge-pdf');
   const inputRef = useRef(null);
   const [files, setFiles] = useState([]);
   const [mergedBlob, setMergedBlob] = useState(null);
@@ -123,12 +128,19 @@ export default function MergePdf() {
 
   return (
     <section className="bg-slate-50 py-8 sm:py-12">
+      <SeoHelmet
+        title={seo.seoTitle}
+        description={seo.metaDescription}
+        canonical={seo.canonicalUrl ?? absoluteUrl(seo.route)}
+        keywords={[seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames]}
+        jsonLd={toolSchemas(seo)}
+      />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="text-xs font-black uppercase tracking-wide text-blue-700">PDF Tools</p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">Merge PDF</h1>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo.h1}</h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-black/60">
-            Combine multiple PDFs into one organized document.
+            {seo.shortIntro}
           </p>
         </div>
 
@@ -268,6 +280,7 @@ export default function MergePdf() {
             </p>
           )}
         </div>
+        <ToolSeoSections seo={seo} activeTab="PDF Tools" />
       </div>
     </section>
   );

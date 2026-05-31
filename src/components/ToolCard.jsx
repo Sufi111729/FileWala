@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n.jsx';
@@ -61,7 +62,7 @@ const cardColors = {
   },
 };
 
-export default function ToolCard({ tool, activeTab = 'All Tools' }) {
+function ToolCard({ tool, activeTab = 'All Tools' }) {
   const { text } = useLanguage();
   const Icon = tool.icon;
   const translatedTool = text.tools?.[tool.slug] ?? [tool.title, tool.description];
@@ -97,3 +98,5 @@ export default function ToolCard({ tool, activeTab = 'All Tools' }) {
     </Link>
   );
 }
+
+export default memo(ToolCard);

@@ -1,5 +1,3 @@
-import { degrees, PDFDocument } from 'pdf-lib';
-
 export function formatFileSize(bytes) {
   if (!bytes) return '0 KB';
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -27,11 +25,17 @@ async function loadPdfDocument(file, action) {
   }
 
   try {
+    const { PDFDocument } = await import('pdf-lib');
     const bytes = await file.arrayBuffer();
     return PDFDocument.load(bytes);
   } catch {
     throw new Error(`${file.name} could not be ${action}. It may be invalid, damaged, or password-protected.`);
   }
+}
+
+async function createPdfDocument() {
+  const { PDFDocument } = await import('pdf-lib');
+  return PDFDocument.create();
 }
 
 export function parsePageRanges(input, totalPages) {
@@ -82,7 +86,7 @@ export async function splitPdfByRanges(file, ranges) {
     throw new Error('Enter at least one page to extract.');
   }
 
-  const outputPdf = await PDFDocument.create();
+  const outputPdf = await createPdfDocument();
   const copiedPages = await outputPdf.copyPages(
     sourcePdf,
     selectedPages.map((page) => page - 1),
@@ -112,7 +116,7 @@ export async function deletePdfPages(file, pagesToDelete) {
     throw new Error('You cannot delete every page. Keep at least one page.');
   }
 
-  const outputPdf = await PDFDocument.create();
+  const outputPdf = await createPdfDocument();
   const copiedPages = await outputPdf.copyPages(
     sourcePdf,
     keepPages.map((page) => page - 1),
@@ -133,6 +137,7 @@ export async function rotatePdfPages(file, pages, rotationDegrees) {
     throw new Error('Choose a valid rotation angle.');
   }
 
+  const { degrees } = await import('pdf-lib');
   selectedPages.forEach((pageNumber) => {
     const page = sourcePdf.getPage(pageNumber - 1);
     const currentAngle = page.getRotation().angle || 0;
@@ -158,6 +163,7 @@ export async function mergePdfFiles(files) {
     throw new Error('Please select at least 2 PDF files to merge.');
   }
 
+  const { PDFDocument } = await import('pdf-lib');
   const mergedPdf = await PDFDocument.create();
 
   for (const file of files) {

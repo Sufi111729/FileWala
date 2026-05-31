@@ -1,6 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
-import Footer from '../components/Footer.jsx';
 import Navbar from '../components/Navbar.jsx';
+
+const Footer = lazy(() => import('../components/Footer.jsx'));
 
 export default function MainLayout() {
   return (
@@ -9,7 +11,9 @@ export default function MainLayout() {
       <main>
         <Outlet />
       </main>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

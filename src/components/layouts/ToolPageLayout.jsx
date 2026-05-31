@@ -2,7 +2,11 @@ import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ToolCard from '../ToolCard.jsx';
 import CategoryTabs from '../navigation/CategoryTabs.jsx';
+import SeoHelmet from '../seo/SeoHelmet.jsx';
+import ToolSeoSections from '../seo/ToolSeoSections.jsx';
+import { toolSchemas } from '../seo/schema.js';
 import { allTools } from '../../data/tools.js';
+import { absoluteUrl } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const workflowSteps = [
@@ -31,6 +35,7 @@ export default function ToolPageLayout({
   category = 'Documents',
   activeTab = 'Documents',
   relatedTitles = defaultRelatedTitles,
+  seo,
   children,
 }) {
   const { text } = useLanguage();
@@ -41,6 +46,13 @@ export default function ToolPageLayout({
 
   return (
     <section className="bg-white py-10 sm:py-14">
+      <SeoHelmet
+        title={seo?.seoTitle ?? `${title} - FileWalaTool`}
+        description={seo?.metaDescription ?? description}
+        canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? '/documents')}
+        keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [title, category]}
+        jsonLd={seo ? toolSchemas(seo) : []}
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 text-sm font-semibold text-black">
@@ -48,9 +60,9 @@ export default function ToolPageLayout({
             {text.toolsLibrary.label}
           </div>
           <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-black sm:text-5xl">
-            {text.toolsLibrary.title}
+            {seo?.h1 ?? text.toolsLibrary.title}
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-black/60 sm:text-lg sm:leading-8">{description}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-black/60 sm:text-lg sm:leading-8">{seo?.shortIntro ?? description}</p>
         </div>
 
         <div className="mt-7">
@@ -122,6 +134,7 @@ export default function ToolPageLayout({
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+        <ToolSeoSections seo={seo} activeTab={activeTab} />
       </div>
     </section>
   );

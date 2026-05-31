@@ -1,6 +1,7 @@
 import { Download } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import ToolPageLayout from '../../components/layouts/ToolPageLayout.jsx';
+import { getToolSeoBySlug } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const initialResume = {
@@ -29,13 +30,10 @@ const fields = [
 
 export default function ResumeBuilder() {
   const { text } = useLanguage();
+  const seo = getToolSeoBySlug('resume-builder');
   const previewRef = useRef(null);
   const [resume, setResume] = useState(initialResume);
   const [status, setStatus] = useState('');
-
-  useEffect(() => {
-    document.title = 'Resume Builder - FileWalaTool';
-  }, []);
 
   const updateField = (name, value) => {
     setResume((current) => ({ ...current, [name]: value }));
@@ -69,7 +67,7 @@ export default function ResumeBuilder() {
   };
 
   return (
-    <ToolPageLayout title={text.tools['resume-builder'][0]} description={text.tools['resume-builder'][1]}>
+    <ToolPageLayout title={text.tools['resume-builder'][0]} description={text.tools['resume-builder'][1]} seo={seo}>
       <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
         <div className="rounded-md border border-black/10 bg-white p-5 shadow-sm">
           <h2 className="text-lg font-black text-black">{text.resume.details}</h2>

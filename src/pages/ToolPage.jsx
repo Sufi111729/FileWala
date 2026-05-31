@@ -1,23 +1,30 @@
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
-import { useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import UploadBox from '../components/UploadBox.jsx';
 import ToolCard from '../components/ToolCard.jsx';
+import SeoHelmet from '../components/seo/SeoHelmet.jsx';
+import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
+import { toolSchemas } from '../components/seo/schema.js';
 import { allTools, defaultTool } from '../data/tools.js';
+import { absoluteUrl, getToolSeoBySlug } from '../data/toolsSeoData.js';
 import { useLanguage } from '../i18n.jsx';
 
 export default function ToolPage() {
   const { text } = useLanguage();
   const { slug } = useParams();
   const tool = allTools.find((item) => item.slug === slug) ?? defaultTool;
+  const seo = getToolSeoBySlug(tool.slug);
   const relatedTools = allTools.filter((item) => item.category === tool.category && item.slug !== tool.slug).slice(0, 4);
-
-  useEffect(() => {
-    document.title = `${tool.title} - FileWalaTool`;
-  }, [tool.title]);
 
   return (
     <section className="bg-white py-8 sm:py-12">
+      <SeoHelmet
+        title={seo?.seoTitle ?? `${tool.title} - FileWalaTool`}
+        description={seo?.metaDescription ?? tool.description}
+        canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? `/tools/${tool.slug}`)}
+        keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [tool.title, tool.category]}
+        jsonLd={seo ? toolSchemas(seo) : []}
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
@@ -31,8 +38,8 @@ export default function ToolPage() {
           <p className="inline-flex rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-black uppercase tracking-wide text-black">
             {text.categories[tool.category] ?? tool.category}
           </p>
-          <h1 className="mt-3 text-4xl font-black tracking-tight text-black">{tool.title}</h1>
-          <p className="mt-4 text-lg leading-8 text-black/60">{tool.description}</p>
+          <h1 className="mt-3 text-4xl font-black tracking-tight text-black">{seo?.h1 ?? tool.title}</h1>
+          <p className="mt-4 text-lg leading-8 text-black/60">{seo?.shortIntro ?? tool.description}</p>
         </div>
 
         <div className="mt-10">
@@ -86,6 +93,8 @@ export default function ToolPage() {
             </div>
           </div>
         )}
+
+        <ToolSeoSections seo={seo} />
       </div>
     </section>
   );

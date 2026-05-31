@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import ToolCard from './ToolCard.jsx';
 import CategoryTabs from './navigation/CategoryTabs.jsx';
 import { allTools } from '../data/tools.js';
@@ -6,16 +7,19 @@ import { useLanguage } from '../i18n.jsx';
 export default function ToolGrid({ searchTerm, activeTab, onTabChange }) {
   const { text } = useLanguage();
   const normalizedSearch = searchTerm.trim().toLowerCase();
-  const filteredTools = allTools.filter((tool) => {
-    const matchesTab = activeTab === 'All Tools' || tool.groups?.includes(activeTab) || tool.category === activeTab;
-    const matchesSearch =
-      !normalizedSearch ||
-      [tool.title, tool.description, tool.category, ...(tool.groups ?? [])].some((value) =>
-        value.toLowerCase().includes(normalizedSearch),
-      );
+  const filteredTools = useMemo(
+    () => allTools.filter((tool) => {
+      const matchesTab = activeTab === 'All Tools' || tool.groups?.includes(activeTab) || tool.category === activeTab;
+      const matchesSearch =
+        !normalizedSearch ||
+        [tool.title, tool.description, tool.category, ...(tool.groups ?? [])].some((value) =>
+          value.toLowerCase().includes(normalizedSearch),
+        );
 
-    return matchesTab && matchesSearch;
-  });
+      return matchesTab && matchesSearch;
+    }),
+    [activeTab, normalizedSearch],
+  );
 
   return (
     <section id="tools" className="bg-white py-12 sm:py-16">

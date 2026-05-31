@@ -1,9 +1,13 @@
 import { MonitorSmartphone, ShieldCheck, Sparkles, Zap } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
-import ToolGrid from '../components/ToolGrid.jsx';
+import SeoHelmet from '../components/seo/SeoHelmet.jsx';
+import { organizationSchema, websiteSchema } from '../components/seo/schema.js';
+import { SITE_URL } from '../data/toolsSeoData.js';
 import { useLanguage } from '../i18n.jsx';
+
+const ToolGrid = lazy(() => import('../components/ToolGrid.jsx'));
 
 const validTabs = ['All Tools', 'Resize', 'Compress', 'Convert', 'PDF Tools', 'Image Tools', 'Documents'];
 
@@ -37,10 +41,6 @@ export default function Home() {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    document.title = 'FileWalaTool - PDF & Image Tools';
-  }, []);
-
-  useEffect(() => {
     const category = searchParams.get('category');
     if (category && validTabs.includes(category)) {
       setActiveTab(category);
@@ -54,8 +54,25 @@ export default function Home() {
 
   return (
     <>
+      <SeoHelmet
+        title="FileWalaTool - Free PDF, Image, and Document Tools Online"
+        description="FileWalaTool, also known as File Wala Tool and Filewala, offers free online PDF, image, compression, resize, and document tools for everyday file work."
+        canonical={SITE_URL}
+        keywords={[
+          'FileWalaTool',
+          'File Wala Tool',
+          'file wala tool',
+          'free online file tools',
+          'pdf tools',
+          'image tools',
+          'document tools India',
+        ]}
+        jsonLd={[websiteSchema(), organizationSchema()]}
+      />
       <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      <ToolGrid searchTerm={searchTerm} activeTab={activeTab} onTabChange={handleTabChange} />
+      <Suspense fallback={null}>
+        <ToolGrid searchTerm={searchTerm} activeTab={activeTab} onTabChange={handleTabChange} />
+      </Suspense>
       <section className="bg-white py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 max-w-2xl">
@@ -65,6 +82,7 @@ export default function Home() {
             </h2>
             <p className="mt-3 text-base leading-7 text-black/60">
               {text.home.description}
+              {' '}FileWalaTool is a free online file tool platform for PDF, image, document, resize, compress, and converter tools.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

@@ -1,4 +1,5 @@
 import { CheckCircle2, Search, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { allTools } from '../data/tools.js';
 import { useLanguage } from '../i18n.jsx';
@@ -52,15 +53,17 @@ const colorForTool = (tool) => searchColors[tool.groups?.find((group) => searchC
 export default function Hero({ searchTerm, onSearchChange }) {
   const { text } = useLanguage();
   const normalizedSearch = searchTerm.trim().toLowerCase();
-  const suggestedTools = normalizedSearch
-    ? allTools
-        .filter((tool) =>
-          [tool.title, tool.description, tool.category, ...(tool.groups ?? [])].some((value) =>
-            value.toLowerCase().includes(normalizedSearch),
-          ),
-        )
-        .slice(0, 6)
-    : [];
+  const suggestedTools = useMemo(() => {
+    if (!normalizedSearch) return [];
+
+    return allTools
+      .filter((tool) =>
+        [tool.title, tool.description, tool.category, ...(tool.groups ?? [])].some((value) =>
+          value.toLowerCase().includes(normalizedSearch),
+        ),
+      )
+      .slice(0, 6);
+  }, [normalizedSearch]);
 
   return (
     <section className="border-b border-black/5 bg-white">

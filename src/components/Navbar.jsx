@@ -8,7 +8,7 @@ import {
   RefreshCw,
   X,
 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { allTools, navTools } from '../data/tools.js';
 import { languages, useLanguage } from '../i18n.jsx';
@@ -277,6 +277,8 @@ export default function Navbar() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [activeMenu, setActiveMenu] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const scrolledRef = useRef(false);
+  const scrollFrameRef = useRef(0);
   const { language, setLanguage, text } = useLanguage();
   const location = useLocation();
   const activeCategory = new URLSearchParams(location.search).get('category') ?? '';
@@ -288,10 +290,28 @@ export default function Navbar() {
   );
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 8);
+    const syncScrolled = () => {
+      const nextScrolled = window.scrollY > 8;
+      if (scrolledRef.current !== nextScrolled) {
+        scrolledRef.current = nextScrolled;
+        setScrolled(nextScrolled);
+      }
+    };
+
+    const handleScroll = () => {
+      if (scrollFrameRef.current) return;
+      scrollFrameRef.current = window.requestAnimationFrame(() => {
+        scrollFrameRef.current = 0;
+        syncScrolled();
+      });
+    };
+
     handleScroll();
     window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (scrollFrameRef.current) window.cancelAnimationFrame(scrollFrameRef.current);
+    };
   }, []);
 
   useEffect(() => {
@@ -333,8 +353,12 @@ export default function Navbar() {
         <nav className="relative flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:h-[68px] lg:px-8">
           <Link to="/" className="focus-ring flex min-w-0 items-center rounded-lg" aria-label="FileWalaTool home">
             <img
-              src="/assets/logofilewalatoo.png"
+              src="/assets/logofilewalatoo-538.png"
               alt="FileWalaTool"
+              width="538"
+              height="140"
+              fetchPriority="high"
+              decoding="async"
               className="h-[36px] w-auto max-w-[168px] object-contain sm:h-[39px] sm:max-w-[203px]"
             />
           </Link>

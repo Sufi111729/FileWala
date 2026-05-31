@@ -22,6 +22,7 @@ export default function AboutUs() {
       ctaTitle="Explore tools built for everyday file work"
       ctaDescription="Resize photos, compress images, edit PDFs, prepare signatures, and scan documents from one FileWalaTool workspace."
       ctaLabel={text.info.exploreAllTools}
+      canonicalPath="/about-us"
     >
       <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
         <div className="grid gap-5">
@@ -29,6 +30,7 @@ export default function AboutUs() {
             <h2 className="text-xl font-black tracking-tight text-black">{text.legal.aboutTitle}</h2>
             <p className="mt-3 text-base leading-7 text-black/65">
               FileWalaTool is a collection of simple online tools for images, PDFs, and documents. It helps users resize photos, compress files, prepare official document images, scan documents, and complete everyday file tasks without complex software.
+              People may also search for File Wala Tool, Filewala, or file wala tool; these names refer to the same FileWalaTool website and brand.
             </p>
           </section>
           <section>

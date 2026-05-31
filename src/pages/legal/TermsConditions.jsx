@@ -24,6 +24,7 @@ export default function TermsConditions() {
       description={text.legal.termsDescription}
       metaTitle="Terms & Conditions - FileWalaTool"
       metaDescription="Read the terms for using FileWalaTool image, PDF, and document tools, including user responsibility, file ownership, and limitations."
+      canonicalPath="/terms-and-conditions"
     >
       <p className="text-sm font-semibold leading-6 text-black/60">{text.info.lastUpdated}</p>
       <div className="mt-6 grid gap-6">

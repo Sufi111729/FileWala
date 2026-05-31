@@ -7,6 +7,7 @@ import RequirementStep from './RequirementStep.jsx';
 import StepTabs from './StepTabs.jsx';
 import ToolPageLayout from '../layouts/ToolPageLayout.jsx';
 import UploadStep from './UploadStep.jsx';
+import { getToolSeoBySlug } from '../../data/toolsSeoData.js';
 
 const steps = ['Upload', 'Requirement', 'Editor'];
 
@@ -17,10 +18,6 @@ export default function DocumentImageTool({ config }) {
   const [imageUrl, setImageUrl] = useState('');
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [values, setValues] = useState(config.defaultValues || {});
-
-  useEffect(() => {
-    document.title = `${config.title} - FileWalaTool`;
-  }, [config.title]);
 
   useEffect(() => () => {
     if (imageUrl) URL.revokeObjectURL(imageUrl);
@@ -43,12 +40,20 @@ export default function DocumentImageTool({ config }) {
 
   const canGoNext = activeStep === 0 ? Boolean(file) : true;
 
-  const translatedTool = text.tools?.[config.output?.filename?.replace('.jpg', '').replace('aadhaar-photo', 'aadhaar-photo-resize').replace('pan-photo', 'pan-photo-resize').replace('passport-photo', 'passport-photo-maker').replace('signature', 'signature-resize').replace('scanned-document', 'document-scanner')] ?? [config.title, config.description];
+  const seoSlug = config.output?.filename
+    ?.replace('.jpg', '')
+    .replace('aadhaar-photo', 'aadhaar-photo-resize')
+    .replace('pan-photo', 'pan-photo-resize')
+    .replace('passport-photo', 'passport-photo-maker')
+    .replace('signature', 'signature-resize')
+    .replace('scanned-document', 'document-scanner');
+  const seo = getToolSeoBySlug(seoSlug);
+  const translatedTool = text.tools?.[seoSlug] ?? [config.title, config.description];
   const pageTitle = translatedTool[0];
   const pageDescription = translatedTool[1];
 
   return (
-    <ToolPageLayout title={pageTitle} description={pageDescription}>
+    <ToolPageLayout title={pageTitle} description={pageDescription} seo={seo}>
         <div>
           <StepTabs steps={text.documentTool.steps} activeStep={activeStep} />
         </div>

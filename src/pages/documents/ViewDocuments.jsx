@@ -1,8 +1,9 @@
-import { useEffect } from 'react';
 import { Sparkles } from 'lucide-react';
 import CategoryTabs from '../../components/navigation/CategoryTabs.jsx';
+import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
 import ToolCard from '../../components/ToolCard.jsx';
 import { allTools } from '../../data/tools.js';
+import { absoluteUrl } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const documentToolTitles = [
@@ -20,12 +21,14 @@ export default function ViewDocuments() {
     .map((title) => allTools.find((tool) => tool.title === title))
     .filter(Boolean);
 
-  useEffect(() => {
-    document.title = 'Documents - FileWalaTool';
-  }, []);
-
   return (
     <section className="bg-white py-10 sm:py-14">
+      <SeoHelmet
+        title="Document Tools Online - Passport Photo, Signature, PAN, Aadhaar | FileWalaTool"
+        description="Prepare passport photos, signatures, Aadhaar photos, PAN photos, resumes, and scanned documents online with FileWalaTool."
+        canonical={absoluteUrl('/documents')}
+        keywords={['document tools', 'passport photo maker', 'signature resize', 'aadhaar photo resize', 'pan photo resize', 'document scanner India']}
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
           <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 text-sm font-semibold text-black">

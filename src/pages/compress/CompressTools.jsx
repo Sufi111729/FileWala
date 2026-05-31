@@ -1,5 +1,7 @@
 import { Archive, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
+import { absoluteUrl } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const compressTools = [
@@ -40,6 +42,12 @@ export default function CompressTools() {
 
   return (
     <section className="bg-white py-10 sm:py-14">
+      <SeoHelmet
+        title="Compress Tools Online - Image and PDF Compressor | FileWalaTool"
+        description="Compress images, photos, and PDFs online with FileWalaTool. Resize files to 20KB, 50KB, 100KB, or a custom KB target for uploads."
+        canonical={absoluteUrl('/compress')}
+        keywords={['compress image', 'image to 20kb', 'image to 50kb', 'compress pdf', 'photo compressor', 'custom kb resizer']}
+      />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           <p className="text-xs font-black uppercase tracking-wide text-green-700">{text.categories.Compress}</p>

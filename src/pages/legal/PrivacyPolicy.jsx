@@ -56,6 +56,7 @@ export default function PrivacyPolicy() {
       description={text.legal.privacyDescription}
       metaTitle="Privacy Policy - FileWalaTool"
       metaDescription="Learn how FileWalaTool handles files, privacy, browser-based processing, cookies, analytics, ads, and user responsibility."
+      canonicalPath="/privacy-policy"
     >
       <div className="prose prose-neutral max-w-none">
         <p className="text-sm font-semibold leading-6 text-black/60">{text.info.lastUpdated}</p>

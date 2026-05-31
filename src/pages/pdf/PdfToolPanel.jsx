@@ -18,6 +18,10 @@ import {
   rotatePdfPages,
   splitPdfByRanges,
 } from '../../utils/pdfUtils.js';
+import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
+import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
+import { toolSchemas } from '../../components/seo/schema.js';
+import { absoluteUrl, getToolSeoBySlug } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const actionLabels = {
@@ -34,6 +38,13 @@ function outputName(file, suffix) {
 
 export default function PdfToolPanel({ title, description, tool }) {
   const { text } = useLanguage();
+  const slugByTool = {
+    split: 'split-pdf',
+    compress: 'compress-pdf',
+    delete: 'pdf-page-delete',
+    rotate: 'rotate-pdf',
+  };
+  const seo = getToolSeoBySlug(slugByTool[tool]);
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [pageCount, setPageCount] = useState(0);
@@ -150,11 +161,18 @@ export default function PdfToolPanel({ title, description, tool }) {
 
   return (
     <section className="bg-slate-50 py-8 sm:py-12">
+      <SeoHelmet
+        title={seo?.seoTitle ?? `${title} - FileWalaTool`}
+        description={seo?.metaDescription ?? description}
+        canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? '/pdf-tools')}
+        keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [title, 'pdf tools']}
+        jsonLd={seo ? toolSchemas(seo) : []}
+      />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
           <p className="text-xs font-black uppercase tracking-wide text-blue-700">{text.categories['PDF Tools']}</p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">{title}</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-black/60">{description}</p>
+          <h1 className="mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? title}</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-black/60">{seo?.shortIntro ?? description}</p>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
@@ -313,6 +331,7 @@ export default function PdfToolPanel({ title, description, tool }) {
             )}
           </aside>
         </div>
+        <ToolSeoSections seo={seo} activeTab="PDF Tools" />
       </div>
     </section>
   );
