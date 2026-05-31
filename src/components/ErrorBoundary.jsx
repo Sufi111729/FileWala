@@ -7,6 +7,12 @@ export default class ErrorBoundary extends Component {
     return { hasError: true };
   }
 
+  componentDidCatch(error, errorInfo) {
+    if (import.meta.env.DEV) {
+      console.error('Route render failed:', error, errorInfo);
+    }
+  }
+
   componentDidUpdate(previousProps) {
     if (this.state.hasError && previousProps.resetKey !== this.props.resetKey) {
       this.setState({ hasError: false });

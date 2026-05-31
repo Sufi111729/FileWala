@@ -9,12 +9,25 @@ import { allTools, defaultTool } from '../data/tools.js';
 import { absoluteUrl, getToolSeoBySlug } from '../data/toolsSeoData.js';
 import { useLanguage } from '../i18n.jsx';
 
+const safeList = (items) => (Array.isArray(items) ? items.filter(Boolean) : []);
+
 export default function ToolPage() {
   const { text } = useLanguage();
   const { slug } = useParams();
   const tool = allTools.find((item) => item.slug === slug) ?? defaultTool;
   const seo = getToolSeoBySlug(tool.slug);
   const relatedTools = allTools.filter((item) => item.category === tool.category && item.slug !== tool.slug).slice(0, 4);
+  const keywords = seo
+    ? [
+        seo.primaryKeyword,
+        ...safeList(seo.secondaryKeywords),
+        ...safeList(seo.longTailKeywords),
+        ...safeList(seo.questionKeywords),
+        ...safeList(seo.indiaKeywords),
+        ...safeList(seo.brandKeywords),
+        ...safeList(seo.alternateNames),
+      ]
+    : [tool.title, tool.category];
 
   return (
     <section className="bg-white py-8 sm:py-12">
@@ -22,7 +35,7 @@ export default function ToolPage() {
         title={seo?.seoTitle ?? `${tool.title} - FileWalaTool`}
         description={seo?.metaDescription ?? tool.description}
         canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? `/tools/${tool.slug}`)}
-        keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [tool.title, tool.category]}
+        keywords={keywords}
         jsonLd={seo ? toolSchemas(seo) : []}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

@@ -6,7 +6,10 @@ import { allTools } from '../../data/tools.js';
 export default function ToolSeoSections({ seo, activeTab }) {
   if (!seo) return null;
 
-  const relatedTools = seo.relatedTools
+  const howToUse = Array.isArray(seo.howToUse) ? seo.howToUse.filter(Boolean) : [];
+  const features = Array.isArray(seo.features) ? seo.features.filter(Boolean) : [];
+  const faqs = Array.isArray(seo.faqs) ? seo.faqs.filter((faq) => faq?.question && faq?.answer) : [];
+  const relatedTools = (Array.isArray(seo.relatedTools) ? seo.relatedTools : [])
     .map((slug) => allTools.find((tool) => tool.slug === slug))
     .filter(Boolean)
     .slice(0, 6);
@@ -42,7 +45,7 @@ export default function ToolSeoSections({ seo, activeTab }) {
             <h2 className="text-xl font-black text-black">How to use</h2>
           </div>
           <ol className="mt-4 grid gap-3">
-            {seo.howToUse.map((step, index) => (
+            {howToUse.map((step, index) => (
               <li key={step} className="flex gap-3 text-sm font-semibold leading-6 text-black/70">
                 <span className="flex h-7 w-7 flex-none items-center justify-center rounded-md bg-blue-700 text-xs font-black text-white">
                   {index + 1}
@@ -59,7 +62,7 @@ export default function ToolSeoSections({ seo, activeTab }) {
             <h2 className="text-xl font-black text-black">Features</h2>
           </div>
           <ul className="mt-4 grid gap-3">
-            {seo.features.map((feature) => (
+            {features.map((feature) => (
               <li key={feature} className="flex gap-3 text-sm font-semibold leading-6 text-black/70">
                 <CheckCircle2 className="mt-0.5 h-5 w-5 flex-none text-green-700" />
                 <span>{feature}</span>
@@ -91,7 +94,7 @@ export default function ToolSeoSections({ seo, activeTab }) {
           <h2 className="text-xl font-black text-black">Frequently asked questions</h2>
         </div>
         <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          {seo.faqs.map((faq) => (
+          {faqs.map((faq) => (
             <article key={faq.question} className="rounded-md border border-black/10 bg-white p-4">
               <h3 className="text-sm font-black text-black">{faq.question}</h3>
               <p className="mt-2 text-sm leading-6 text-black/60">{faq.answer}</p>

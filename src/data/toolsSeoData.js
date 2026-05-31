@@ -1,5 +1,14 @@
-export { absoluteUrl, BRAND_ALIASES, BRAND_NAME, SITE_URL } from './siteMetadata.js';
-import { SITE_URL } from './siteMetadata.js';
+export { BRAND_ALIASES, BRAND_NAME } from './siteMetadata.js';
+
+const SITE_URL = 'https://www.filewalatool.com';
+
+const absoluteUrl = (path = '/') => {
+  if (!path) return SITE_URL;
+  if (path.startsWith('http')) return path;
+  return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
+};
+
+export { absoluteUrl, SITE_URL };
 
 const commonPrivacyFaq = {
   question: 'Are my files uploaded permanently?',

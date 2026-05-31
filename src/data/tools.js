@@ -302,6 +302,43 @@ export const toolCategories = [
 
 export const allTools = toolCategories.flatMap((category) => category.tools);
 
+export const toolRouteBySlug = {
+  'merge-pdf': '/pdf-tools/merge-pdf',
+  'split-pdf': '/pdf-tools/split-pdf',
+  'compress-pdf': '/pdf-tools/compress-pdf',
+  'pdf-to-jpg': '/tools/pdf-to-jpg',
+  'image-to-pdf': '/tools/image-to-pdf',
+  'pdf-to-word': '/tools/pdf-to-word',
+  'word-to-pdf': '/tools/word-to-pdf',
+  'protect-pdf': '/tools/protect-pdf',
+  'unlock-pdf': '/tools/unlock-pdf',
+  'rotate-pdf': '/pdf-tools/pdf-rotate',
+  'pdf-page-delete': '/pdf-tools/pdf-page-delete',
+  'watermark-pdf': '/tools/watermark-pdf',
+  'resize-image': '/tools/resize-image',
+  'compress-image': '/compress/image-compressor',
+  'image-kb-resizer': '/compress/custom-image-kb-resizer',
+  'crop-image': '/tools/crop-image',
+  'jpg-to-png': '/tools/jpg-to-png',
+  'png-to-jpg': '/tools/png-to-jpg',
+  'background-remover': '/tools/background-remover',
+  'image-upscaler': '/tools/image-upscaler',
+  'image-downscaler': '/tools/image-downscaler',
+  'passport-photo-maker': '/documents/passport-photo-maker',
+  'signature-resize': '/documents/signature-resize',
+  'photo-to-20kb': '/compress/image-to-20kb',
+  'photo-to-50kb': '/compress/image-to-50kb',
+  'photo-to-100kb': '/compress/image-to-100kb',
+  'aadhaar-photo-resize': '/documents/aadhaar-photo-resize',
+  'pan-photo-resize': '/documents/pan-photo-resize',
+  'resume-builder': '/documents/resume-builder',
+  'document-scanner': '/documents/document-scanner',
+};
+
+allTools.forEach((tool) => {
+  tool.href = toolRouteBySlug[tool.slug] ?? `/tools/${tool.slug}`;
+});
+
 const toolHrefByTitle = Object.fromEntries(allTools.map((tool) => [tool.title, tool.href ?? `/tools/${tool.slug}`]));
 
 export const navTools = [
