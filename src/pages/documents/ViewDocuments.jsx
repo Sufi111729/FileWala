@@ -3,7 +3,7 @@ import CategoryTabs from '../../components/navigation/CategoryTabs.jsx';
 import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
 import ToolCard from '../../components/ToolCard.jsx';
 import { allTools } from '../../data/tools.js';
-import { absoluteUrl } from '../../data/toolsSeoData.js';
+import { absoluteUrl } from '../../data/siteMetadata.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const documentToolTitles = [

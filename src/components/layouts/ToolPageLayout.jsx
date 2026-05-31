@@ -6,7 +6,7 @@ import SeoHelmet from '../seo/SeoHelmet.jsx';
 import ToolSeoSections from '../seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../seo/schema.js';
 import { allTools } from '../../data/tools.js';
-import { absoluteUrl } from '../../data/toolsSeoData.js';
+import { absoluteUrl } from '../../data/siteMetadata.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const workflowSteps = [

@@ -1,17 +1,5 @@
-export const SITE_URL = 'https://www.filewalatool.com';
-export const BRAND_NAME = 'FileWalaTool';
-export const BRAND_ALIASES = [
-  'FileWalaTool',
-  'File Wala Tool',
-  'filewalatool',
-  'file wala tool',
-  'Filewala',
-  'file wala',
-  'File Tool',
-  'File Tools',
-  'Online File Tool',
-  'Free File Tool',
-];
+export { absoluteUrl, BRAND_ALIASES, BRAND_NAME, SITE_URL } from './siteMetadata.js';
+import { SITE_URL } from './siteMetadata.js';
 
 const commonPrivacyFaq = {
   question: 'Are my files uploaded permanently?',
@@ -868,11 +856,6 @@ export const toolsSeoBySlug = Object.fromEntries(toolsSeoData.map((tool) => [too
 
 export function getToolSeoBySlug(slug) {
   return toolsSeoBySlug[slug];
-}
-
-export function absoluteUrl(path = '/') {
-  if (!path || path === '/') return SITE_URL;
-  return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
 export function createImageKbSeoTemplate(kb, route = `/compress/image-to-${kb}kb`) {

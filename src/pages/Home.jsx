@@ -4,7 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
 import { organizationSchema, websiteSchema } from '../components/seo/schema.js';
-import { SITE_URL } from '../data/toolsSeoData.js';
+import { SITE_URL } from '../data/siteMetadata.js';
 import { useLanguage } from '../i18n.jsx';
 
 const ToolGrid = lazy(() => import('../components/ToolGrid.jsx'));

@@ -79,7 +79,7 @@ Many image, PDF, and document operations are designed to run in the user's brows
 - Tailwind CSS
 - React Router
 - JavaScript
-- `react-helmet-async` for metadata
+- Lightweight document-head metadata updates
 - `lucide-react` for icons
 - `pdf-lib` for browser-side PDF operations
 - `html2canvas` and `jspdf` for resume PDF export

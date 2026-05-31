@@ -1,4 +1,4 @@
-import { absoluteUrl, BRAND_ALIASES, BRAND_NAME, SITE_URL } from '../../data/toolsSeoData.js';
+import { absoluteUrl, BRAND_ALIASES, BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
 
 export function organizationSchema() {
   return {

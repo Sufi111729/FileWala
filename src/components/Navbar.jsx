@@ -352,15 +352,18 @@ export default function Navbar() {
       <div className="relative" onMouseLeave={() => setActiveMenu('')}>
         <nav className="relative flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:h-[68px] lg:px-8">
           <Link to="/" className="focus-ring flex min-w-0 items-center rounded-lg" aria-label="FileWalaTool home">
-            <img
-              src="/assets/logofilewalatoo-538.png"
-              alt="FileWalaTool"
-              width="538"
-              height="140"
-              fetchPriority="high"
-              decoding="async"
-              className="h-[36px] w-auto max-w-[168px] object-contain sm:h-[39px] sm:max-w-[203px]"
-            />
+            <picture>
+              <source srcSet="/assets/logofilewalatoo-538.webp" type="image/webp" />
+              <img
+                src="/assets/logofilewalatoo-538.png"
+                alt="FileWalaTool"
+                width="538"
+                height="140"
+                fetchPriority="high"
+                decoding="async"
+                className="h-[36px] w-auto max-w-[168px] object-contain sm:h-[39px] sm:max-w-[203px]"
+              />
+            </picture>
           </Link>
 
           <div className="absolute left-1/2 hidden -translate-x-1/2 items-center gap-1 lg:flex">

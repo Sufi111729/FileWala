@@ -1,7 +1,7 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SeoHelmet from '../seo/SeoHelmet.jsx';
-import { absoluteUrl } from '../../data/toolsSeoData.js';
+import { absoluteUrl } from '../../data/siteMetadata.js';
 import { useLanguage } from '../../i18n.jsx';
 
 export default function InfoPageLayout({

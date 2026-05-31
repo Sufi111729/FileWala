@@ -21,7 +21,7 @@ export default defineConfig({
             return 'icons';
           }
 
-          if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router-dom/') || id.includes('/react-helmet-async/')) {
+          if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router-dom/')) {
             return 'react-vendor';
           }
 

@@ -1,7 +1,7 @@
 import { Archive, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
-import { absoluteUrl } from '../../data/toolsSeoData.js';
+import { absoluteUrl } from '../../data/siteMetadata.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const compressTools = [
