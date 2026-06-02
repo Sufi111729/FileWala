@@ -14,6 +14,7 @@ import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
 import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../../components/seo/schema.js';
 import { absoluteUrl, getToolSeoBySlug } from '../../data/toolsSeoData.js';
+import { useLanguage } from '../../i18n.jsx';
 import { downloadBlob, formatFileSize, mergePdfFiles } from '../../utils/pdfUtils.js';
 
 function fileId(file) {
@@ -21,7 +22,8 @@ function fileId(file) {
 }
 
 export default function MergePdf() {
-  const seo = getToolSeoBySlug('merge-pdf');
+  const { text, tLiteral, tSeo } = useLanguage();
+  const seo = tSeo(getToolSeoBySlug('merge-pdf'));
   const inputRef = useRef(null);
   const [files, setFiles] = useState([]);
   const [mergedBlob, setMergedBlob] = useState(null);
@@ -70,7 +72,7 @@ export default function MergePdf() {
     });
 
     if (rejectedCount > 0) {
-      setWarning('Only PDF files are accepted. Non-PDF files were skipped.');
+      setWarning(tLiteral('Only PDF files are accepted. Non-PDF files were skipped.'));
     }
   };
 
@@ -102,7 +104,7 @@ export default function MergePdf() {
     setWarning('');
 
     if (files.length < 2) {
-      setWarning('Please select at least 2 PDF files to merge.');
+      setWarning(tLiteral('Please select at least 2 PDF files to merge.'));
       return;
     }
 
@@ -113,9 +115,9 @@ export default function MergePdf() {
       if (mergedUrl) URL.revokeObjectURL(mergedUrl);
       setMergedBlob(blob);
       setMergedUrl(URL.createObjectURL(blob));
-      setStatus('Merged PDF is ready.');
+      setStatus(tLiteral('Merged PDF is ready.'));
     } catch (caughtError) {
-      setError(caughtError.message || 'Unable to merge these PDF files.');
+      setError(caughtError.message || tLiteral('Unable to merge these PDF files.'));
       setStatus('');
     }
   };
@@ -123,7 +125,7 @@ export default function MergePdf() {
   const handleDownload = () => {
     if (!mergedBlob) return;
     downloadBlob(mergedBlob, 'merged-filewalatool.pdf');
-    setStatus('Merged PDF downloaded.');
+    setStatus(tLiteral('Merged PDF downloaded.'));
   };
 
   return (
@@ -137,7 +139,7 @@ export default function MergePdf() {
       />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <p className="text-xs font-black uppercase tracking-wide text-blue-700">PDF Tools</p>
+          <p className="text-xs font-black uppercase tracking-wide text-blue-700">{text.categories['PDF Tools']}</p>
           <h1 className="mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo.h1}</h1>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-black/60">
             {seo.shortIntro}
@@ -153,9 +155,9 @@ export default function MergePdf() {
             <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-white text-blue-700 ring-1 ring-black/10">
               <UploadCloud className="h-7 w-7" />
             </span>
-            <span className="mt-5 text-lg font-black text-black">Upload PDF files</span>
+            <span className="mt-5 text-lg font-black text-black">{text.pdf.uploadPdfFiles}</span>
             <span className="mt-2 max-w-md text-sm leading-6 text-black/55">
-              Drag and drop multiple PDFs here, or click to choose files.
+              {text.upload.drop}
             </span>
             <input
               ref={inputRef}
@@ -168,15 +170,15 @@ export default function MergePdf() {
           </label>
 
           <p className="mt-3 text-sm font-semibold text-black/50">
-            Your PDFs are processed in your browser whenever possible.
+            {text.pdf.browserHint}
           </p>
 
           <div className="mt-6 rounded-lg border border-black/10 bg-white">
             <div className="flex flex-col gap-2 border-b border-black/10 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="text-base font-black text-black">Selected files</h2>
+                <h2 className="text-base font-black text-black">{tLiteral('Selected files')}</h2>
                 <p className="mt-1 text-sm text-black/50">
-                  {files.length} {files.length === 1 ? 'file' : 'files'} selected · {formatFileSize(totalSize)}
+                  {files.length} {files.length === 1 ? text.grid.tool : text.upload.filesSelected} - {formatFileSize(totalSize)}
                 </p>
               </div>
               <button
@@ -184,7 +186,7 @@ export default function MergePdf() {
                 onClick={() => inputRef.current?.click()}
                 className="focus-ring inline-flex items-center justify-center rounded-md border border-black/10 bg-white px-4 py-2 text-sm font-bold text-black transition-colors hover:border-blue-400 hover:text-blue-700"
               >
-                Add PDFs
+                {tLiteral('Add PDFs')}
               </button>
             </div>
 
@@ -235,7 +237,7 @@ export default function MergePdf() {
               </ul>
             ) : (
               <div className="px-4 py-10 text-center text-sm font-semibold text-black/45">
-                No PDFs selected yet.
+                {tLiteral('No PDFs selected yet.')}
               </div>
             )}
           </div>
@@ -248,7 +250,7 @@ export default function MergePdf() {
               className="focus-ring inline-flex items-center justify-center gap-2 rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
             >
               {isMerging && <Loader2 className="h-4 w-4 animate-spin" />}
-              Merge PDFs
+              {tLiteral('Merge PDFs')}
             </button>
             <button
               type="button"
@@ -257,7 +259,7 @@ export default function MergePdf() {
               className="focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-black text-black transition-colors hover:border-blue-400 hover:text-blue-700 disabled:cursor-not-allowed disabled:text-black/30"
             >
               <Download className="h-4 w-4" />
-              Download Merged PDF
+              {tLiteral('Download Merged PDF')}
             </button>
           </div>
 
@@ -285,3 +287,4 @@ export default function MergePdf() {
     </section>
   );
 }
+

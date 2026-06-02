@@ -374,7 +374,7 @@ function previewType(contentType) {
 }
 
 export default function UploadBox({ tool }) {
-  const { text } = useLanguage();
+  const { text, tLiteral, tToolTitle } = useLanguage();
   const fileInputRef = useRef(null);
   const config = useMemo(() => ({ ...defaultConfig, ...(converterConfig[tool.slug] ?? {}) }), [tool.slug]);
   const [files, setFiles] = useState([]);
@@ -486,7 +486,7 @@ export default function UploadBox({ tool }) {
     }
 
     setError('');
-    setCloudStatus('Opening Google Drive...');
+    setCloudStatus(tLiteral('Opening Google Drive...'));
     setImportSource('Google Drive');
 
     try {
@@ -514,7 +514,7 @@ export default function UploadBox({ tool }) {
             }
             if (action === window.google.picker.Action.PICKED) {
               try {
-                setCloudStatus('Downloading Google Drive file...');
+                setCloudStatus(tLiteral('Downloading Google Drive file...'));
                 const documents = data[window.google.picker.Response.DOCUMENTS] ?? data.docs ?? [];
                 const downloadedFiles = await Promise.all(
                   documents.map((document) => fetchGoogleDriveFile(document, accessToken)),
@@ -548,7 +548,7 @@ export default function UploadBox({ tool }) {
     }
 
     setError('');
-    setCloudStatus('Opening Dropbox...');
+    setCloudStatus(tLiteral('Opening Dropbox...'));
     setImportSource('Dropbox');
 
     try {
@@ -568,7 +568,7 @@ export default function UploadBox({ tool }) {
           extensions: dropboxExtensions(config.accept),
           success: async (selectedFiles) => {
             try {
-              setCloudStatus('Downloading Dropbox file...');
+              setCloudStatus(tLiteral('Downloading Dropbox file...'));
               const downloadedFiles = await Promise.all(selectedFiles.map(fetchDropboxFile));
               handleFiles(downloadedFiles);
               setImportSource('Dropbox');
@@ -604,7 +604,7 @@ export default function UploadBox({ tool }) {
           </span>
           <span className="mt-5 text-xl font-black tracking-tight text-black">{text.upload.drop}</span>
           <span className="mt-2 max-w-md text-sm leading-6 text-black/50">
-            {fileLabel || `${text.upload.choose} ${tool.title}.`}
+            {fileLabel || `${text.upload.choose} ${tToolTitle(tool)}.`}
           </span>
           {importSource && (
             <span className="mt-2 text-xs font-bold text-black/50">{text.upload.selectedFrom} {importSource}</span>

@@ -38,7 +38,11 @@ export default function ToolPageLayout({
   seo,
   children,
 }) {
-  const { text } = useLanguage();
+  const { text, tCategory, tSeo, tToolTitle, tToolDescription } = useLanguage();
+  const localizedSeo = tSeo(seo);
+  const currentTool = allTools.find((tool) => tool.title === title);
+  const localizedTitle = currentTool ? tToolTitle(currentTool) : title;
+  const localizedDescription = currentTool ? tToolDescription(currentTool) : description;
   const relatedTools = relatedTitles
     .map((toolTitle) => allTools.find((tool) => tool.title === toolTitle))
     .filter((tool) => tool && tool.title !== title)
@@ -47,11 +51,11 @@ export default function ToolPageLayout({
   return (
     <section className="bg-white py-10 sm:py-14">
       <SeoHelmet
-        title={seo?.seoTitle ?? `${title} - FileWalaTool`}
-        description={seo?.metaDescription ?? description}
-        canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? '/documents')}
-        keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [title, category]}
-        jsonLd={seo ? toolSchemas(seo) : []}
+        title={localizedSeo?.seoTitle ?? `${localizedTitle} - FileWalaTool`}
+        description={localizedSeo?.metaDescription ?? localizedDescription}
+        canonical={localizedSeo?.canonicalUrl ?? absoluteUrl(localizedSeo?.route ?? '/documents')}
+        keywords={localizedSeo ? [localizedSeo.primaryKeyword, ...localizedSeo.secondaryKeywords, ...localizedSeo.longTailKeywords, ...localizedSeo.questionKeywords, ...localizedSeo.indiaKeywords, ...localizedSeo.brandKeywords, ...localizedSeo.alternateNames] : [localizedTitle, category]}
+        jsonLd={localizedSeo ? toolSchemas(localizedSeo) : []}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
@@ -60,9 +64,9 @@ export default function ToolPageLayout({
             {text.toolsLibrary.label}
           </div>
           <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-black sm:text-5xl">
-            {seo?.h1 ?? text.toolsLibrary.title}
+            {localizedSeo?.h1 ?? localizedTitle ?? text.toolsLibrary.title}
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-black/60 sm:text-lg sm:leading-8">{seo?.shortIntro ?? description}</p>
+          <p className="mt-4 max-w-2xl text-base leading-7 text-black/60 sm:text-lg sm:leading-8">{localizedSeo?.shortIntro ?? localizedDescription}</p>
         </div>
 
         <div className="mt-7">
@@ -71,8 +75,8 @@ export default function ToolPageLayout({
 
         <div className="mt-7 rounded-md border border-black/10 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
           <div className="mb-5">
-            <p className="text-xs font-black uppercase tracking-wide text-blue-700">{category}</p>
-            <h2 className="mt-2 text-2xl font-black tracking-tight text-black sm:text-3xl">{title}</h2>
+            <p className="text-xs font-black uppercase tracking-wide text-blue-700">{tCategory(category)}</p>
+            <h2 className="mt-2 text-2xl font-black tracking-tight text-black sm:text-3xl">{localizedTitle}</h2>
           </div>
           {children}
         </div>
@@ -90,7 +94,7 @@ export default function ToolPageLayout({
           <div>
             <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.documentTool.about}</p>
             <h2 className="mt-2 text-2xl font-black tracking-tight text-black">
-              {text.documentTool.cleanerPrefix} {title}
+              {text.documentTool.cleanerPrefix} {localizedTitle}
             </h2>
             <p className="mt-3 text-base leading-7 text-black/60">
               {text.documentTool.aboutText}
@@ -134,7 +138,7 @@ export default function ToolPageLayout({
             <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
-        <ToolSeoSections seo={seo} activeTab={activeTab} />
+        <ToolSeoSections seo={localizedSeo} activeTab={activeTab} />
       </div>
     </section>
   );

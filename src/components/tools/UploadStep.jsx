@@ -79,7 +79,7 @@ export default function UploadStep({ file, previewUrl, dimensions, onFileReady, 
             <div className="min-w-0 flex-1">
               <p className="truncate text-base font-black text-black">{file.name}</p>
               <p className="mt-1 text-sm font-semibold text-black/55">
-                {formatFileSize(file.size)} • {dimensions.width} × {dimensions.height} px
+                {formatFileSize(file.size)} - {dimensions.width} x {dimensions.height} px
               </p>
             </div>
             <button

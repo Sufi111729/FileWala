@@ -51,7 +51,7 @@ const searchColors = {
 const colorForTool = (tool) => searchColors[tool.groups?.find((group) => searchColors[group])] ?? searchColors[tool.category] ?? searchColors['PDF Tools'];
 
 export default function Hero({ searchTerm, onSearchChange }) {
-  const { text } = useLanguage();
+  const { text, tCategory, tToolTitle, tToolDescription } = useLanguage();
   const normalizedSearch = searchTerm.trim().toLowerCase();
   const suggestedTools = useMemo(() => {
     if (!normalizedSearch) return [];
@@ -113,11 +113,11 @@ export default function Hero({ searchTerm, onSearchChange }) {
                           <Icon className={`h-5 w-5 ${color.text}`} />
                         </span>
                         <span className="min-w-0 flex-1">
-                          <span className="block truncate text-sm font-black text-black">{tool.title}</span>
-                          <span className="block truncate text-xs font-semibold text-black/50">{tool.description}</span>
+                          <span className="block truncate text-sm font-black text-black">{tToolTitle(tool)}</span>
+                          <span className="block truncate text-xs font-semibold text-black/50">{tToolDescription(tool)}</span>
                         </span>
                         <span className={`hidden rounded-full px-3 py-1 text-xs font-black ${color.softBg} ${color.text} sm:inline-flex`}>
-                          {tool.category.replace(' Tools', '')}
+                          {tCategory(tool.category).replace(' Tools', '')}
                         </span>
                       </Link>
                     );

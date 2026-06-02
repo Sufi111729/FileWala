@@ -43,16 +43,21 @@ function getBaseImageSize(image, frameWidth, frameHeight) {
 }
 
 export default function FixedFrameImageEditor({
+  imageFile,
   file,
   imageUrl,
   title,
   requirementsTitle,
   requirements = [],
   output,
+  frameRatio,
   cropAspect = 1,
   outputWidth,
   outputHeight,
   targetKB,
+  filename,
+  backgroundColor = '#ffffff',
+  toolType,
 }) {
   const { text } = useLanguage();
   const stageRef = useRef(null);
@@ -66,12 +71,17 @@ export default function FixedFrameImageEditor({
   const [contrast, setContrast] = useState(100);
   const [result, setResult] = useState(null);
   const [resultUrl, setResultUrl] = useState('');
+  const [localImageUrl, setLocalImageUrl] = useState('');
   const [status, setStatus] = useState('');
   const [error, setError] = useState('');
+  const activeFile = imageFile || file;
+  const activeFilename = filename || output?.filename || 'processed-image.jpg';
+  const activeFrameRatio = frameRatio || cropAspect;
+  const previewImageUrl = imageUrl || localImageUrl;
 
   const frameSize = useMemo(
-    () => getFrameSize(stageSize.width, stageSize.height, cropAspect),
-    [cropAspect, stageSize],
+    () => getFrameSize(stageSize.width, stageSize.height, activeFrameRatio),
+    [activeFrameRatio, stageSize],
   );
 
   const baseImageSize = useMemo(
@@ -99,6 +109,7 @@ export default function FixedFrameImageEditor({
 
   useEffect(() => {
     let isMounted = true;
+    let objectUrl = '';
     setImage(null);
     setResult(null);
     setResultUrl('');
@@ -110,7 +121,14 @@ export default function FixedFrameImageEditor({
     setError('');
     setStatus('');
 
-    loadImage(file)
+    if (!imageUrl && activeFile) {
+      objectUrl = URL.createObjectURL(activeFile);
+      setLocalImageUrl(objectUrl);
+    } else {
+      setLocalImageUrl('');
+    }
+
+    loadImage(activeFile)
       .then((loadedImage) => {
         if (isMounted) setImage(loadedImage);
       })
@@ -120,8 +138,9 @@ export default function FixedFrameImageEditor({
 
     return () => {
       isMounted = false;
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [file]);
+  }, [activeFile, imageUrl, text.documentTool.imageLoadFailed]);
 
   useEffect(() => () => {
     if (resultUrl) URL.revokeObjectURL(resultUrl);
@@ -199,7 +218,9 @@ export default function FixedFrameImageEditor({
         outputWidth,
         outputHeight,
         targetKB,
-        filename: output.filename,
+        filename: activeFilename,
+        backgroundColor,
+        toolType,
       });
 
       if (resultUrl) URL.revokeObjectURL(resultUrl);
@@ -239,7 +260,7 @@ export default function FixedFrameImageEditor({
           >
             {image && (
               <img
-                src={imageUrl}
+                src={previewImageUrl}
                 alt="Editor preview"
                 draggable="false"
                 className="pointer-events-none absolute left-1/2 top-1/2 max-w-none select-none"
@@ -340,7 +361,7 @@ export default function FixedFrameImageEditor({
           <button
             type="button"
             disabled={!canDownload}
-            onClick={() => downloadBlob(result.blob, output.filename)}
+            onClick={() => downloadBlob(result.blob, activeFilename)}
             className="focus-ring mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
           >
             <Download className="h-4 w-4" />

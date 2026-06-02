@@ -48,20 +48,25 @@ const sections = [
 ];
 
 export default function PrivacyPolicy() {
-  const { text } = useLanguage();
+  const { language, text } = useLanguage();
+  const localizedSections = language === 'en' ? sections : [
+    { title: text.sections.privacyFriendly, body: [text.legal.privacyDescription, text.toolPage.aboutText] },
+    { title: text.sections.fastSecureProcessing, body: text.toolPage.bullets },
+    { title: text.legal.contactInfo, body: [text.legal.issueNote] },
+  ];
 
   return (
     <InfoPageLayout
       title={text.legal.privacyTitle}
       description={text.legal.privacyDescription}
-      metaTitle="Privacy Policy - FileWalaTool"
-      metaDescription="Learn how FileWalaTool handles files, privacy, browser-based processing, cookies, analytics, ads, and user responsibility."
+      metaTitle={`${text.legal.privacyTitle} - FileWalaTool`}
+      metaDescription={text.legal.privacyDescription}
       canonicalPath="/privacy-policy"
     >
       <div className="prose prose-neutral max-w-none">
         <p className="text-sm font-semibold leading-6 text-black/60">{text.info.lastUpdated}</p>
         <div className="mt-6 grid gap-6">
-          {sections.map((section) => (
+          {localizedSections.map((section) => (
             <section key={section.title}>
               <h2 className="text-xl font-black tracking-tight text-black">{section.title}</h2>
               <div className="mt-3 grid gap-3">
@@ -76,11 +81,11 @@ export default function PrivacyPolicy() {
         <section className="mt-8 rounded-md border border-black/10 bg-black/[0.015] p-5">
           <h2 className="text-xl font-black tracking-tight text-black">{text.legal.contactEmail}</h2>
           <p className="mt-3 text-base leading-7 text-black/65">
-            For privacy questions, contact us at{' '}
+            {text.legal.contactDescription}{' '}
             <a className="font-bold text-blue-700 hover:text-blue-800" href="mailto:support@filewalatool.com">
               support@filewalatool.com
             </a>
-            . You can also use the <Link className="font-bold text-blue-700 hover:text-blue-800" to="/contact-us">Contact Us</Link> page.
+            . <Link className="font-bold text-blue-700 hover:text-blue-800" to="/contact-us">{text.legal.contactTitle}</Link>
           </p>
         </section>
       </div>

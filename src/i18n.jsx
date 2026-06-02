@@ -700,23 +700,766 @@ const ar = {
   image: { ...en.image, uploadImage: 'رفع صورة', settings: 'الإعدادات', original: 'الأصلي', compressed: 'مضغوط', compressImage: 'ضغط الصورة', previewHint: 'ستظهر المعاينة هنا.' },
 };
 
-export const translations = { en, hi, ur, ar };
+const localizedTools = {
+  hi: {
+    'merge-pdf': ['PDF मर्ज करें', 'कई PDF को एक व्यवस्थित दस्तावेज में जोड़ें.'],
+    'split-pdf': ['PDF विभाजित करें', 'चुने हुए पेज निकालें या PDF को छोटे हिस्सों में बांटें.'],
+    'compress-pdf': ['PDF कंप्रेस करें', 'दस्तावेज साफ रखते हुए PDF फाइल का साइज कम करें.'],
+    'pdf-to-jpg': ['PDF से JPG', 'PDF पेजों को अच्छी गुणवत्ता वाली JPG इमेज में बदलें.'],
+    'image-to-pdf': ['इमेज से PDF', 'JPG, PNG, WEBP, BMP या कई इमेज को एक PDF में बदलें.'],
+    'pdf-to-word': ['PDF से Word', 'PDF दस्तावेजों को संपादन योग्य Word फाइल में बदलें.'],
+    'word-to-pdf': ['Word से PDF', 'Word दस्तावेजों को साफ PDF फाइल में बदलें.'],
+    'protect-pdf': ['PDF सुरक्षित करें', 'संवेदनशील PDF फाइलों में पासवर्ड सुरक्षा जोड़ें.'],
+    'unlock-pdf': ['PDF अनलॉक करें', 'जिन PDF को खोलने की अनुमति है उनसे पासवर्ड हटाएं.'],
+    'rotate-pdf': ['PDF घुमाएं', 'PDF पेज घुमाएं और दस्तावेज की दिशा ठीक करें.'],
+    'pdf-page-delete': ['PDF पेज हटाएं', 'PDF दस्तावेज से अनचाहे पेज हटाएं.'],
+    'watermark-pdf': ['PDF वॉटरमार्क', 'PDF पेजों पर टेक्स्ट या इमेज वॉटरमार्क लगाएं.'],
+    'resize-image': ['इमेज रीसाइजर', 'वेब, सोशल, फॉर्म या दस्तावेज के लिए इमेज रीसाइज करें.'],
+    'compress-image': ['इमेज कंप्रेस करें', 'दृश्य गुणवत्ता बनाए रखते हुए इमेज छोटी करें.'],
+    'image-kb-resizer': ['कस्टम KB रीसाइजर', 'अपलोड सीमा के अनुसार इमेज फाइल साइज सेट करें.'],
+    'crop-image': ['इमेज क्रॉप करें', 'फोटो को सही माप और अनुपात में क्रॉप करें.'],
+    'jpg-to-png': ['JPG से PNG', 'JPG फाइलों को PNG इमेज में बदलें.'],
+    'png-to-jpg': ['PNG से JPG', 'PNG इमेज से हल्की JPG फाइल बनाएं.'],
+    'background-remover': ['बैकग्राउंड रिमूवर', 'प्रोफाइल और उत्पादों के लिए इमेज बैकग्राउंड हटाएं.'],
+    'image-upscaler': ['इमेज अपस्केलर', 'किनारे साफ रखते हुए इमेज का आकार बढ़ाएं.'],
+    'image-downscaler': ['इमेज डाउनस्केलर', 'तेज शेयरिंग और अपलोड के लिए इमेज का आकार घटाएं.'],
+    'passport-photo-maker': ['पासपोर्ट फोटो मेकर', 'साफ एलाइनमेंट के साथ पासपोर्ट साइज फोटो बनाएं.'],
+    'signature-resize': ['सिग्नेचर रीसाइज', 'ऑनलाइन फॉर्म और दस्तावेज अपलोड के लिए सिग्नेचर रीसाइज करें.'],
+    'photo-to-20kb': ['इमेज से 20KB', 'आवेदन फोटो को 20KB लक्ष्य तक कंप्रेस करें.'],
+    'photo-to-50kb': ['इमेज से 50KB', '50KB जरूरत के लिए फोटो अपलोड ऑप्टिमाइज करें.'],
+    'photo-to-100kb': ['इमेज से 100KB', '100KB सीमा के अंदर साफ फोटो बनाएं.'],
+    'aadhaar-photo-resize': ['Aadhaar फोटो रीसाइज', 'दस्तावेज और फॉर्म अपलोड के लिए Aadhaar फोटो तैयार करें.'],
+    'pan-photo-resize': ['PAN फोटो रीसाइज', 'स्वीकृत अपलोड माप के लिए PAN card फोटो रीसाइज करें.'],
+    'resume-builder': ['रिज्यूमे बिल्डर', 'आवेदन के लिए साफ रिज्यूमे दस्तावेज बनाएं.'],
+    'document-scanner': ['दस्तावेज स्कैनर', 'शेयरिंग के लिए दस्तावेज फोटो स्कैन और साफ करें.'],
+  },
+  ur: {
+    'merge-pdf': ['PDF ضم کریں', 'کئی PDF فائلوں کو ایک منظم دستاویز میں جوڑیں.'],
+    'split-pdf': ['PDF تقسیم کریں', 'منتخب صفحات نکالیں یا PDF کو چھوٹی فائلوں میں بانٹیں.'],
+    'compress-pdf': ['PDF کمپریس کریں', 'دستاویز صاف رکھتے ہوئے PDF فائل کا سائز کم کریں.'],
+    'pdf-to-jpg': ['PDF سے JPG', 'PDF صفحات کو اعلی معیار کی JPG تصاویر میں بدلیں.'],
+    'image-to-pdf': ['تصویر سے PDF', 'JPG, PNG, WEBP, BMP یا کئی تصاویر کو ایک PDF بنائیں.'],
+    'pdf-to-word': ['PDF سے Word', 'PDF دستاویزات کو قابل تدوین Word فائلوں میں بدلیں.'],
+    'word-to-pdf': ['Word سے PDF', 'Word دستاویزات کو صاف PDF فائلوں میں بدلیں.'],
+    'protect-pdf': ['PDF محفوظ کریں', 'حساس PDF فائلوں میں پاس ورڈ حفاظت شامل کریں.'],
+    'unlock-pdf': ['PDF ان لاک کریں', 'اجازت یافتہ PDF فائلوں سے پاس ورڈ ہٹائیں.'],
+    'rotate-pdf': ['PDF گھمائیں', 'صفحات گھمائیں اور دستاویز کی سمت درست کریں.'],
+    'pdf-page-delete': ['PDF صفحات حذف کریں', 'PDF دستاویز سے غیر ضروری صفحات ہٹائیں.'],
+    'watermark-pdf': ['PDF واٹرمارک', 'PDF صفحات پر متن یا تصویر واٹرمارک لگائیں.'],
+    'resize-image': ['امیج ریسائزر', 'ویب، سوشل، فارم یا دستاویزات کے لیے تصاویر ریسائز کریں.'],
+    'compress-image': ['امیج کمپریس کریں', 'ظاہری معیار برقرار رکھتے ہوئے تصاویر چھوٹی کریں.'],
+    'image-kb-resizer': ['کسٹم KB ریسائزر', 'اپ لوڈ حد کے مطابق تصویر کا فائل سائز بنائیں.'],
+    'crop-image': ['امیج کراپ کریں', 'تصاویر کو درست سائز اور تناسب میں کراپ کریں.'],
+    'jpg-to-png': ['JPG سے PNG', 'JPG فائلوں کو PNG تصاویر میں بدلیں.'],
+    'png-to-jpg': ['PNG سے JPG', 'PNG تصاویر سے ہلکی JPG فائلیں بنائیں.'],
+    'background-remover': ['بیک گراؤنڈ ریموور', 'پروفائل اور پروڈکٹ تصاویر کے بیک گراؤنڈ ہٹائیں.'],
+    'image-upscaler': ['امیج اپ اسکیلر', 'کنارے صاف رکھتے ہوئے تصویر کا سائز بڑھائیں.'],
+    'image-downscaler': ['امیج ڈاؤن اسکیلر', 'تیز شیئرنگ اور اپ لوڈ کے لیے تصویر کا سائز کم کریں.'],
+    'passport-photo-maker': ['پاسپورٹ فوٹو میکر', 'صاف الائنمنٹ کے ساتھ پاسپورٹ سائز فوٹو بنائیں.'],
+    'signature-resize': ['دستخط ریسائز', 'آن لائن فارم اور دستاویز اپ لوڈ کے لیے دستخط ریسائز کریں.'],
+    'photo-to-20kb': ['امیج سے 20KB', 'درخواست کی تصاویر کو 20KB تک کمپریس کریں.'],
+    'photo-to-50kb': ['امیج سے 50KB', '50KB ضرورت کے لیے فوٹو اپ لوڈ بہتر بنائیں.'],
+    'photo-to-100kb': ['امیج سے 100KB', '100KB حد کے اندر صاف تصاویر بنائیں.'],
+    'aadhaar-photo-resize': ['Aadhaar فوٹو ریسائز', 'دستاویز اور فارم اپ لوڈ کے لیے Aadhaar فوٹو تیار کریں.'],
+    'pan-photo-resize': ['PAN فوٹو ریسائز', 'قبول شدہ اپ لوڈ سائز کے لیے PAN card فوٹو ریسائز کریں.'],
+    'resume-builder': ['ریزیومے بلڈر', 'درخواستوں کے لیے صاف ریزیومے دستاویز بنائیں.'],
+    'document-scanner': ['دستاویز اسکینر', 'شیئرنگ کے لیے دستاویز تصاویر اسکین اور صاف کریں.'],
+  },
+  ar: {
+    'merge-pdf': ['دمج PDF', 'اجمع عدة ملفات PDF في مستند واحد منظم.'],
+    'split-pdf': ['تقسيم PDF', 'استخرج صفحات محددة أو قسم PDF إلى ملفات أصغر.'],
+    'compress-pdf': ['ضغط PDF', 'قلل حجم ملف PDF مع الحفاظ على وضوح المستند.'],
+    'pdf-to-jpg': ['PDF إلى JPG', 'حول صفحات PDF إلى صور JPG عالية الجودة.'],
+    'image-to-pdf': ['صورة إلى PDF', 'حول JPG و PNG و WEBP و BMP أو صورا متعددة إلى PDF واحد.'],
+    'pdf-to-word': ['PDF إلى Word', 'حول مستندات PDF إلى ملفات Word قابلة للتحرير.'],
+    'word-to-pdf': ['Word إلى PDF', 'حول مستندات Word إلى ملفات PDF مرتبة.'],
+    'protect-pdf': ['حماية PDF', 'أضف حماية بكلمة مرور إلى ملفات PDF الحساسة.'],
+    'unlock-pdf': ['فتح PDF', 'أزل كلمات المرور من ملفات PDF المسموح لك بفتحها.'],
+    'rotate-pdf': ['تدوير PDF', 'دوّر الصفحات وأصلح اتجاه المستند بسرعة.'],
+    'pdf-page-delete': ['حذف صفحات PDF', 'أزل الصفحات غير المطلوبة من مستند PDF.'],
+    'watermark-pdf': ['علامة مائية PDF', 'أضف علامات مائية نصية أو صورية على صفحات PDF.'],
+    'resize-image': ['تغيير حجم الصورة', 'غير حجم الصور للويب أو الشبكات أو النماذج أو المستندات.'],
+    'compress-image': ['ضغط الصورة', 'اجعل الصور أصغر مع الحفاظ على الجودة المرئية.'],
+    'image-kb-resizer': ['مغير KB مخصص', 'اضبط حجم ملف الصورة ليتوافق مع حدود الرفع.'],
+    'crop-image': ['قص الصورة', 'قص الصور إلى أبعاد ونسب دقيقة.'],
+    'jpg-to-png': ['JPG إلى PNG', 'حول ملفات JPG إلى صور PNG.'],
+    'png-to-jpg': ['PNG إلى JPG', 'أنشئ ملفات JPG خفيفة من صور PNG.'],
+    'background-remover': ['مزيل الخلفية', 'أزل خلفيات الصور للملفات الشخصية والمنتجات.'],
+    'image-upscaler': ['تكبير الصورة', 'زد أبعاد الصورة مع الحفاظ على وضوح الحواف.'],
+    'image-downscaler': ['تصغير الصورة', 'قلل أبعاد الصورة للمشاركة والرفع السريع.'],
+    'passport-photo-maker': ['منشئ صورة جواز السفر', 'أنشئ صورا بحجم جواز السفر بمحاذاة نظيفة.'],
+    'signature-resize': ['تغيير حجم التوقيع', 'غير حجم التوقيعات للنماذج ورفع المستندات.'],
+    'photo-to-20kb': ['صورة إلى 20KB', 'اضغط صور الطلبات إلى هدف 20KB.'],
+    'photo-to-50kb': ['صورة إلى 50KB', 'حسن رفع الصور لمتطلب 50KB.'],
+    'photo-to-100kb': ['صورة إلى 100KB', 'أنشئ صورا واضحة ضمن حد 100KB.'],
+    'aadhaar-photo-resize': ['تغيير حجم صورة Aadhaar', 'جهز صور Aadhaar لرفع المستندات والنماذج.'],
+    'pan-photo-resize': ['تغيير حجم صورة PAN', 'غير حجم صور PAN card إلى أبعاد الرفع المقبولة.'],
+    'resume-builder': ['منشئ السيرة الذاتية', 'أنشئ مستند سيرة ذاتية واضحا للتقديم.'],
+    'document-scanner': ['ماسح المستندات', 'امسح صور المستندات ونظفها للمشاركة.'],
+  },
+};
+
+const literalTranslations = {
+  hi: {
+    'About this tool': 'इस टूल के बारे में',
+    'Trust and privacy': 'विश्वास और प्राइवेसी',
+    'How to use': 'कैसे उपयोग करें',
+    Features: 'विशेषताएं',
+    Benefits: 'लाभ',
+    'Frequently asked questions': 'अक्सर पूछे जाने वाले सवाल',
+    'Related tools': 'संबंधित टूल',
+    'More useful FileWalaTool options': 'FileWalaTool के और उपयोगी विकल्प',
+    'View all tools': 'सभी टूल देखें',
+    Advertisement: 'विज्ञापन',
+    'Selected files': 'चुनी हुई फाइलें',
+    'No PDFs selected yet.': 'अभी कोई PDF नहीं चुनी गई.',
+    'Add PDFs': 'PDF जोड़ें',
+    'Merge PDFs': 'PDF मर्ज करें',
+    'Download Merged PDF': 'मर्ज की गई PDF डाउनलोड करें',
+    'Only PDF files are accepted. Non-PDF files were skipped.': 'केवल PDF फाइलें स्वीकार हैं. गैर-PDF फाइलें छोड़ दी गईं.',
+    'Please select at least 2 PDF files to merge.': 'मर्ज करने के लिए कम से कम 2 PDF फाइलें चुनें.',
+    'Merged PDF is ready.': 'मर्ज की गई PDF तैयार है.',
+    'Unable to merge these PDF files.': 'इन PDF फाइलों को मर्ज नहीं किया जा सका.',
+    'Merged PDF downloaded.': 'मर्ज की गई PDF डाउनलोड हो गई.',
+    'This PDF could not be reduced much in the browser.': 'यह PDF ब्राउजर में ज्यादा कम नहीं हो सकी.',
+    'Could not process this PDF.': 'यह PDF प्रोसेस नहीं हो सकी.',
+    'Browser-side image upscaling': 'ब्राउजर में इमेज अपस्केलिंग',
+    'Upload image': 'इमेज अपलोड करें',
+    'JPG, JPEG, PNG, or WEBP up to 10MB': 'JPG, JPEG, PNG या WEBP, अधिकतम 10MB',
+    Settings: 'सेटिंग्स',
+    Width: 'चौड़ाई',
+    Height: 'ऊंचाई',
+    'Keep aspect ratio': 'अनुपात बनाए रखें',
+    'Download format': 'डाउनलोड फॉर्मेट',
+    Original: 'ओरिजिनल',
+    Result: 'परिणाम',
+    Output: 'आउटपुट',
+    'Original file': 'ओरिजिनल फाइल',
+    'Output file': 'आउटपुट फाइल',
+    'Process image': 'इमेज प्रोसेस करें',
+    'Custom width/height': 'कस्टम चौड़ाई/ऊंचाई',
+    'Max width 1920px': 'अधिकतम चौड़ाई 1920px',
+    'Max width 1280px': 'अधिकतम चौड़ाई 1280px',
+    'Max width 800px': 'अधिकतम चौड़ाई 800px',
+    'Output requirements': 'आउटपुट जरूरतें',
+    'Passport Photo Requirements': 'पासपोर्ट फोटो जरूरतें',
+    'Signature Requirements': 'सिग्नेचर जरूरतें',
+    'Aadhaar Photo Requirements': 'Aadhaar फोटो जरूरतें',
+    'PAN Photo Requirements': 'PAN फोटो जरूरतें',
+    'Application Website': 'एप्लिकेशन वेबसाइट',
+    'Photo type': 'फोटो प्रकार',
+    Type: 'प्रकार',
+    Resize: 'रीसाइज',
+    'Resize Original': 'ओरिजिनल रीसाइज करें',
+    'Resize Selected Area': 'चुने हुए क्षेत्र को रीसाइज करें',
+    Photograph: 'फोटो',
+    Signature: 'सिग्नेचर',
+    'Document Type': 'दस्तावेज प्रकार',
+    Passport: 'पासपोर्ट',
+    'General Document': 'सामान्य दस्तावेज',
+    'Dimensions: 3.5 cm x 2.5 cm': 'माप: 3.5 cm x 2.5 cm',
+    'Resolution: 200 DPI': 'रेजोल्यूशन: 200 DPI',
+    'File Format: JPEG': 'फाइल फॉर्मेट: JPEG',
+    'File Size: Maximum 50 KB': 'फाइल साइज: अधिकतम 50 KB',
+    'Background: Plain white or light background': 'बैकग्राउंड: सादा सफेद या हल्का बैकग्राउंड',
+    'Appearance: Color photo, recent, and taken with a neutral expression': 'दिखावट: हाल की रंगीन फोटो, सामान्य भाव के साथ',
+    'Box Dimensions: 2 cm x 4.5 cm': 'बॉक्स माप: 2 cm x 4.5 cm',
+    'Ink & Paper: black ink on white paper': 'स्याही और कागज: सफेद कागज पर काली स्याही',
+    'Signature must stay inside the white box': 'सिग्नेचर सफेद बॉक्स के अंदर रहना चाहिए',
+    'JPEG format': 'JPEG फॉर्मेट',
+    'Maximum 10KB': 'अधिकतम 10KB',
+    'Dimensions: 250 x 350 px': 'माप: 250 x 350 px',
+    'File Size: 10 KB to 100 KB': 'फाइल साइज: 10 KB से 100 KB',
+    'Appearance: Clear recent color photo': 'दिखावट: साफ हाल की रंगीन फोटो',
+    'Adjustable crop area': 'एडजस्टेबल क्रॉप एरिया',
+    'JPEG output': 'JPEG आउटपुट',
+    'Clean scanner filters': 'साफ स्कैनर फिल्टर',
+    'Ready to download': 'डाउनलोड के लिए तैयार',
+    'Opening Google Drive...': 'Google Drive खुल रहा है...',
+    'Downloading Google Drive file...': 'Google Drive फाइल डाउनलोड हो रही है...',
+    'Opening Dropbox...': 'Dropbox खुल रहा है...',
+    'Downloading Dropbox file...': 'Dropbox फाइल डाउनलोड हो रही है...',
+    Download: 'डाउनलोड',
+    'Preview will appear here.': 'प्रीव्यू यहां दिखेगा.',
+    'Please upload a JPG, JPEG, PNG, or WEBP image.': 'कृपया JPG, JPEG, PNG या WEBP इमेज अपलोड करें.',
+    'Please upload an image under 10MB.': 'कृपया 10MB से छोटी इमेज अपलोड करें.',
+    'This image could not be opened. Please try another file.': 'यह इमेज नहीं खुल सकी. दूसरी फाइल आजमाएं.',
+    'Please upload an image first.': 'पहले इमेज अपलोड करें.',
+    'Please choose a valid output size.': 'कृपया सही आउटपुट साइज चुनें.',
+    'Image processed successfully.': 'इमेज सफलतापूर्वक प्रोसेस हुई.',
+    'Image processing failed. Please try again.': 'इमेज प्रोसेसिंग विफल रही. फिर कोशिश करें.',
+  },
+  ur: {
+    'About this tool': 'اس ٹول کے بارے میں',
+    'Trust and privacy': 'اعتماد اور پرائیویسی',
+    'How to use': 'استعمال کا طریقہ',
+    Features: 'خصوصیات',
+    Benefits: 'فوائد',
+    'Frequently asked questions': 'اکثر پوچھے گئے سوالات',
+    'Related tools': 'متعلقہ ٹولز',
+    'More useful FileWalaTool options': 'FileWalaTool کے مزید مفید اختیارات',
+    'View all tools': 'تمام ٹولز دیکھیں',
+    Advertisement: 'اشتہار',
+    'Selected files': 'منتخب فائلیں',
+    'No PDFs selected yet.': 'ابھی کوئی PDF منتخب نہیں.',
+    'Add PDFs': 'PDF شامل کریں',
+    'Merge PDFs': 'PDF ضم کریں',
+    'Download Merged PDF': 'ضم شدہ PDF ڈاؤن لوڈ کریں',
+    'Only PDF files are accepted. Non-PDF files were skipped.': 'صرف PDF فائلیں قبول ہیں. غیر PDF فائلیں چھوڑ دی گئیں.',
+    'Please select at least 2 PDF files to merge.': 'ضم کرنے کے لیے کم از کم 2 PDF فائلیں منتخب کریں.',
+    'Merged PDF is ready.': 'ضم شدہ PDF تیار ہے.',
+    'Unable to merge these PDF files.': 'یہ PDF فائلیں ضم نہیں ہو سکیں.',
+    'Merged PDF downloaded.': 'ضم شدہ PDF ڈاؤن لوڈ ہو گئی.',
+    'This PDF could not be reduced much in the browser.': 'یہ PDF براؤزر میں زیادہ کم نہیں ہو سکی.',
+    'Could not process this PDF.': 'یہ PDF پروسیس نہیں ہو سکی.',
+    'Browser-side image upscaling': 'براؤزر میں امیج اپ اسکیلنگ',
+    'Upload image': 'امیج اپ لوڈ کریں',
+    'JPG, JPEG, PNG, or WEBP up to 10MB': 'JPG, JPEG, PNG یا WEBP، زیادہ سے زیادہ 10MB',
+    Settings: 'سیٹنگز',
+    Width: 'چوڑائی',
+    Height: 'اونچائی',
+    'Keep aspect ratio': 'تناسب برقرار رکھیں',
+    'Download format': 'ڈاؤن لوڈ فارمیٹ',
+    Original: 'اصل',
+    Result: 'نتیجہ',
+    Output: 'آؤٹ پٹ',
+    'Original file': 'اصل فائل',
+    'Output file': 'آؤٹ پٹ فائل',
+    'Process image': 'امیج پروسیس کریں',
+    'Custom width/height': 'کسٹم چوڑائی/اونچائی',
+    'Max width 1920px': 'زیادہ سے زیادہ چوڑائی 1920px',
+    'Max width 1280px': 'زیادہ سے زیادہ چوڑائی 1280px',
+    'Max width 800px': 'زیادہ سے زیادہ چوڑائی 800px',
+    'Output requirements': 'آؤٹ پٹ ضروریات',
+    'Passport Photo Requirements': 'پاسپورٹ فوٹو ضروریات',
+    'Signature Requirements': 'دستخط ضروریات',
+    'Aadhaar Photo Requirements': 'Aadhaar فوٹو ضروریات',
+    'PAN Photo Requirements': 'PAN فوٹو ضروریات',
+    'Application Website': 'درخواست ویب سائٹ',
+    'Photo type': 'فوٹو قسم',
+    Type: 'قسم',
+    Resize: 'ری سائز',
+    'Resize Original': 'اصل ری سائز کریں',
+    'Resize Selected Area': 'منتخب حصہ ری سائز کریں',
+    Photograph: 'فوٹو',
+    Signature: 'دستخط',
+    'Document Type': 'دستاویز قسم',
+    Passport: 'پاسپورٹ',
+    'General Document': 'عام دستاویز',
+    'Dimensions: 3.5 cm x 2.5 cm': 'ابعاد: 3.5 cm x 2.5 cm',
+    'Resolution: 200 DPI': 'ریزولوشن: 200 DPI',
+    'File Format: JPEG': 'فائل فارمیٹ: JPEG',
+    'File Size: Maximum 50 KB': 'فائل سائز: زیادہ سے زیادہ 50 KB',
+    'Background: Plain white or light background': 'پس منظر: سادہ سفید یا ہلکا پس منظر',
+    'Appearance: Color photo, recent, and taken with a neutral expression': 'ظاہری شکل: حالیہ رنگین فوٹو، غیر جانبدار تاثر کے ساتھ',
+    'Box Dimensions: 2 cm x 4.5 cm': 'باکس ابعاد: 2 cm x 4.5 cm',
+    'Ink & Paper: black ink on white paper': 'سیاہی اور کاغذ: سفید کاغذ پر کالی سیاہی',
+    'Signature must stay inside the white box': 'دستخط سفید باکس کے اندر رہنے چاہئیں',
+    'JPEG format': 'JPEG فارمیٹ',
+    'Maximum 10KB': 'زیادہ سے زیادہ 10KB',
+    'Dimensions: 250 x 350 px': 'ابعاد: 250 x 350 px',
+    'File Size: 10 KB to 100 KB': 'فائل سائز: 10 KB سے 100 KB',
+    'Appearance: Clear recent color photo': 'ظاہری شکل: صاف حالیہ رنگین فوٹو',
+    'Adjustable crop area': 'قابل ایڈجسٹ کراپ ایریا',
+    'JPEG output': 'JPEG آؤٹ پٹ',
+    'Clean scanner filters': 'صاف اسکینر فلٹرز',
+    'Ready to download': 'ڈاؤن لوڈ کے لیے تیار',
+    'Opening Google Drive...': 'Google Drive کھل رہا ہے...',
+    'Downloading Google Drive file...': 'Google Drive فائل ڈاؤن لوڈ ہو رہی ہے...',
+    'Opening Dropbox...': 'Dropbox کھل رہا ہے...',
+    'Downloading Dropbox file...': 'Dropbox فائل ڈاؤن لوڈ ہو رہی ہے...',
+    Download: 'ڈاؤن لوڈ',
+    'Preview will appear here.': 'پری ویو یہاں آئے گا.',
+    'Please upload a JPG, JPEG, PNG, or WEBP image.': 'براہ کرم JPG, JPEG, PNG یا WEBP امیج اپ لوڈ کریں.',
+    'Please upload an image under 10MB.': 'براہ کرم 10MB سے کم امیج اپ لوڈ کریں.',
+    'This image could not be opened. Please try another file.': 'یہ امیج نہیں کھل سکی. دوسری فائل آزمائیں.',
+    'Please upload an image first.': 'پہلے امیج اپ لوڈ کریں.',
+    'Please choose a valid output size.': 'درست آؤٹ پٹ سائز منتخب کریں.',
+    'Image processed successfully.': 'امیج کامیابی سے پروسیس ہو گئی.',
+    'Image processing failed. Please try again.': 'امیج پروسیسنگ ناکام رہی. دوبارہ کوشش کریں.',
+  },
+  ar: {
+    'About this tool': 'حول هذه الأداة',
+    'Trust and privacy': 'الثقة والخصوصية',
+    'How to use': 'طريقة الاستخدام',
+    Features: 'الميزات',
+    Benefits: 'الفوائد',
+    'Frequently asked questions': 'الأسئلة الشائعة',
+    'Related tools': 'أدوات ذات صلة',
+    'More useful FileWalaTool options': 'خيارات FileWalaTool مفيدة أخرى',
+    'View all tools': 'عرض كل الأدوات',
+    Advertisement: 'إعلان',
+    'Selected files': 'الملفات المحددة',
+    'No PDFs selected yet.': 'لم يتم تحديد أي PDF بعد.',
+    'Add PDFs': 'إضافة PDF',
+    'Merge PDFs': 'دمج PDF',
+    'Download Merged PDF': 'تنزيل PDF المدمج',
+    'Only PDF files are accepted. Non-PDF files were skipped.': 'تقبل ملفات PDF فقط. تم تجاهل الملفات غير PDF.',
+    'Please select at least 2 PDF files to merge.': 'يرجى تحديد ملفي PDF على الأقل للدمج.',
+    'Merged PDF is ready.': 'ملف PDF المدمج جاهز.',
+    'Unable to merge these PDF files.': 'تعذر دمج ملفات PDF هذه.',
+    'Merged PDF downloaded.': 'تم تنزيل PDF المدمج.',
+    'This PDF could not be reduced much in the browser.': 'تعذر تقليل هذا PDF كثيرا في المتصفح.',
+    'Could not process this PDF.': 'تعذرت معالجة ملف PDF هذا.',
+    'Browser-side image upscaling': 'تكبير الصورة داخل المتصفح',
+    'Upload image': 'رفع صورة',
+    'JPG, JPEG, PNG, or WEBP up to 10MB': 'JPG أو JPEG أو PNG أو WEBP حتى 10MB',
+    Settings: 'الإعدادات',
+    Width: 'العرض',
+    Height: 'الارتفاع',
+    'Keep aspect ratio': 'الحفاظ على النسبة',
+    'Download format': 'تنسيق التنزيل',
+    Original: 'الأصلي',
+    Result: 'النتيجة',
+    Output: 'الإخراج',
+    'Original file': 'الملف الأصلي',
+    'Output file': 'ملف الإخراج',
+    'Process image': 'معالجة الصورة',
+    'Custom width/height': 'عرض/ارتفاع مخصص',
+    'Max width 1920px': 'أقصى عرض 1920px',
+    'Max width 1280px': 'أقصى عرض 1280px',
+    'Max width 800px': 'أقصى عرض 800px',
+    'Output requirements': 'متطلبات الإخراج',
+    'Passport Photo Requirements': 'متطلبات صورة جواز السفر',
+    'Signature Requirements': 'متطلبات التوقيع',
+    'Aadhaar Photo Requirements': 'متطلبات صورة Aadhaar',
+    'PAN Photo Requirements': 'متطلبات صورة PAN',
+    'Application Website': 'موقع الطلب',
+    'Photo type': 'نوع الصورة',
+    Type: 'النوع',
+    Resize: 'تغيير الحجم',
+    'Resize Original': 'تغيير حجم الأصل',
+    'Resize Selected Area': 'تغيير حجم المنطقة المحددة',
+    Photograph: 'صورة',
+    Signature: 'توقيع',
+    'Document Type': 'نوع المستند',
+    Passport: 'جواز سفر',
+    'General Document': 'مستند عام',
+    'Dimensions: 3.5 cm x 2.5 cm': 'الأبعاد: 3.5 cm x 2.5 cm',
+    'Resolution: 200 DPI': 'الدقة: 200 DPI',
+    'File Format: JPEG': 'تنسيق الملف: JPEG',
+    'File Size: Maximum 50 KB': 'حجم الملف: بحد أقصى 50 KB',
+    'Background: Plain white or light background': 'الخلفية: بيضاء أو فاتحة بسيطة',
+    'Appearance: Color photo, recent, and taken with a neutral expression': 'المظهر: صورة ملونة حديثة بتعبير محايد',
+    'Box Dimensions: 2 cm x 4.5 cm': 'أبعاد الصندوق: 2 cm x 4.5 cm',
+    'Ink & Paper: black ink on white paper': 'الحبر والورق: حبر أسود على ورق أبيض',
+    'Signature must stay inside the white box': 'يجب أن يبقى التوقيع داخل المربع الأبيض',
+    'JPEG format': 'تنسيق JPEG',
+    'Maximum 10KB': 'بحد أقصى 10KB',
+    'Dimensions: 250 x 350 px': 'الأبعاد: 250 x 350 px',
+    'File Size: 10 KB to 100 KB': 'حجم الملف: من 10 KB إلى 100 KB',
+    'Appearance: Clear recent color photo': 'المظهر: صورة ملونة حديثة وواضحة',
+    'Adjustable crop area': 'منطقة قص قابلة للتعديل',
+    'JPEG output': 'إخراج JPEG',
+    'Clean scanner filters': 'فلاتر ماسح نظيفة',
+    'Ready to download': 'جاهز للتنزيل',
+    'Opening Google Drive...': 'يتم فتح Google Drive...',
+    'Downloading Google Drive file...': 'يتم تنزيل ملف Google Drive...',
+    'Opening Dropbox...': 'يتم فتح Dropbox...',
+    'Downloading Dropbox file...': 'يتم تنزيل ملف Dropbox...',
+    Download: 'تنزيل',
+    'Preview will appear here.': 'ستظهر المعاينة هنا.',
+    'Please upload a JPG, JPEG, PNG, or WEBP image.': 'يرجى رفع صورة JPG أو JPEG أو PNG أو WEBP.',
+    'Please upload an image under 10MB.': 'يرجى رفع صورة أقل من 10MB.',
+    'This image could not be opened. Please try another file.': 'تعذر فتح هذه الصورة. جرب ملفا آخر.',
+    'Please upload an image first.': 'يرجى رفع صورة أولا.',
+    'Please choose a valid output size.': 'يرجى اختيار حجم إخراج صالح.',
+    'Image processed successfully.': 'تمت معالجة الصورة بنجاح.',
+    'Image processing failed. Please try again.': 'فشلت معالجة الصورة. حاول مرة أخرى.',
+  },
+};
+
+const sectionTranslations = {
+  hi: {
+    relatedTools: 'संबंधित टूल',
+    aboutThisTool: 'इस टूल के बारे में',
+    howToUse: 'इस टूल का उपयोग कैसे करें',
+    fastSecureProcessing: 'तेज और सुरक्षित फाइल प्रोसेसिंग',
+    privacyFriendly: 'प्राइवेसी फ्रेंडली',
+    mobileDesktopSupport: 'मोबाइल और डेस्कटॉप सपोर्ट',
+    features: 'विशेषताएं',
+    benefits: 'लाभ',
+    faq: 'अक्सर पूछे जाने वाले सवाल',
+    trustPrivacy: 'विश्वास और प्राइवेसी',
+  },
+  ur: {
+    relatedTools: 'متعلقہ ٹولز',
+    aboutThisTool: 'اس ٹول کے بارے میں',
+    howToUse: 'اس ٹول کا استعمال کیسے کریں',
+    fastSecureProcessing: 'تیز اور محفوظ فائل پروسیسنگ',
+    privacyFriendly: 'پرائیویسی دوست',
+    mobileDesktopSupport: 'موبائل اور ڈیسک ٹاپ سپورٹ',
+    features: 'خصوصیات',
+    benefits: 'فوائد',
+    faq: 'اکثر پوچھے گئے سوالات',
+    trustPrivacy: 'اعتماد اور پرائیویسی',
+  },
+  ar: {
+    relatedTools: 'أدوات ذات صلة',
+    aboutThisTool: 'حول هذه الأداة',
+    howToUse: 'طريقة استخدام هذه الأداة',
+    fastSecureProcessing: 'معالجة ملفات سريعة وآمنة',
+    privacyFriendly: 'يحترم الخصوصية',
+    mobileDesktopSupport: 'دعم الجوال وسطح المكتب',
+    features: 'الميزات',
+    benefits: 'الفوائد',
+    faq: 'الأسئلة الشائعة',
+    trustPrivacy: 'الثقة والخصوصية',
+  },
+};
+
+const homeTranslations = {
+  hi: {
+    eyebrow: 'FileWalaTool क्यों',
+    title: 'तेज रोजमर्रा फाइल काम के लिए बनाया गया',
+    description: 'सामान्य फाइल कामों के लिए साफ वर्कस्पेस, स्पष्ट कंट्रोल और कम चरण.',
+    features: [
+      ['तेज प्रोसेसिंग', 'हर टूल को तेज और हल्का रखने वाले ऑप्टिमाइज्ड फ्लो.'],
+      ['सुरक्षित फाइल हैंडलिंग', 'स्पष्ट अपलोड स्थिति और प्राइवेसी-ध्यान वाले फाइल वर्कफ्लो.'],
+      ['साइनअप की जरूरत नहीं', 'बिना रुकावट एडिटिंग, कन्वर्जन और रीसाइज शुरू करें.'],
+      ['मोबाइल/डेस्कटॉप पर काम करता है', 'हर स्क्रीन पर स्वाभाविक लगने वाले रिस्पॉन्सिव लेआउट.'],
+    ],
+  },
+  ur: {
+    eyebrow: 'FileWalaTool کیوں',
+    title: 'روزمرہ فائل کام کے لیے تیز بنایا گیا',
+    description: 'عام فائل کاموں کے لیے صاف ورک اسپیس، واضح کنٹرولز اور کم مراحل.',
+    features: [
+      ['تیز پروسیسنگ', 'ہر ٹول کو تیز اور ہلکا رکھنے والے بہتر فلو.'],
+      ['محفوظ فائل ہینڈلنگ', 'واضح اپ لوڈ اسٹیٹس اور پرائیویسی کو مدنظر رکھنے والے فائل ورک فلو.'],
+      ['سائن اپ ضروری نہیں', 'بغیر رکاوٹ ایڈٹنگ، کنورژن اور ری سائز شروع کریں.'],
+      ['موبائل/ڈیسک ٹاپ سپورٹ', 'ہر اسکرین پر قدرتی لگنے والے responsive layouts.'],
+    ],
+  },
+  ar: {
+    eyebrow: 'لماذا FileWalaTool',
+    title: 'مصمم للعمل السريع على الملفات اليومية',
+    description: 'مساحة عمل واضحة لمهام الملفات الشائعة مع عناصر تحكم مباشرة وخطوات أقل.',
+    features: [
+      ['معالجة سريعة', 'مسارات محسنة تجعل كل أداة سريعة وخفيفة.'],
+      ['تعامل آمن مع الملفات', 'حالات رفع واضحة وسير عمل يراعي الخصوصية.'],
+      ['لا حاجة للتسجيل', 'ابدأ التحرير والتحويل وتغيير الحجم دون تعقيد.'],
+      ['دعم الجوال وسطح المكتب', 'تخطيطات متجاوبة تبدو طبيعية على كل شاشة.'],
+    ],
+  },
+};
+
+const sharedTranslations = {
+  hi: {
+    footer: {
+      description: 'इमेज और PDF को ऑनलाइन कंप्रेस, रीसाइज, कन्वर्ट और तैयार करने के लिए तेज और सरल फाइल टूल.',
+      quickLinks: 'त्वरित लिंक',
+      categories: 'टूल श्रेणियां',
+      passportPhotos: 'पासपोर्ट फोटो',
+      backgroundRemover: 'बैकग्राउंड रिमूवर',
+    },
+    resume: {
+      details: 'रिज्यूमे विवरण',
+      livePreview: 'लाइव रिज्यूमे प्रीव्यू',
+      template: 'प्रोफेशनल सिंगल-पेज टेम्पलेट',
+      downloadPdf: 'PDF डाउनलोड',
+      fields: {
+        fullName: 'पूरा नाम',
+        email: 'ईमेल',
+        phone: 'फोन',
+        address: 'पता',
+        objective: 'उद्देश्य',
+        education: 'शिक्षा',
+        skills: 'कौशल',
+        experience: 'अनुभव',
+        projects: 'प्रोजेक्ट',
+      },
+      placeholders: {
+        fullName: 'पूरा नाम',
+        email: 'email@example.com',
+        phone: 'फोन',
+        address: 'पता',
+        objective: 'संक्षिप्त करियर उद्देश्य यहां दिखेगा.',
+        education: 'डिग्री, संस्थान, तारीख और स्कोर जोड़ें.',
+        skills: 'कौशल कॉमा से अलग करके या हर लाइन में जोड़ें.',
+        experience: 'भूमिका, कंपनी, तारीख और जिम्मेदारियां जोड़ें.',
+        projects: 'प्रोजेक्ट नाम, तकनीक और प्रभाव जोड़ें.',
+      },
+    },
+  },
+  ur: {
+    footer: {
+      description: 'امیجز اور PDF کو آن لائن کمپریس، ری سائز، کنورٹ اور تیار کرنے کے لیے تیز اور آسان فائل ٹولز.',
+      quickLinks: 'فوری لنکس',
+      categories: 'ٹول کیٹیگریز',
+      passportPhotos: 'پاسپورٹ فوٹوز',
+      backgroundRemover: 'بیک گراؤنڈ ریموور',
+    },
+    toolsLibrary: {
+      label: 'ٹولز لائبریری',
+      title: 'صحیح ٹول منتخب کریں اور کام جلدی مکمل کریں',
+      documentsDescription: 'FileWalaTool کے دستاویز ٹولز سے فوٹوز، دستخط، ریزیومے اور اسکین دستاویزات تیار کریں.',
+      toolsFound: 'ٹولز ملے',
+    },
+    toolPage: {
+      allTools: 'تمام ٹولز',
+      steps: ['محفوظ اپ لوڈ ایریا سے فائل اپ لوڈ کریں.', 'معیار یا فائل سائز کے مطابق پروسیسنگ موڈ منتخب کریں.', 'فائل پروسیس کریں اور نتیجہ ڈاؤن لوڈ کریں.'],
+      about: 'اس ٹول کے بارے میں',
+      cleaner: 'استعمال کا صاف طریقہ',
+      aboutText: 'عام اپ لوڈ اور کنورژن کاموں کے لیے فائلیں تیار کرنے کو FileWalaTool ورک اسپیس میں آسان بنائیں.',
+      bullets: ['براہ راست براؤزر میں کام کرتا ہے.', 'تیز فائل اپ لوڈ ضروریات کے لیے بنایا گیا.', 'موبائل اور ڈیسک ٹاپ پر سادہ رہتا ہے.'],
+      related: 'متعلقہ ٹولز',
+      more: 'مزید',
+    },
+    resume: {
+      details: 'ریزیومے تفصیلات',
+      livePreview: 'لائیو ریزیومے پری ویو',
+      template: 'پروفیشنل سنگل پیج ٹیمپلیٹ',
+      downloadPdf: 'PDF ڈاؤن لوڈ',
+      fields: {
+        fullName: 'پورا نام',
+        email: 'ای میل',
+        phone: 'فون',
+        address: 'پتہ',
+        objective: 'مقصد',
+        education: 'تعلیم',
+        skills: 'مہارتیں',
+        experience: 'تجربہ',
+        projects: 'پروجیکٹس',
+      },
+      placeholders: {
+        fullName: 'پورا نام',
+        email: 'email@example.com',
+        phone: 'فون',
+        address: 'پتہ',
+        objective: 'مختصر کیریئر مقصد یہاں ظاہر ہوگا.',
+        education: 'ڈگریاں، ادارے، تاریخیں اور اسکور شامل کریں.',
+        skills: 'مہارتیں کوما سے یا ہر لائن میں شامل کریں.',
+        experience: 'کردار، کمپنیاں، تاریخیں اور ذمہ داریاں شامل کریں.',
+        projects: 'پروجیکٹ نام، ٹیکنالوجیز اور اثر شامل کریں.',
+      },
+    },
+  },
+  ar: {
+    footer: {
+      description: 'أدوات ملفات سريعة وبسيطة لضغط الصور وPDF وتغيير حجمها وتحويلها وتجهيزها عبر الإنترنت.',
+      quickLinks: 'روابط سريعة',
+      categories: 'تصنيفات الأدوات',
+      passportPhotos: 'صور جواز السفر',
+      backgroundRemover: 'مزيل الخلفية',
+    },
+    toolsLibrary: {
+      label: 'مكتبة الأدوات',
+      title: 'اختر الأداة المناسبة وأنجز العمل بسرعة',
+      documentsDescription: 'جهز الصور والتوقيعات والسير الذاتية والمستندات الممسوحة باستخدام أدوات FileWalaTool.',
+      toolsFound: 'أدوات موجودة',
+    },
+    toolPage: {
+      allTools: 'كل الأدوات',
+      steps: ['ارفع ملفك من منطقة الرفع الآمنة.', 'اختر وضع معالجة يناسب الجودة أو حجم الملف.', 'عالج الملف ونزل النتيجة النهائية.'],
+      about: 'حول هذه الأداة',
+      cleaner: 'طريقة أوضح لاستخدام',
+      aboutText: 'استخدم مساحة FileWalaTool لتجهيز الملفات لمهام الرفع والتحويل الشائعة دون مغادرة التطبيق.',
+      bullets: ['تعمل مباشرة في المتصفح.', 'مصممة لمتطلبات رفع الملفات السريعة.', 'تبقى بسيطة على الجوال وسطح المكتب.'],
+      related: 'أدوات ذات صلة',
+      more: 'المزيد',
+    },
+    resume: {
+      details: 'تفاصيل السيرة الذاتية',
+      livePreview: 'معاينة السيرة الذاتية',
+      template: 'قالب احترافي من صفحة واحدة',
+      downloadPdf: 'تنزيل PDF',
+      fields: {
+        fullName: 'الاسم الكامل',
+        email: 'البريد الإلكتروني',
+        phone: 'الهاتف',
+        address: 'العنوان',
+        objective: 'الهدف',
+        education: 'التعليم',
+        skills: 'المهارات',
+        experience: 'الخبرة',
+        projects: 'المشاريع',
+      },
+      placeholders: {
+        fullName: 'الاسم الكامل',
+        email: 'email@example.com',
+        phone: 'الهاتف',
+        address: 'العنوان',
+        objective: 'سيظهر هدف مهني مختصر هنا.',
+        education: 'أضف الدرجات والمؤسسات والتواريخ والنتائج.',
+        skills: 'أضف المهارات مفصولة بفواصل أو كل مهارة في سطر.',
+        experience: 'أضف الأدوار والشركات والتواريخ والمسؤوليات.',
+        projects: 'أضف أسماء المشاريع والتقنيات والأثر.',
+      },
+    },
+  },
+};
+
+const translations = { en, hi, ur, ar };
+
+function mergeDeep(base, override) {
+  return Object.entries(override).reduce((next, [key, value]) => {
+    if (value && typeof value === 'object' && !Array.isArray(value)) {
+      next[key] = mergeDeep(next[key] && typeof next[key] === 'object' ? next[key] : {}, value);
+      return next;
+    }
+    next[key] = value;
+    return next;
+  }, { ...base });
+}
+
+Object.entries(translations).forEach(([code, table]) => {
+  table.tools = { ...en.tools, ...(localizedTools[code] ?? {}) };
+  table.literals = { ...(literalTranslations[code] ?? {}) };
+  table.sections = {
+    relatedTools: 'Related tools',
+    aboutThisTool: 'About this tool',
+    howToUse: 'How to use this tool',
+    fastSecureProcessing: 'Fast & Secure File Processing',
+    privacyFriendly: 'Privacy Friendly',
+    mobileDesktopSupport: 'Mobile & Desktop Support',
+    features: 'Features',
+    benefits: 'Benefits',
+    faq: 'Frequently asked questions',
+    trustPrivacy: 'Trust and privacy',
+    ...(sectionTranslations[code] ?? {}),
+  };
+  table.home = { ...table.home, ...(homeTranslations[code] ?? {}) };
+  Object.entries(sharedTranslations[code] ?? {}).forEach(([key, value]) => {
+    table[key] = mergeDeep(table[key] ?? {}, value);
+  });
+  table.nav = {
+    home: 'Home',
+    resize: table.categories.Resize,
+    compress: table.categories.Compress,
+    convert: table.categories.Convert,
+    pdfTools: table.categories['PDF Tools'],
+    imageTools: table.categories['Image Tools'],
+    documents: table.categories.Documents,
+    about: table.common.about,
+    contact: table.common.contact,
+    privacy: table.common.privacy,
+    terms: table.common.terms,
+  };
+  table.errors = {
+    invalidFileType: table.documentTool.invalidImageType,
+    fileTooLarge: table.documentTool.fileTooLarge,
+    processingFailed: table.documentTool.processingFailed,
+    noFileSelected: table.image.selectFirst,
+    uploadFailed: table.documentTool.imageLoadFailed,
+  };
+  table.success = {
+    fileUploaded: table.documentTool.previewReady,
+    fileProcessed: table.image.success,
+    downloadReady: table.upload.ready,
+  };
+  table.pdf.actions = {
+    split: table.tools['split-pdf'][0],
+    compress: table.tools['compress-pdf'][0],
+    delete: table.tools['pdf-page-delete'][0],
+    rotate: table.tools['rotate-pdf'][0],
+  };
+  table.common.uploadFile = table.upload.drop;
+  table.common.uploadYourFile = table.upload.drop;
+  table.common.selectFile = table.upload.select;
+  table.common.loading = table.upload.processingBrowser;
+  table.common.tryAgain = code === 'en' ? 'Try again' : table.documentTool.tryAnotherFile;
+  table.common.reset = table.documentTool.resetPosition;
+});
+
+export { translations };
 
 const LanguageContext = createContext(null);
+const storageKey = 'filewalatool-language';
+const legacyStorageKey = 'filewala-language';
+const validLanguageCodes = new Set(languages.map((item) => item.code));
+
+function getInitialLanguage() {
+  const saved = localStorage.getItem(storageKey) ?? localStorage.getItem(legacyStorageKey);
+  const code = validLanguageCodes.has(saved) ? saved : 'en';
+  const language = languages.find((item) => item.code === code) ?? languages[0];
+  document.documentElement.lang = language.code;
+  document.documentElement.dir = language.dir;
+  return code;
+}
+
+function makeSeoText(seo, text) {
+  if (!seo) return null;
+  const tool = text.tools?.[seo.slug];
+  const title = tool?.[0] ?? seo.h1 ?? seo.title;
+  const description = tool?.[1] ?? seo.shortIntro ?? seo.metaDescription;
+  const intro = `${title} ${description}`;
+
+  return {
+    ...seo,
+    title,
+    seoTitle: `${title} | FileWalaTool`,
+    metaDescription: description,
+    h1: title,
+    shortIntro: description,
+    intro,
+    detailedIntro: intro,
+    features: [
+      text.sections.fastSecureProcessing,
+      text.sections.privacyFriendly,
+      text.sections.mobileDesktopSupport,
+    ],
+    benefits: [
+      text.sections.fastSecureProcessing,
+      text.sections.privacyFriendly,
+      text.sections.mobileDesktopSupport,
+    ],
+    howToUse: text.toolPage.steps,
+    faqs: [
+      {
+        question: text.sections.howToUse,
+        answer: description,
+      },
+      {
+        question: text.sections.trustPrivacy,
+        answer: text.toolPage.aboutText,
+      },
+    ],
+  };
+}
 
 export function LanguageProvider({ children }) {
-  const [language, setLanguage] = useState(() => localStorage.getItem('filewala-language') ?? 'en');
+  const [language, setLanguageState] = useState(getInitialLanguage);
   const currentLanguage = languages.find((item) => item.code === language) ?? languages[0];
   const text = translations[currentLanguage.code] ?? translations.en;
 
+  const setLanguage = (nextLanguage) => {
+    setLanguageState(validLanguageCodes.has(nextLanguage) ? nextLanguage : 'en');
+  };
+
   useEffect(() => {
-    localStorage.setItem('filewala-language', currentLanguage.code);
+    localStorage.setItem(storageKey, currentLanguage.code);
+    localStorage.removeItem(legacyStorageKey);
     document.documentElement.lang = currentLanguage.code;
     document.documentElement.dir = currentLanguage.dir;
   }, [currentLanguage.code, currentLanguage.dir]);
 
   const value = useMemo(
-    () => ({ language: currentLanguage.code, setLanguage, currentLanguage, text }),
+    () => {
+      const tCategory = (category) => text.categories?.[category] ?? category;
+      const tLiteral = (value) => text.literals?.[value] ?? value;
+      const tTool = (toolOrSlug) => {
+        const slug = typeof toolOrSlug === 'string' ? toolOrSlug : toolOrSlug?.slug;
+        const fallback = typeof toolOrSlug === 'string' ? ['', ''] : [toolOrSlug?.title, toolOrSlug?.description];
+        return text.tools?.[slug] ?? fallback;
+      };
+      const tToolTitle = (toolOrSlug) => tTool(toolOrSlug)?.[0] || (typeof toolOrSlug === 'string' ? toolOrSlug : toolOrSlug?.title);
+      const tToolDescription = (toolOrSlug) => tTool(toolOrSlug)?.[1] || (typeof toolOrSlug === 'string' ? '' : toolOrSlug?.description);
+      const tSeo = (seo) => makeSeoText(seo, text);
+
+      return {
+        language: currentLanguage.code,
+        setLanguage,
+        currentLanguage,
+        text,
+        tCategory,
+        tLiteral,
+        tTool,
+        tToolTitle,
+        tToolDescription,
+        tSeo,
+      };
+    },
     [currentLanguage, text],
   );
 

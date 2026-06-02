@@ -1,7 +1,8 @@
 import { ArrowRight, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import SeoHelmet from '../seo/SeoHelmet.jsx';
-import { absoluteUrl } from '../../data/siteMetadata.js';
+import { breadcrumbSchema, webPageSchema } from '../seo/schema.js';
+import { absoluteUrl, SITE_URL } from '../../data/siteMetadata.js';
 import { useLanguage } from '../../i18n.jsx';
 
 export default function InfoPageLayout({
@@ -17,14 +18,25 @@ export default function InfoPageLayout({
   children,
 }) {
   const { text } = useLanguage();
+  const resolvedPath = canonicalPath ?? `/${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`;
+  const canonical = absoluteUrl(resolvedPath);
+  const resolvedDescription = metaDescription ?? description;
+  const jsonLd = [
+    webPageSchema({ name: title, description: resolvedDescription, path: resolvedPath }),
+    breadcrumbSchema([
+      { name: text.nav.home, url: SITE_URL },
+      { name: title, url: canonical },
+    ]),
+  ];
 
   return (
     <>
       <SeoHelmet
         title={metaTitle ?? `${title} - FileWalaTool`}
-        description={metaDescription ?? description}
-        canonical={absoluteUrl(canonicalPath ?? `/${title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')}`)}
+        description={resolvedDescription}
+        canonical={canonical}
         keywords={['FileWalaTool', 'File Wala Tool', title]}
+        jsonLd={jsonLd}
       />
 
       <main className="bg-white py-10 sm:py-14">

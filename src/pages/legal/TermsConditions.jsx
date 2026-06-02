@@ -16,19 +16,25 @@ const sections = [
 ];
 
 export default function TermsConditions() {
-  const { text } = useLanguage();
+  const { language, text } = useLanguage();
+  const localizedSections = language === 'en' ? sections : [
+    [text.legal.termsTitle, text.legal.termsDescription],
+    [text.sections.fastSecureProcessing, text.toolPage.aboutText],
+    [text.sections.privacyFriendly, text.legal.privacyDescription],
+    [text.legal.contactSection, text.legal.issueNote],
+  ];
 
   return (
     <InfoPageLayout
       title={text.legal.termsTitle}
       description={text.legal.termsDescription}
-      metaTitle="Terms & Conditions - FileWalaTool"
-      metaDescription="Read the terms for using FileWalaTool image, PDF, and document tools, including user responsibility, file ownership, and limitations."
+      metaTitle={`${text.legal.termsTitle} - FileWalaTool`}
+      metaDescription={text.legal.termsDescription}
       canonicalPath="/terms-and-conditions"
     >
       <p className="text-sm font-semibold leading-6 text-black/60">{text.info.lastUpdated}</p>
       <div className="mt-6 grid gap-6">
-        {sections.map(([title, body]) => (
+        {localizedSections.map(([title, body]) => (
           <section key={title}>
             <h2 className="text-xl font-black tracking-tight text-black">{title}</h2>
             <p className="mt-3 text-base leading-7 text-black/65">{body}</p>
@@ -39,11 +45,11 @@ export default function TermsConditions() {
       <section className="mt-8 rounded-md border border-black/10 bg-black/[0.015] p-5">
         <h2 className="text-xl font-black tracking-tight text-black">{text.legal.contactSection}</h2>
         <p className="mt-3 text-base leading-7 text-black/65">
-          Questions about these terms can be sent to{' '}
+          {text.legal.contactDescription}{' '}
           <a className="font-bold text-blue-700 hover:text-blue-800" href="mailto:support@filewalatool.com">
             support@filewalatool.com
           </a>{' '}
-          or through our <Link className="font-bold text-blue-700 hover:text-blue-800" to="/contact-us">Contact Us</Link> page.
+          <Link className="font-bold text-blue-700 hover:text-blue-800" to="/contact-us">{text.legal.contactTitle}</Link>
         </p>
       </section>
     </InfoPageLayout>

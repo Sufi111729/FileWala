@@ -1,7 +1,7 @@
 import { useLanguage } from '../../i18n.jsx';
 
 export default function RequirementStep({ title = 'Output requirements', fields = [], requirements = [], values, onChange }) {
-  const { text } = useLanguage();
+  const { text, tLiteral } = useLanguage();
 
   return (
     <div className="grid gap-5 lg:grid-cols-[minmax(240px,0.8fr)_minmax(0,1.2fr)]">
@@ -10,7 +10,7 @@ export default function RequirementStep({ title = 'Output requirements', fields 
         <div className="mt-4 grid gap-3">
           {fields.map((field) => (
             <label key={field.name} className="grid gap-2 text-sm font-bold text-black/70">
-              {field.label}
+              {tLiteral(field.label)}
               <select
                 value={values[field.name]}
                 onChange={(event) => onChange(field.name, event.target.value)}
@@ -18,7 +18,7 @@ export default function RequirementStep({ title = 'Output requirements', fields 
               >
                 {field.options.map((option) => (
                   <option key={option} value={option}>
-                    {option}
+                    {tLiteral(option)}
                   </option>
                 ))}
               </select>
@@ -28,11 +28,11 @@ export default function RequirementStep({ title = 'Output requirements', fields 
       </div>
 
       <div className="rounded-md border border-black/10 bg-blue-50/50 p-4 sm:p-5">
-        <h2 className="text-lg font-black text-black">{title}</h2>
+        <h2 className="text-lg font-black text-black">{tLiteral(title)}</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
           {requirements.map((item) => (
             <div key={item} className="flex min-h-14 items-center rounded-md border border-black/10 bg-white px-4 py-3 text-sm font-bold leading-6 text-black/70 shadow-sm">
-              {item}
+              {tLiteral(item)}
             </div>
           ))}
         </div>

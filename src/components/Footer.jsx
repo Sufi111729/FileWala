@@ -3,9 +3,9 @@ import { useLanguage } from '../i18n.jsx';
 
 const quickLinks = [
   ['All Tools', '/#tools'],
-  ['Image Tools', '/?category=Image%20Tools#tools'],
-  ['PDF Tools', '/?category=PDF%20Tools#tools'],
-  ['Compress', '/?category=Compress#tools'],
+  ['Image Tools', '/image-tools'],
+  ['PDF Tools', '/pdf-tools'],
+  ['Compress', '/compress'],
   ['Convert', '/?category=Convert#tools'],
 ];
 
@@ -46,7 +46,6 @@ export default function Footer() {
             </Link>
             <p className="mt-4 max-w-md text-sm leading-6 text-black/60">
               {text.footer.description}
-              {' '}FileWalaTool, also searched as File Wala Tool or Filewala, keeps PDF, image, and document utilities in one place.
             </p>
           </div>
 

@@ -16,6 +16,8 @@ const ImageCompressor = lazyPage(() => import('./pages/compress/ImageCompressor.
 const ImageTo100KB = lazyPage(() => import('./pages/compress/ImageTo100KB.jsx'));
 const ImageTo20KB = lazyPage(() => import('./pages/compress/ImageTo20KB.jsx'));
 const ImageTo50KB = lazyPage(() => import('./pages/compress/ImageTo50KB.jsx'));
+const ImageDownscaler = lazyPage(() => import('./pages/image/ImageDownscaler.jsx'));
+const ImageUpscaler = lazyPage(() => import('./pages/image/ImageUpscaler.jsx'));
 const AadhaarPhotoResize = lazyPage(() => import('./pages/documents/AadhaarPhotoResize.jsx'));
 const DocumentScanner = lazyPage(() => import('./pages/documents/DocumentScanner.jsx'));
 const PanPhotoResize = lazyPage(() => import('./pages/documents/PanPhotoResize.jsx'));
@@ -92,6 +94,8 @@ export default function App() {
         <Route path="/tools/photo-to-50kb" element={<RouteView><ImageTo50KB /></RouteView>} />
         <Route path="/tools/photo-to-100kb" element={<RouteView><ImageTo100KB /></RouteView>} />
         <Route path="/tools/image-kb-resizer" element={<RouteView><CustomImageKBResizer /></RouteView>} />
+        <Route path="/tools/image-upscaler" element={<RouteView><ImageUpscaler /></RouteView>} />
+        <Route path="/tools/image-downscaler" element={<RouteView><ImageDownscaler /></RouteView>} />
         <Route path="/tools/:slug" element={<RouteView><ToolPage /></RouteView>} />
       </Route>
     </Routes>

@@ -33,10 +33,10 @@ export default function ContactUs() {
     <InfoPageLayout
       title={text.legal.contactTitle}
       description={text.legal.contactDescription}
-      metaTitle="Contact Us - FileWalaTool Support"
-      metaDescription="Contact FileWalaTool for support, feedback, business inquiries, tool issues, and product suggestions."
-      ctaTitle="Need a tool first?"
-      ctaDescription="Most file tasks can be handled directly from the tools library."
+      metaTitle={`${text.legal.contactTitle} - FileWalaTool`}
+      metaDescription={text.legal.contactDescription}
+      ctaTitle={text.toolsLibrary.title}
+      ctaDescription={text.info.ctaDescription}
       canonicalPath="/contact-us"
     >
       <div className="grid gap-8 lg:grid-cols-[1fr_0.8fr]">
@@ -87,7 +87,7 @@ export default function ContactUs() {
             </span>
             <h2 className="mt-5 text-xl font-black tracking-tight text-black">{text.legal.contactInfo}</h2>
             <p className="mt-3 text-base leading-7 text-black/65">
-              Email us at{' '}
+              {text.legal.contactEmail}{' '}
               <a className="font-bold text-blue-700 hover:text-blue-800" href={`mailto:${supportEmail}`}>
                 {supportEmail}
               </a>

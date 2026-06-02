@@ -24,7 +24,7 @@ function previewUrl(fileOrBlob) {
 }
 
 export default function ImageCompressor({ title = 'Image Compressor', targetKB = null, customTarget = false }) {
-  const { text } = useLanguage();
+  const { text, tSeo, tToolTitle, tToolDescription } = useLanguage();
   const seoSlugByTitle = {
     'Image Compressor': 'compress-image',
     'Image to 20KB': 'photo-to-20kb',
@@ -32,7 +32,10 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
     'Image to 100KB': 'photo-to-100kb',
     'Custom Image KB Resizer': 'image-kb-resizer',
   };
-  const seo = getToolSeoBySlug(seoSlugByTitle[title] ?? 'compress-image');
+  const seoSlug = seoSlugByTitle[title] ?? 'compress-image';
+  const seo = tSeo(getToolSeoBySlug(seoSlug));
+  const localizedTitle = tToolTitle(seoSlug);
+  const localizedDescription = tToolDescription(seoSlug);
   const inputRef = useRef(null);
   const [file, setFile] = useState(null);
   const [originalUrl, setOriginalUrl] = useState('');
@@ -139,18 +142,18 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
   return (
     <section className="bg-white py-8 sm:py-12">
       <SeoHelmet
-        title={seo?.seoTitle ?? `${title} - FileWalaTool`}
-        description={seo?.metaDescription}
+        title={seo?.seoTitle ?? `${localizedTitle || title} - FileWalaTool`}
+        description={seo?.metaDescription ?? localizedDescription}
         canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? '/compress/image-compressor')}
-        keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [title, 'compress image']}
+        keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [localizedTitle || title, 'compress image']}
         jsonLd={seo ? toolSchemas(seo) : []}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl">
           <p className="text-xs font-black uppercase tracking-wide text-green-700">{text.categories.Compress}</p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? title}</h1>
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? localizedTitle ?? title}</h1>
           <p className="mt-4 text-base leading-7 text-black/60">
-            {seo?.shortIntro ?? 'Upload an image, preview it, compress in your browser with canvas, then download the optimized file.'}
+            {seo?.shortIntro ?? localizedDescription}
           </p>
         </div>
 
@@ -192,7 +195,7 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
                     className="h-4 w-4 accent-black"
                     disabled={isFixedTarget || customTarget}
                   />
-                  {item.label}
+                  {text.upload.options[['best', 'balanced', 'fast'].indexOf(key)] ?? item.label}
                 </label>
               ))}
             </div>

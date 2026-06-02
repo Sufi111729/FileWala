@@ -1,0 +1,10 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">FileWalaTool icon</title>
+  <desc id="desc">Minimal document and tool mark for FileWalaTool.</desc>
+  <path d="M128 64h176l80 80v304H128V64Z" fill="#111111"/>
+  <path d="M304 64v80h80" fill="#FFFFFF" fill-opacity=".18"/>
+  <path d="M168 136h104v48h-56v48h72v48h-72v96h-48V136Z" fill="#FFFFFF"/>
+  <path d="M284 244l30 88 28-88h32l28 88 30-88h42l-50 132h-42l-24-70-24 70h-42l-50-132h42Z" fill="#FFFFFF"/>
+  <path d="M352 168h84v36h-48v48h-36v-84Z" fill="#E11D2E"/>
+  <path d="M409 186l-78 78" stroke="#E11D2E" stroke-width="28" stroke-linecap="round"/>
+</svg>

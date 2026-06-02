@@ -223,6 +223,7 @@ export const toolCategories = [
         category: 'Passport Tools',
         groups: ['Image Tools', 'Documents'],
         icon: ScanFace,
+        previewBadge: 'Passport',
       },
       {
         title: 'Signature Resize',
@@ -232,6 +233,7 @@ export const toolCategories = [
         category: 'Passport Tools',
         groups: ['Image Tools', 'Resize', 'Documents'],
         icon: BadgeCheck,
+        previewBadge: 'Signature',
       },
       {
         title: 'Image to 20KB',
@@ -268,6 +270,7 @@ export const toolCategories = [
         category: 'Passport Tools',
         groups: ['Documents'],
         icon: BadgeCheck,
+        previewBadge: 'Aadhaar',
       },
       {
         title: 'PAN Photo Resize',
@@ -277,6 +280,7 @@ export const toolCategories = [
         category: 'Passport Tools',
         groups: ['Documents'],
         icon: BadgeCheck,
+        previewBadge: 'PAN',
       },
       {
         title: 'Resume Builder',

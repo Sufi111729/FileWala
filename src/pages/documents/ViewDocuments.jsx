@@ -1,9 +1,10 @@
 import { Sparkles } from 'lucide-react';
 import CategoryTabs from '../../components/navigation/CategoryTabs.jsx';
 import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
+import { breadcrumbSchema, collectionPageSchema } from '../../components/seo/schema.js';
 import ToolCard from '../../components/ToolCard.jsx';
 import { allTools } from '../../data/tools.js';
-import { absoluteUrl } from '../../data/siteMetadata.js';
+import { absoluteUrl, SITE_URL } from '../../data/siteMetadata.js';
 import { useLanguage } from '../../i18n.jsx';
 
 const documentToolTitles = [
@@ -17,17 +18,27 @@ const documentToolTitles = [
 
 export default function ViewDocuments() {
   const { text } = useLanguage();
+  const canonical = absoluteUrl('/documents');
+  const description = text.toolsLibrary.documentsDescription;
   const documentTools = documentToolTitles
     .map((title) => allTools.find((tool) => tool.title === title))
     .filter(Boolean);
+  const jsonLd = [
+    collectionPageSchema({ name: text.categories.Documents, description, path: '/documents' }),
+    breadcrumbSchema([
+      { name: text.nav.home, url: SITE_URL },
+      { name: text.categories.Documents, url: canonical },
+    ]),
+  ];
 
   return (
     <section className="bg-white py-10 sm:py-14">
       <SeoHelmet
-        title="Document Tools Online - Passport Photo, Signature, PAN, Aadhaar | FileWalaTool"
-        description="Prepare passport photos, signatures, Aadhaar photos, PAN photos, resumes, and scanned documents online with FileWalaTool."
-        canonical={absoluteUrl('/documents')}
+        title={`${text.categories.Documents} | FileWalaTool`}
+        description={description}
+        canonical={canonical}
         keywords={['document tools', 'passport photo maker', 'signature resize', 'aadhaar photo resize', 'pan photo resize', 'document scanner India']}
+        jsonLd={jsonLd}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto flex max-w-5xl flex-col items-center text-center">

@@ -91,6 +91,8 @@ export default function DocumentImageTool({ config }) {
               outputWidth={config.outputWidth}
               outputHeight={config.outputHeight}
               targetKB={config.targetKB}
+              backgroundColor={config.backgroundColor}
+              toolType={config.title}
             />
           )}
 

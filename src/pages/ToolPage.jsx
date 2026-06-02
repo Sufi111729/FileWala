@@ -12,10 +12,10 @@ import { useLanguage } from '../i18n.jsx';
 const safeList = (items) => (Array.isArray(items) ? items.filter(Boolean) : []);
 
 export default function ToolPage() {
-  const { text } = useLanguage();
+  const { text, tCategory, tSeo, tToolTitle, tToolDescription } = useLanguage();
   const { slug } = useParams();
   const tool = allTools.find((item) => item.slug === slug) ?? defaultTool;
-  const seo = getToolSeoBySlug(tool.slug);
+  const seo = tSeo(getToolSeoBySlug(tool.slug));
   const relatedTools = allTools.filter((item) => item.category === tool.category && item.slug !== tool.slug).slice(0, 4);
   const keywords = seo
     ? [
@@ -27,13 +27,13 @@ export default function ToolPage() {
         ...safeList(seo.brandKeywords),
         ...safeList(seo.alternateNames),
       ]
-    : [tool.title, tool.category];
+    : [tToolTitle(tool), tool.category];
 
   return (
     <section className="bg-white py-8 sm:py-12">
       <SeoHelmet
-        title={seo?.seoTitle ?? `${tool.title} - FileWalaTool`}
-        description={seo?.metaDescription ?? tool.description}
+        title={seo?.seoTitle ?? `${tToolTitle(tool)} - FileWalaTool`}
+        description={seo?.metaDescription ?? tToolDescription(tool)}
         canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? `/tools/${tool.slug}`)}
         keywords={keywords}
         jsonLd={seo ? toolSchemas(seo) : []}
@@ -49,10 +49,10 @@ export default function ToolPage() {
 
         <div className="mx-auto mt-6 max-w-3xl text-center">
           <p className="inline-flex rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-black uppercase tracking-wide text-black">
-            {text.categories[tool.category] ?? tool.category}
+            {tCategory(tool.category)}
           </p>
-          <h1 className="mt-3 text-4xl font-black tracking-tight text-black">{seo?.h1 ?? tool.title}</h1>
-          <p className="mt-4 text-lg leading-8 text-black/60">{seo?.shortIntro ?? tool.description}</p>
+          <h1 className="mt-3 text-4xl font-black tracking-tight text-black">{seo?.h1 ?? tToolTitle(tool)}</h1>
+          <p className="mt-4 text-lg leading-8 text-black/60">{seo?.shortIntro ?? tToolDescription(tool)}</p>
         </div>
 
         <div className="mt-10">
@@ -72,7 +72,7 @@ export default function ToolPage() {
           <div>
             <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.toolPage.about}</p>
             <h2 className="mt-2 text-2xl font-black tracking-tight text-black">
-              {text.toolPage.cleaner} {tool.title}
+              {text.toolPage.cleaner} {tToolTitle(tool)}
             </h2>
             <p className="mt-3 text-base leading-7 text-black/60">{text.toolPage.aboutText}</p>
           </div>
@@ -92,7 +92,7 @@ export default function ToolPage() {
               <div>
                 <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.toolPage.related}</p>
                 <h2 className="mt-1 text-2xl font-black text-black">
-                  {text.toolPage.more} {text.categories[tool.category] ?? tool.category}
+                  {text.toolPage.more} {tCategory(tool.category)}
                 </h2>
               </div>
               <Link to="/#tools" className="text-sm font-black text-black transition-colors duration-150 hover:text-black/70">

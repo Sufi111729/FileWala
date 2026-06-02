@@ -1,5 +1,17 @@
 import { absoluteUrl, BRAND_ALIASES, BRAND_LOGO_URL, BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
 
+const categoryPathByName = {
+  'PDF Tools': '/pdf-tools',
+  'Image Tools': '/image-tools',
+  'Passport Tools': '/documents',
+  Documents: '/documents',
+  Compress: '/compress',
+};
+
+function categoryUrl(category) {
+  return absoluteUrl(categoryPathByName[category] ?? '/');
+}
+
 export function organizationSchema() {
   return {
     '@context': 'https://schema.org',
@@ -18,10 +30,54 @@ export function websiteSchema() {
     name: BRAND_NAME,
     alternateName: BRAND_ALIASES,
     url: SITE_URL,
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${SITE_URL}/?q={search_term_string}#tools`,
-      'query-input': 'required name=search_term_string',
+  };
+}
+
+export function breadcrumbSchema(items) {
+  const cleanItems = items.filter((item) => item?.name && item?.url);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: cleanItems.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      item: item.url,
+    })),
+  };
+}
+
+export function collectionPageSchema({ name, description, path }) {
+  const url = absoluteUrl(path);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name,
+    description,
+    url,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: BRAND_NAME,
+      url: SITE_URL,
+    },
+  };
+}
+
+export function webPageSchema({ name, description, path }) {
+  const url = absoluteUrl(path);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name,
+    description,
+    url,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: BRAND_NAME,
+      url: SITE_URL,
     },
   };
 }
@@ -30,8 +86,9 @@ export function toolSchemas(seo) {
   if (!seo) return [];
 
   const url = seo.canonicalUrl ?? absoluteUrl(seo.route);
+  const faqs = Array.isArray(seo.faqs) ? seo.faqs.filter((faq) => faq?.question && faq?.answer) : [];
 
-  return [
+  const schemas = [
     {
       '@context': 'https://schema.org',
       '@type': 'SoftwareApplication',
@@ -61,18 +118,6 @@ export function toolSchemas(seo) {
     },
     {
       '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: seo.faqs.map((faq) => ({
-        '@type': 'Question',
-        name: faq.question,
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: faq.answer,
-        },
-      })),
-    },
-    {
-      '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
         {
@@ -85,7 +130,7 @@ export function toolSchemas(seo) {
           '@type': 'ListItem',
           position: 2,
           name: seo.category,
-          item: seo.category === 'PDF Tools' ? absoluteUrl('/?category=PDF%20Tools#tools') : absoluteUrl('/#tools'),
+          item: categoryUrl(seo.category),
         },
         {
           '@type': 'ListItem',
@@ -96,4 +141,21 @@ export function toolSchemas(seo) {
       ],
     },
   ];
+
+  if (faqs.length > 0) {
+    schemas.splice(1, 0, {
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((faq) => ({
+        '@type': 'Question',
+        name: faq.question,
+        acceptedAnswer: {
+          '@type': 'Answer',
+          text: faq.answer,
+        },
+      })),
+    });
+  }
+
+  return schemas;
 }

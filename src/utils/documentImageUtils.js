@@ -98,6 +98,7 @@ export async function exportFixedFrameImage({
   outputHeight,
   targetKB,
   filename,
+  backgroundColor = '#ffffff',
 }) {
   if (!image) throw new Error('Please upload an image first.');
   if (!frameWidth || !frameHeight || !outputWidth || !outputHeight) {
@@ -109,7 +110,7 @@ export async function exportFixedFrameImage({
   canvas.height = outputHeight;
 
   const ctx = canvas.getContext('2d');
-  ctx.fillStyle = '#ffffff';
+  ctx.fillStyle = backgroundColor || '#ffffff';
   ctx.fillRect(0, 0, outputWidth, outputHeight);
 
   const naturalWidth = image.naturalWidth || image.width;

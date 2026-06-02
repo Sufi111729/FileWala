@@ -22,7 +22,7 @@ export default function PdfCompressor() {
       return;
     }
     if (selectedFile.size > 50 * 1024 * 1024) {
-      setError('File too large. Please upload a PDF under 50MB.');
+      setError(text.errors.fileTooLarge);
       return;
     }
     setFile(selectedFile);
@@ -54,7 +54,7 @@ export default function PdfCompressor() {
       setResult(output.size < file.size ? output : new Blob([bytes], { type: 'application/pdf' }));
       setStatus(text.pdf.compressLimited);
     } catch {
-      setError('PDF compression failed. Try another PDF file.');
+      setError(text.errors.processingFailed);
       setStatus('');
     }
   };
@@ -63,7 +63,7 @@ export default function PdfCompressor() {
     if (!result) return;
     const base = file?.name?.replace(/\.pdf$/i, '') || 'compressed-pdf';
     downloadBlob(result, `${base}-compressed.pdf`);
-    setStatus('Downloaded successfully. Basic browser compression applied. For heavy PDF compression, backend processing is required.');
+    setStatus(text.image.downloaded);
   };
 
   return (
@@ -72,7 +72,7 @@ export default function PdfCompressor() {
         <p className="text-xs font-black uppercase tracking-wide text-green-700">{text.categories.Compress}</p>
         <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{text.tools['compress-pdf'][0]}</h1>
         <p className="mt-4 text-base leading-7 text-black/60">
-          Upload a PDF and apply basic browser-side optimization. Heavy PDF compression needs server-side PDF processing.
+          {text.tools['compress-pdf'][1]}
         </p>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
@@ -83,14 +83,14 @@ export default function PdfCompressor() {
           >
             <UploadCloud className="h-10 w-10 text-green-700" />
             <span className="mt-4 text-lg font-black text-black">{text.pdf.uploadPdf}</span>
-            <span className="mt-2 text-sm text-black/55">{file?.name || 'Drop a PDF here, or click to choose.'}</span>
+            <span className="mt-2 text-sm text-black/55">{file?.name || text.upload.drop}</span>
             <input type="file" accept="application/pdf" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
           </label>
 
           <aside className="rounded-md border border-black/10 bg-white p-5">
             <h2 className="text-sm font-black uppercase tracking-wide text-black/50">{text.pdf.pdfDetails}</h2>
             <div className="mt-4 grid gap-2 rounded-md border border-black/10 bg-black/[0.015] p-4 text-sm font-semibold text-black/65">
-              <span>Name: {file?.name || 'No file selected'}</span>
+              <span>{text.legal.name}: {file?.name || text.errors.noFileSelected}</span>
               <span>{text.pdf.original}: {formatFileSize(file?.size || 0)}</span>
               <span>{text.pdf.output}: {formatFileSize(result?.size || 0)}</span>
               <span>{text.image.reduction}: {reduction}%</span>
