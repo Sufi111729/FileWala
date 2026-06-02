@@ -1,13 +1,14 @@
 import { MonitorSmartphone, ShieldCheck, Sparkles, Zap } from 'lucide-react';
-import { lazy, Suspense, useEffect, useState } from 'react';
+import { Component, Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
 import { organizationSchema, websiteSchema } from '../components/seo/schema.js';
 import { SITE_URL } from '../data/siteMetadata.js';
 import { useLanguage } from '../i18n.jsx';
+import { lazyWithRetry } from '../utils/lazyPage.js';
 
-const ToolGrid = lazy(() => import('../components/ToolGrid.jsx'));
+const ToolGrid = lazyWithRetry(() => import('../components/ToolGrid.jsx'));
 
 const validTabs = ['All Tools', 'Resize', 'Compress', 'Convert', 'PDF Tools', 'Image Tools', 'Documents'];
 
@@ -33,6 +34,23 @@ const features = [
     icon: MonitorSmartphone,
   },
 ];
+
+function ToolGridReserve() {
+  return <section id="tools" className="tools-grid-section bg-white" aria-hidden="true" />;
+}
+
+class SilentToolGridBoundary extends Component {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) return <ToolGridReserve />;
+    return this.props.children;
+  }
+}
 
 export default function Home() {
   const { text } = useLanguage();
@@ -70,10 +88,12 @@ export default function Home() {
         jsonLd={[websiteSchema(), organizationSchema()]}
       />
       <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-      <Suspense fallback={null}>
-        <ToolGrid searchTerm={searchTerm} activeTab={activeTab} onTabChange={handleTabChange} />
-      </Suspense>
-      <section className="bg-white py-12 sm:py-16">
+      <SilentToolGridBoundary>
+        <Suspense fallback={<ToolGridReserve />}>
+          <ToolGrid searchTerm={searchTerm} activeTab={activeTab} onTabChange={handleTabChange} />
+        </Suspense>
+      </SilentToolGridBoundary>
+      <section className="why-section below-fold-section bg-white py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 max-w-2xl">
             <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.home.eyebrow}</p>

@@ -1,8 +1,14 @@
-import { lazy, Suspense } from 'react';
+import { Suspense } from 'react';
 import { Outlet } from 'react-router-dom';
 import Navbar from '../components/Navbar.jsx';
+import { lazyWithRetry } from '../utils/lazyPage.js';
 
-const Footer = lazy(() => import('../components/Footer.jsx'));
+const Footer = lazyWithRetry(() => import('../components/Footer.jsx'));
+const ThirdPartyScripts = lazyWithRetry(() => import('../components/ThirdPartyScripts.jsx'));
+
+function FooterReserve() {
+  return <div className="site-footer footer-reserve" aria-hidden="true" />;
+}
 
 export default function MainLayout() {
   return (
@@ -11,8 +17,11 @@ export default function MainLayout() {
       <main>
         <Outlet />
       </main>
-      <Suspense fallback={null}>
+      <Suspense fallback={<FooterReserve />}>
         <Footer />
+      </Suspense>
+      <Suspense fallback={null}>
+        <ThirdPartyScripts />
       </Suspense>
     </div>
   );

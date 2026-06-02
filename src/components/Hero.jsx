@@ -66,7 +66,7 @@ export default function Hero({ searchTerm, onSearchChange }) {
   }, [normalizedSearch]);
 
   return (
-    <section className="border-b border-black/5 bg-white">
+    <section className="home-hero-section border-b border-black/5 bg-white">
       <div className="mx-auto flex max-w-5xl flex-col items-center px-4 pb-12 pt-12 text-center sm:px-6 sm:pb-16 sm:pt-14 lg:px-8">
         <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 text-sm font-semibold text-black">
           <Sparkles className="h-4 w-4 text-brand-red" />

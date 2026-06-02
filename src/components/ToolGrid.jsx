@@ -45,8 +45,8 @@ export default function ToolGrid({ searchTerm, activeTab, onTabChange }) {
 
         {filteredTools.length > 0 ? (
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredTools.map((tool) => (
-              <ToolCard key={tool.slug} tool={tool} activeTab={activeTab} />
+            {filteredTools.map((tool, index) => (
+              <ToolCard key={tool.slug} tool={tool} activeTab={activeTab} eagerPreview={index < 8} />
             ))}
           </div>
         ) : (

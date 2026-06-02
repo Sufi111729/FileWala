@@ -17,6 +17,10 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
+          if (id.includes('ThirdPartyScripts.jsx')) {
+            return 'ads';
+          }
+
           if (!id.includes('node_modules')) return undefined;
 
           if (id.includes('lucide-react')) {

@@ -1,6 +1,8 @@
 import { lazy } from 'react';
 
 const reloadKey = 'filewala-lazy-reload';
+const defaultRetries = 3;
+const defaultDelay = 1000;
 
 function getReloadFlag() {
   try {
@@ -36,10 +38,20 @@ function isChunkLoadError(error) {
   );
 }
 
-export function lazyPage(importer) {
+export function retryImport(importer, retries = defaultRetries, delay = defaultDelay) {
+  return importer().catch((error) => {
+    if (retries <= 0 || !isChunkLoadError(error)) throw error;
+
+    return new Promise((resolve) => {
+      globalThis.setTimeout(resolve, delay);
+    }).then(() => retryImport(importer, retries - 1, delay * 1.5));
+  });
+}
+
+export function lazyWithRetry(importer) {
   return lazy(async () => {
     try {
-      const module = await importer();
+      const module = await retryImport(importer);
       clearReloadFlag();
       return module;
     } catch (error) {
@@ -53,3 +65,5 @@ export function lazyPage(importer) {
     }
   });
 }
+
+export const lazyPage = lazyWithRetry;

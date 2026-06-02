@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n.jsx';
@@ -942,7 +942,7 @@ function renderPreviewLayout(config, tone) {
 
 function ToolPreviewSvg({ config, tone }) {
   return (
-    <svg viewBox="0 0 320 180" className="h-full w-full" role="img" aria-hidden="true">
+    <svg viewBox="0 0 320 180" width="320" height="180" className="h-full w-full" role="img" aria-hidden="true">
       <rect width="320" height="180" fill={tone.pale} opacity="0.82" />
       <circle cx="164" cy="90" r="72" fill={tone.soft} opacity="0.38" />
       <circle cx="36" cy="144" r="46" fill="#ffffff" opacity="0.52" />
@@ -967,7 +967,39 @@ function FallbackPreview({ tool, type }) {
 
 /* ── Main exported component ────────────────────── */
 
-function ToolCard({ tool, activeTab = 'All Tools' }) {
+function useNearViewport(enabled) {
+  const ref = useRef(null);
+  const [isNearViewport, setIsNearViewport] = useState(enabled);
+
+  useEffect(() => {
+    if (enabled || isNearViewport) return undefined;
+
+    const node = ref.current;
+    if (!node) return undefined;
+
+    if (!('IntersectionObserver' in window)) {
+      setIsNearViewport(true);
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsNearViewport(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: '900px 0px' },
+    );
+
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [enabled, isNearViewport]);
+
+  return [ref, isNearViewport];
+}
+
+function ToolCard({ tool, activeTab = 'All Tools', eagerPreview = false }) {
   const { text, tLiteral } = useLanguage();
   const Icon = tool.icon;
   const translatedTool = text.tools?.[tool.slug] ?? [tool.title, tool.description];
@@ -979,15 +1011,16 @@ function ToolCard({ tool, activeTab = 'All Tools' }) {
   const categoryLabel = (text.categories[tool.category] ?? tool.category).replace(' Tools', '');
   const previewBadge = tLiteral(tool.previewBadge ?? categoryLabel);
   const previewType = getPreviewType(tool);
+  const [previewRef, shouldRenderPreview] = useNearViewport(eagerPreview || Boolean(tool.previewImage));
 
   return (
     <Link
       to={tool.href ?? `/tools/${tool.slug}`}
-      className={`group block h-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.055)] transition-all duration-200 ${color.border} hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(15,23,42,0.095)] focus:outline-none focus-visible:ring-2 ${color.ring} focus-visible:ring-offset-2`}
+      className={`group block h-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.055)] ${color.border} focus:outline-none focus-visible:ring-2 ${color.ring} focus-visible:ring-offset-2`}
     >
       <div className="flex h-full flex-col">
         <div className="p-3 pb-0">
-          <div className={`relative aspect-video overflow-hidden rounded-xl border border-black/5 ${getPreviewBackground(previewType)}`}>
+          <div ref={previewRef} className={`relative aspect-video overflow-hidden rounded-xl border border-black/5 ${getPreviewBackground(previewType)}`}>
             {tool.previewImage ? (
               <img
                 src={tool.previewImage}
@@ -996,11 +1029,11 @@ function ToolCard({ tool, activeTab = 'All Tools' }) {
                 height="360"
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-contain p-2.5 transition-transform duration-300 group-hover:scale-[1.015]"
+                className="h-full w-full object-contain p-2.5"
               />
-            ) : (
+            ) : shouldRenderPreview ? (
               <FallbackPreview tool={tool} type={previewType} />
-            )}
+            ) : null}
           </div>
         </div>
 
@@ -1019,7 +1052,7 @@ function ToolCard({ tool, activeTab = 'All Tools' }) {
 
           <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-black">
             {text.common.openTool}
-            <ArrowRight className={`h-4 w-4 ${color.text} transition-transform duration-200 group-hover:translate-x-1`} />
+            <ArrowRight className={`h-4 w-4 ${color.text}`} />
           </span>
         </div>
       </div>

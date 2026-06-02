@@ -49,6 +49,8 @@ export default function SeoHelmet({
   keywords = [],
   robots = 'index, follow',
   image = BRAND_LOGO_URL,
+  ogTitle,
+  ogDescription,
   type = 'website',
   jsonLd = [],
 }) {
@@ -64,8 +66,8 @@ export default function SeoHelmet({
 
     upsertMeta('meta[property="og:site_name"]', { property: 'og:site_name', content: BRAND_NAME });
     upsertMeta('meta[property="og:type"]', { property: 'og:type', content: type });
-    upsertMeta('meta[property="og:title"]', { property: 'og:title', content: title });
-    if (description) upsertMeta('meta[property="og:description"]', { property: 'og:description', content: description });
+    upsertMeta('meta[property="og:title"]', { property: 'og:title', content: ogTitle ?? title });
+    if (description || ogDescription) upsertMeta('meta[property="og:description"]', { property: 'og:description', content: ogDescription ?? description });
     upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonical });
     upsertMeta('meta[property="og:image"]', { property: 'og:image', content: image });
     upsertMeta('meta[property="og:logo"]', { property: 'og:logo', content: BRAND_ICON_URL });
@@ -77,7 +79,7 @@ export default function SeoHelmet({
 
     removeManagedSchemas();
     schemaItems.forEach(appendSchema);
-  }, [canonical, description, image, jsonLd, keywords, robots, title, type]);
+  }, [canonical, description, image, jsonLd, keywords, ogDescription, ogTitle, robots, title, type]);
 
   return null;
 }

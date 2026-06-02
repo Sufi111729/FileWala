@@ -10,6 +10,7 @@ const AboutUs = lazyPage(() => import('./pages/legal/AboutUs.jsx'));
 const ContactUs = lazyPage(() => import('./pages/legal/ContactUs.jsx'));
 const PrivacyPolicy = lazyPage(() => import('./pages/legal/PrivacyPolicy.jsx'));
 const TermsConditions = lazyPage(() => import('./pages/legal/TermsConditions.jsx'));
+const ContactMessagesAdmin = lazyPage(() => import('./pages/admin/ContactMessagesAdmin.jsx'));
 const CompressTools = lazyPage(() => import('./pages/compress/CompressTools.jsx'));
 const CustomImageKBResizer = lazyPage(() => import('./pages/compress/CustomImageKBResizer.jsx'));
 const ImageCompressor = lazyPage(() => import('./pages/compress/ImageCompressor.jsx'));
@@ -65,6 +66,7 @@ export default function App() {
         <Route path="/terms-and-conditions" element={<RouteView><TermsConditions /></RouteView>} />
         <Route path="/about-us" element={<RouteView><AboutUs /></RouteView>} />
         <Route path="/contact-us" element={<RouteView><ContactUs /></RouteView>} />
+        <Route path="/contact" element={<RouteView><ContactMessagesAdmin /></RouteView>} />
         <Route path="/compress" element={<RouteView><CompressTools /></RouteView>} />
         <Route path="/compress/image-compressor" element={<RouteView><ImageCompressor /></RouteView>} />
         <Route path="/compress/image-to-20kb" element={<RouteView><ImageTo20KB /></RouteView>} />

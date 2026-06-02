@@ -101,3 +101,81 @@ input {
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(14px);
 }
+
+.home-hero-section {
+  min-height: 430px;
+}
+
+.tools-grid-section {
+  min-height: 10440px;
+}
+
+.why-section {
+  min-height: 448px;
+}
+
+.site-footer {
+  min-height: 330px;
+}
+
+.footer-reserve {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.below-fold-section {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 560px;
+}
+
+.ad-slot {
+  display: block;
+  width: 100%;
+  min-height: 280px;
+  overflow: hidden;
+}
+
+.ad-slot.horizontal {
+  min-height: 90px;
+}
+
+.ad-slot.rectangle {
+  min-height: 280px;
+}
+
+@media (min-width: 640px) {
+  .home-hero-section {
+    min-height: 460px;
+  }
+
+  .tools-grid-section {
+    min-height: 5420px;
+  }
+
+  .why-section {
+    min-height: 430px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .home-hero-section {
+    min-height: 452px;
+  }
+
+  .tools-grid-section {
+    min-height: 3880px;
+  }
+
+  .why-section {
+    min-height: 360px;
+  }
+
+  .site-footer {
+    min-height: 286px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .tools-grid-section {
+    min-height: 3040px;
+  }
+}

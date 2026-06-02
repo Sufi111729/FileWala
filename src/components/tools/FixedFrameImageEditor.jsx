@@ -103,7 +103,7 @@ export default function FixedFrameImageEditor({
     };
 
     measureStage();
-    window.addEventListener('resize', measureStage);
+    window.addEventListener('resize', measureStage, { passive: true });
     return () => window.removeEventListener('resize', measureStage);
   }, []);
 

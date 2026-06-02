@@ -45,7 +45,7 @@ const en = {
   },
   hero: {
     eyebrow: 'Simple online file tools for everyday work',
-    title: 'Every file tool you need, in one place',
+    title: 'Free Online Image & PDF Tools',
     description: 'Compress, resize, convert and edit images and PDFs online with simple, fast and secure tools.',
     search: 'Search tools',
     searchPlaceholder: 'Search tools...',
