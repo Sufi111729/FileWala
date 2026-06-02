@@ -3,11 +3,13 @@ import react from '@vitejs/plugin-react';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/',
   esbuild: {
     legalComments: 'none',
     drop: ['console', 'debugger'],
   },
   build: {
+    outDir: 'dist',
     target: 'es2020',
     cssCodeSplit: true,
     sourcemap: false,
