@@ -19,6 +19,7 @@ const ImageTo20KB = lazyPage(() => import('./pages/compress/ImageTo20KB.jsx'));
 const ImageTo50KB = lazyPage(() => import('./pages/compress/ImageTo50KB.jsx'));
 const ImageDownscaler = lazyPage(() => import('./pages/image/ImageDownscaler.jsx'));
 const ImageUpscaler = lazyPage(() => import('./pages/image/ImageUpscaler.jsx'));
+const BatchImageCropper = lazyPage(() => import('./pages/BatchImageCropper.jsx'));
 const AadhaarPhotoResize = lazyPage(() => import('./pages/documents/AadhaarPhotoResize.jsx'));
 const DocumentScanner = lazyPage(() => import('./pages/documents/DocumentScanner.jsx'));
 const PanPhotoResize = lazyPage(() => import('./pages/documents/PanPhotoResize.jsx'));
@@ -62,6 +63,7 @@ export default function App() {
         <Route index element={<RouteView><Home /></RouteView>} />
         <Route path="/pdf-tools" element={<RouteView><CategoryToolsPage category="PDF Tools" /></RouteView>} />
         <Route path="/image-tools" element={<RouteView><CategoryToolsPage category="Image Tools" /></RouteView>} />
+        <Route path="/batch-image-cropper" element={<RouteView><BatchImageCropper /></RouteView>} />
         <Route path="/privacy-policy" element={<RouteView><PrivacyPolicy /></RouteView>} />
         <Route path="/terms-and-conditions" element={<RouteView><TermsConditions /></RouteView>} />
         <Route path="/about-us" element={<RouteView><AboutUs /></RouteView>} />
@@ -98,6 +100,7 @@ export default function App() {
         <Route path="/tools/image-kb-resizer" element={<RouteView><CustomImageKBResizer /></RouteView>} />
         <Route path="/tools/image-upscaler" element={<RouteView><ImageUpscaler /></RouteView>} />
         <Route path="/tools/image-downscaler" element={<RouteView><ImageDownscaler /></RouteView>} />
+        <Route path="/tools/batch-image-cropper" element={<RouteView><BatchImageCropper /></RouteView>} />
         <Route path="/tools/:slug" element={<RouteView><ToolPage /></RouteView>} />
       </Route>
     </Routes>

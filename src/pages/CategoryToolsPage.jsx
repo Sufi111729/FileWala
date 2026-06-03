@@ -1,6 +1,6 @@
 import CategoryTabs from '../components/navigation/CategoryTabs.jsx';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
-import { breadcrumbSchema, collectionPageSchema } from '../components/seo/schema.js';
+import { breadcrumbSchema, collectionPageSchema, toolItemListSchema } from '../components/seo/schema.js';
 import ToolCard from '../components/ToolCard.jsx';
 import { allTools } from '../data/tools.js';
 import { absoluteUrl, SITE_URL } from '../data/siteMetadata.js';
@@ -31,6 +31,7 @@ export default function CategoryToolsPage({ category }) {
   const canonical = absoluteUrl(meta.path);
   const jsonLd = [
     collectionPageSchema({ name: categoryName, description: localizedDescription, path: meta.path }),
+    toolItemListSchema(tools),
     breadcrumbSchema([
       { name: text.nav.home, url: SITE_URL },
       { name: categoryName, url: canonical },

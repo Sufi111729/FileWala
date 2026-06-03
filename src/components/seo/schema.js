@@ -65,6 +65,28 @@ export function collectionPageSchema({ name, description, path }) {
   };
 }
 
+export function toolItemListSchema(tools = []) {
+  const cleanTools = tools.filter((tool) => tool?.title && tool?.href);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: cleanTools.map((tool, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      item: {
+        '@type': 'WebApplication',
+        name: tool.title,
+        description: tool.description,
+        url: absoluteUrl(tool.href),
+        image: tool.imageUrl,
+        applicationCategory: 'UtilitiesApplication',
+        operatingSystem: 'Web',
+      },
+    })),
+  };
+}
+
 export function webPageSchema({ name, description, path }) {
   const url = absoluteUrl(path);
 

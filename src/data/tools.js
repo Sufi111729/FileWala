@@ -22,6 +22,55 @@ import {
   ShieldCheck,
   Stamp,
 } from 'lucide-react';
+import { absoluteUrl } from './siteMetadata.js';
+
+const toolImageSeoBySlug = {
+  'merge-pdf': ['merge-pdf-thumbnail.png', 'Merge PDF online tool thumbnail showing multiple PDF files combining into one document', 'Merge PDF Online Tool - FileWalaTool', 'Combine multiple PDF files into one organized document online.'],
+  'split-pdf': ['split-pdf-thumbnail.png', 'Split PDF online tool thumbnail showing one PDF divided into multiple pages', 'Split PDF Online Tool - FileWalaTool', 'Extract selected pages or split a PDF into smaller files online.'],
+  'compress-pdf': ['compress-pdf-thumbnail.png', 'Compress PDF tool thumbnail showing PDF file size reduced online', 'Compress PDF Online Tool - FileWalaTool', 'Reduce PDF file size while keeping documents clear.'],
+  'pdf-to-jpg': ['pdf-to-jpg-thumbnail.png', 'PDF to JPG converter thumbnail showing PDF pages converted into JPG images', 'PDF to JPG Converter - FileWalaTool', 'Convert PDF pages into high-quality JPG images online.'],
+  'image-to-pdf': ['image-to-pdf-thumbnail.png', 'Image to PDF converter thumbnail showing JPG PNG WEBP images converted into PDF', 'Image to PDF Converter - FileWalaTool', 'Convert images into one clean PDF document online.'],
+  'pdf-to-word': ['pdf-to-word-thumbnail.png', 'PDF to Word converter thumbnail showing a PDF document changed into an editable Word file', 'PDF to Word Converter - FileWalaTool', 'Convert PDF documents into editable Word files online.'],
+  'word-to-pdf': ['word-to-pdf-thumbnail.png', 'Word to PDF converter thumbnail showing a Word document exported as PDF', 'Word to PDF Converter - FileWalaTool', 'Turn Word documents into polished PDF files online.'],
+  'protect-pdf': ['protect-pdf-thumbnail.png', 'Protect PDF tool thumbnail showing a PDF file secured with a password lock', 'Protect PDF Online Tool - FileWalaTool', 'Add password protection to sensitive PDF files online.'],
+  'unlock-pdf': ['unlock-pdf-thumbnail.png', 'Unlock PDF tool thumbnail showing a locked PDF file opened for access', 'Unlock PDF Online Tool - FileWalaTool', 'Remove passwords from PDFs you are allowed to access.'],
+  'rotate-pdf': ['pdf-rotate-thumbnail.png', 'PDF Rotate tool thumbnail showing PDF pages rotated to fix orientation', 'PDF Rotate Online Tool - FileWalaTool', 'Rotate pages and fix PDF orientation quickly online.'],
+  'pdf-page-delete': ['pdf-page-delete-thumbnail.png', 'PDF Page Delete tool thumbnail showing unwanted pages removed from a PDF document', 'PDF Page Delete Tool - FileWalaTool', 'Remove unwanted pages from a PDF document online.'],
+  'watermark-pdf': ['watermark-pdf-thumbnail.png', 'Watermark PDF tool thumbnail showing a watermark applied across PDF pages', 'Watermark PDF Online Tool - FileWalaTool', 'Apply text or image watermarks across PDF pages online.'],
+  'resize-image': ['image-resizer-thumbnail.png', 'Image Resizer tool thumbnail showing photo dimensions resized for web and forms', 'Image Resizer Online Tool - FileWalaTool', 'Resize images for web, social media, forms, and documents.'],
+  'compress-image': ['compress-image-thumbnail.png', 'Compress Image tool thumbnail showing an image file reduced in size online', 'Compress Image Online Tool - FileWalaTool', 'Make images smaller without losing visual quality.'],
+  'image-kb-resizer': ['custom-kb-resizer-thumbnail.png', 'Custom KB Resizer thumbnail showing image file size adjusted to a target KB value', 'Custom KB Resizer - FileWalaTool', 'Resize image file weight to match upload limits.'],
+  'crop-image': ['crop-image-thumbnail.png', 'Crop Image tool thumbnail showing a photo cropped to an exact frame', 'Crop Image Online Tool - FileWalaTool', 'Crop photos to exact dimensions and aspect ratios.'],
+  'batch-image-cropper': ['batch-image-cropper-thumbnail.png', 'Batch Image Cropper thumbnail showing multiple crop selections on an image sheet', 'Batch Image Cropper - FileWalaTool', 'Create multiple crop selections and export every crop area as separate images.'],
+  'jpg-to-png': ['jpg-to-png-thumbnail.png', 'JPG to PNG converter thumbnail showing a JPG image converted into PNG format', 'JPG to PNG Converter - FileWalaTool', 'Convert JPG files into transparent-ready PNG images online.'],
+  'png-to-jpg': ['png-to-jpg-thumbnail.png', 'PNG to JPG converter thumbnail showing a PNG image converted into JPG format', 'PNG to JPG Converter - FileWalaTool', 'Create lightweight JPG files from PNG images online.'],
+  'background-remover': ['background-remover-thumbnail.png', 'Background Remover thumbnail showing an image background removed for a clean cutout', 'Background Remover Tool - FileWalaTool', 'Remove image backgrounds for profiles and products.'],
+  'image-upscaler': ['image-upscaler-thumbnail.png', 'Image Upscaler thumbnail showing a photo enlarged with clearer dimensions', 'Image Upscaler Online Tool - FileWalaTool', 'Increase image dimensions while keeping edges clear.'],
+  'image-downscaler': ['image-downscaler-thumbnail.png', 'Image Downscaler thumbnail showing a large image reduced to smaller dimensions', 'Image Downscaler Online Tool - FileWalaTool', 'Reduce image dimensions for faster sharing and uploads.'],
+  'passport-photo-maker': ['passport-photo-maker-thumbnail.png', 'Passport Photo Maker thumbnail showing passport size photo preparation for applications', 'Passport Photo Maker - FileWalaTool', 'Create passport-size photos with clean alignment online.'],
+  'signature-resize': ['signature-resize-thumbnail.png', 'Signature Resize thumbnail showing a signature image resized for online forms', 'Signature Resize Online Tool - FileWalaTool', 'Resize signatures for online forms and document uploads.'],
+  'photo-to-20kb': ['image-to-20kb-thumbnail.png', 'Image to 20KB thumbnail showing a photo compressed to a 20KB upload target', 'Image to 20KB Tool - FileWalaTool', 'Compress application photos to a 20KB target online.'],
+  'photo-to-50kb': ['image-to-50kb-thumbnail.png', 'Image to 50KB thumbnail showing a photo optimized for a 50KB upload requirement', 'Image to 50KB Tool - FileWalaTool', 'Optimize photo uploads for a 50KB requirement.'],
+  'photo-to-100kb': ['image-to-100kb-thumbnail.png', 'Image to 100KB thumbnail showing a clear photo compressed under 100KB', 'Image to 100KB Tool - FileWalaTool', 'Create clear photos under a 100KB limit online.'],
+  'aadhaar-photo-resize': ['aadhaar-photo-resize-thumbnail.png', 'Aadhaar Photo Resize thumbnail showing an Aadhaar photo prepared for upload dimensions', 'Aadhaar Photo Resize - FileWalaTool', 'Prepare Aadhaar photos for document and form uploads.'],
+  'pan-photo-resize': ['pan-photo-resize-thumbnail.png', 'PAN Photo Resize thumbnail showing a PAN card photo resized for online upload', 'PAN Photo Resize - FileWalaTool', 'Resize PAN card photos to accepted upload dimensions.'],
+  'resume-builder': ['resume-builder-thumbnail.png', 'Resume Builder thumbnail showing a clean resume document created online', 'Resume Builder Online - FileWalaTool', 'Create a clean resume document for applications.'],
+  'document-scanner': ['document-scanner-thumbnail.png', 'Document Scanner thumbnail showing a document photo cleaned and scanned online', 'Document Scanner Online - FileWalaTool', 'Scan and clean document photos for sharing.'],
+};
+
+function imageSeo(slug) {
+  const [fileName, imageAlt, imageTitle, imageCaption] = toolImageSeoBySlug[slug] ?? [];
+  if (!fileName) return {};
+  const preview = `/tool-previews/${fileName}`;
+  return {
+    preview,
+    previewImage: preview,
+    imageUrl: absoluteUrl(preview),
+    imageAlt,
+    imageTitle,
+    imageCaption,
+  };
+}
 
 export const toolCategories = [
   {
@@ -168,6 +217,16 @@ export const toolCategories = [
         category: 'Image Tools',
         groups: ['Image Tools', 'Resize'],
         icon: Crop,
+      },
+      {
+        title: 'Batch Image Cropper',
+        slug: 'batch-image-cropper',
+        href: '/batch-image-cropper',
+        description: 'Crop multiple images together with custom aspect ratios.',
+        category: 'Image Tools',
+        groups: ['Image Tools', 'Editor'],
+        icon: Crop,
+        previewBadge: 'Editor',
       },
       {
         title: 'JPG to PNG',
@@ -323,6 +382,7 @@ export const toolRouteBySlug = {
   'compress-image': '/compress/image-compressor',
   'image-kb-resizer': '/compress/custom-image-kb-resizer',
   'crop-image': '/tools/crop-image',
+  'batch-image-cropper': '/batch-image-cropper',
   'jpg-to-png': '/tools/jpg-to-png',
   'png-to-jpg': '/tools/png-to-jpg',
   'background-remover': '/tools/background-remover',
@@ -341,6 +401,7 @@ export const toolRouteBySlug = {
 
 allTools.forEach((tool) => {
   tool.href = toolRouteBySlug[tool.slug] ?? `/tools/${tool.slug}`;
+  Object.assign(tool, imageSeo(tool.slug));
 });
 
 const toolHrefByTitle = Object.fromEntries(allTools.map((tool) => [tool.title, tool.href ?? `/tools/${tool.slug}`]));
@@ -377,6 +438,7 @@ export const navTools = [
     tools: [
       'Image Resizer',
       'Compress Image',
+      'Batch Image Cropper',
       'JPG to PNG',
       'PNG to JPG',
       'Background Remover',

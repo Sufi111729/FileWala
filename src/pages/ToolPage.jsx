@@ -36,6 +36,7 @@ export default function ToolPage() {
         description={seo?.metaDescription ?? tToolDescription(tool)}
         canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? `/tools/${tool.slug}`)}
         keywords={keywords}
+        image={tool.imageUrl}
         jsonLd={seo ? toolSchemas(seo) : []}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

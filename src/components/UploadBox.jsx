@@ -40,6 +40,10 @@ const converterConfig = {
     outputType: 'image/jpeg',
     needsLibrary: 'PDF to JPG needs a frontend PDF renderer such as pdf.js.',
   },
+  'batch-image-cropper': {
+    accept: 'image/jpeg,image/png,image/webp,image/bmp',
+    multiple: true,
+  },
   'pdf-to-word': {
     accept: 'application/pdf',
     outputName: 'pdf-to-word-filewalatool.docx',
@@ -373,7 +377,7 @@ function previewType(contentType) {
   return '';
 }
 
-export default function UploadBox({ tool }) {
+export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, helperText = '' }) {
   const { text, tLiteral, tToolTitle } = useLanguage();
   const fileInputRef = useRef(null);
   const config = useMemo(() => ({ ...defaultConfig, ...(converterConfig[tool.slug] ?? {}) }), [tool.slug]);
@@ -402,7 +406,9 @@ export default function UploadBox({ tool }) {
 
   const handleFiles = (fileList) => {
     const selectedFiles = Array.from(fileList ?? []);
-    setFiles(config.multiple ? selectedFiles : selectedFiles.slice(0, 1));
+    const nextFiles = config.multiple ? selectedFiles : selectedFiles.slice(0, 1);
+    setFiles(nextFiles);
+    onFilesSelected?.(nextFiles);
     resetResult();
   };
 
@@ -604,7 +610,7 @@ export default function UploadBox({ tool }) {
           </span>
           <span className="mt-5 text-xl font-black tracking-tight text-black">{text.upload.drop}</span>
           <span className="mt-2 max-w-md text-sm leading-6 text-black/50">
-            {fileLabel || `${text.upload.choose} ${tToolTitle(tool)}.`}
+            {fileLabel || helperText || `${text.upload.choose} ${tToolTitle(tool)}.`}
           </span>
           {importSource && (
             <span className="mt-2 text-xs font-bold text-black/50">{text.upload.selectedFrom} {importSource}</span>
@@ -624,6 +630,7 @@ export default function UploadBox({ tool }) {
           />
         </label>
 
+        {!uploadOnly && (
         <div className="grid gap-6 border-t border-black/5 p-5 sm:p-6 lg:grid-cols-[1fr_280px]">
           <div className="rounded-md border border-black/10 bg-white p-5">
             <div className="flex items-center gap-3">
@@ -699,9 +706,10 @@ export default function UploadBox({ tool }) {
             {cloudStatus && <p className="mt-3 text-sm font-semibold text-black/60">{cloudStatus}</p>}
           </aside>
         </div>
+        )}
       </div>
 
-      {result && (
+      {!uploadOnly && result && (
         <div className="mt-6 rounded-md border border-black/10 bg-white p-5 text-center">
           <CheckCircle2 className="mx-auto h-8 w-8 text-brand-red" />
           <p className="mt-2 font-black text-black">{text.upload.ready}</p>

@@ -2,6 +2,106 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n.jsx';
+import mergePdfPreview from '../assets/tool-previews/marge pdf.png';
+import splitPdfPreview from '../assets/tool-previews/split pdf.png';
+import compressPdfPreview from '../assets/tool-previews/compress pdf.png';
+import pdfToJpgPreview from '../assets/tool-previews/pdf to jpg.png';
+import imageToPdfPreview from '../assets/tool-previews/img to pdf.png';
+import pdfToWordPreview from '../assets/tool-previews/pdf to word.png';
+import wordToPdfPreview from '../assets/tool-previews/word to pdf.png';
+import protectPdfPreview from '../assets/tool-previews/protect pdf.png';
+import unlockPdfPreview from '../assets/tool-previews/unlock pdf.png';
+import pdfRotatePreview from '../assets/tool-previews/rotate pdf.png';
+import pdfPageDeletePreview from '../assets/tool-previews/pdf page delete.png';
+import watermarkPdfPreview from '../assets/tool-previews/watermark pdf.png';
+import resizeImagePreview from '../assets/tool-previews/img resize.png';
+import compressImagePreview from '../assets/tool-previews/compress img.png';
+import imageKbResizerPreview from '../assets/tool-previews/kb resizer.png';
+import cropImagePreview from '../assets/tool-previews/crop img.png';
+import jpgToPngPreview from '../assets/tool-previews/jpg to png.png';
+import pngToJpgPreview from '../assets/tool-previews/png to jpg.png';
+import backgroundRemoverPreview from '../assets/tool-previews/background remover.png';
+import imageUpscalerPreview from '../assets/tool-previews/img upplerscaling.png';
+import imageDownscalerPreview from '../assets/tool-previews/img downscaling.png';
+import passportPhotoMakerPreview from '../assets/tool-previews/passport photo maker.png';
+import signatureResizePreview from '../assets/tool-previews/signature resizer.png';
+import imageTo20kbPreview from '../assets/tool-previews/img 20 kb.png';
+import imageTo50kbPreview from '../assets/tool-previews/img 50 kb.png';
+import imageTo100kbPreview from '../assets/tool-previews/img 100kb.png';
+import aadhaarPhotoResizePreview from '../assets/tool-previews/Aadhar photo resizer.png';
+import panPhotoResizePreview from '../assets/tool-previews/pan photo resizer.png';
+import resumeBuilderPreview from '../assets/tool-previews/resume builder.png';
+import documentScannerPreview from '../assets/tool-previews/Doc scanner.png';
+
+const toolPreviewImages = {
+  'merge-pdf': mergePdfPreview,
+  'split-pdf': splitPdfPreview,
+  'compress-pdf': compressPdfPreview,
+  'pdf-to-jpg': pdfToJpgPreview,
+  'image-to-pdf': imageToPdfPreview,
+  'pdf-to-word': pdfToWordPreview,
+  'word-to-pdf': wordToPdfPreview,
+  'protect-pdf': protectPdfPreview,
+  'unlock-pdf': unlockPdfPreview,
+  'rotate-pdf': pdfRotatePreview,
+  'pdf-page-delete': pdfPageDeletePreview,
+  'watermark-pdf': watermarkPdfPreview,
+  'resize-image': resizeImagePreview,
+  'compress-image': compressImagePreview,
+  'image-kb-resizer': imageKbResizerPreview,
+  'crop-image': cropImagePreview,
+  'batch-image-cropper': cropImagePreview,
+  'jpg-to-png': jpgToPngPreview,
+  'png-to-jpg': pngToJpgPreview,
+  'background-remover': backgroundRemoverPreview,
+  'image-upscaler': imageUpscalerPreview,
+  'image-downscaler': imageDownscalerPreview,
+  'photo-to-20kb': imageTo20kbPreview,
+  'photo-to-50kb': imageTo50kbPreview,
+  'photo-to-100kb': imageTo100kbPreview,
+  'passport-photo-maker': passportPhotoMakerPreview,
+  'signature-resize': signatureResizePreview,
+  'aadhaar-photo-resize': aadhaarPhotoResizePreview,
+  'pan-photo-resize': panPhotoResizePreview,
+  'resume-builder': resumeBuilderPreview,
+  'document-scanner': documentScannerPreview,
+};
+
+const normalizePreviewKey = (value = '') => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
+const toolPreviewImagesByTitle = {
+  'merge-pdf': mergePdfPreview,
+  'split-pdf': splitPdfPreview,
+  'compress-pdf': compressPdfPreview,
+  'pdf-to-jpg': pdfToJpgPreview,
+  'image-to-pdf': imageToPdfPreview,
+  'pdf-to-word': pdfToWordPreview,
+  'word-to-pdf': wordToPdfPreview,
+  'protect-pdf': protectPdfPreview,
+  'unlock-pdf': unlockPdfPreview,
+  'pdf-rotate': pdfRotatePreview,
+  'pdf-page-delete': pdfPageDeletePreview,
+  'watermark-pdf': watermarkPdfPreview,
+  'image-resizer': resizeImagePreview,
+  'compress-image': compressImagePreview,
+  'custom-kb-resizer': imageKbResizerPreview,
+  'crop-image': cropImagePreview,
+  'batch-image-cropper': cropImagePreview,
+  'jpg-to-png': jpgToPngPreview,
+  'png-to-jpg': pngToJpgPreview,
+  'background-remover': backgroundRemoverPreview,
+  'image-upscaler': imageUpscalerPreview,
+  'image-downscaler': imageDownscalerPreview,
+  'passport-photo-maker': passportPhotoMakerPreview,
+  'signature-resize': signatureResizePreview,
+  'image-to-20kb': imageTo20kbPreview,
+  'image-to-50kb': imageTo50kbPreview,
+  'image-to-100kb': imageTo100kbPreview,
+  'aadhaar-photo-resize': aadhaarPhotoResizePreview,
+  'pan-photo-resize': panPhotoResizePreview,
+  'resume-builder': resumeBuilderPreview,
+  'document-scanner': documentScannerPreview,
+};
 
 /* ── Color palette ────────────────────────────────── */
 const cardColors = {
@@ -91,6 +191,7 @@ const previewConfigs = {
   'compress-image': { layout: 'compress', tone: 'image', left: 'IMG', right: 'IMG', badge: 'KB' },
   'image-kb-resizer': { layout: 'target', tone: 'resize', left: 'IMG', badge: 'KB' },
   'crop-image': { layout: 'crop', tone: 'image', left: 'IMG' },
+  'batch-image-cropper': { layout: 'batch-crop', tone: 'image', left: 'IMG', badge: '16:9' },
   'jpg-to-png': { layout: 'convert', tone: 'convert', left: 'JPG', right: 'PNG', leftKind: 'image', rightKind: 'image' },
   'png-to-jpg': { layout: 'convert', tone: 'convert', left: 'PNG', right: 'JPG', leftKind: 'image', rightKind: 'image' },
   'background-remover': { layout: 'transparent', tone: 'image', left: 'IMG', badge: 'BG' },
@@ -889,6 +990,16 @@ function renderPreviewLayout(config, tone) {
           <ImageCard x="222" y="60" label="CROP" tone={tone} size="small" />
         </>
       );
+    case 'batch-crop':
+      return (
+        <>
+          <ImageCard x="44" y="62" label={config.left} tone={tone} size="medium" muted />
+          <ImageCard x="112" y="42" label={config.left} tone={tone} size="large" />
+          <GuideMark x="130" y="54" color={tone.accent2} compact />
+          <ImageCard x="224" y="66" label="CROP" tone={tone} size="small" />
+          <Badge x="224" y="126" label={config.badge} color={tone.accent2} />
+        </>
+      );
     case 'transparent':
       return (
         <>
@@ -1011,30 +1122,36 @@ function ToolCard({ tool, activeTab = 'All Tools', eagerPreview = false }) {
   const categoryLabel = (text.categories[tool.category] ?? tool.category).replace(' Tools', '');
   const previewBadge = tLiteral(tool.previewBadge ?? categoryLabel);
   const previewType = getPreviewType(tool);
+  const resolvedPreviewImage = tool.previewImage || tool.preview || toolPreviewImages[tool.slug] || toolPreviewImagesByTitle[normalizePreviewKey(tool.title)];
+  const previewAlt = tool.imageAlt || `${translatedTool[0]} online tool preview`;
+  const previewTitle = tool.imageTitle || `${translatedTool[0]} - FileWalaTool`;
   const [previewRef, shouldRenderPreview] = useNearViewport(eagerPreview || Boolean(tool.previewImage));
 
   return (
     <Link
       to={tool.href ?? `/tools/${tool.slug}`}
+      aria-label={`Open ${translatedTool[0]} tool`}
       className={`group block h-full overflow-hidden rounded-2xl border border-black/10 bg-white shadow-[0_8px_24px_rgba(15,23,42,0.055)] ${color.border} focus:outline-none focus-visible:ring-2 ${color.ring} focus-visible:ring-offset-2`}
     >
       <div className="flex h-full flex-col">
         <div className="p-3 pb-0">
-          <div ref={previewRef} className={`relative aspect-video overflow-hidden rounded-xl border border-black/5 ${getPreviewBackground(previewType)}`}>
-            {tool.previewImage ? (
+          <div ref={previewRef} className={`relative h-36 overflow-hidden rounded-xl border border-gray-100 bg-white sm:h-44 ${resolvedPreviewImage ? '' : getPreviewBackground(previewType)}`}>
+            {shouldRenderPreview && resolvedPreviewImage ? (
               <img
-                src={tool.previewImage}
-                alt={`${translatedTool[0]} preview`}
-                width="640"
-                height="360"
+                src={resolvedPreviewImage}
+                alt={previewAlt}
+                title={previewTitle}
+                width="800"
+                height="500"
                 loading="lazy"
                 decoding="async"
-                className="h-full w-full object-contain p-2.5"
+                className="h-full w-full object-contain"
               />
             ) : shouldRenderPreview ? (
               <FallbackPreview tool={tool} type={previewType} />
             ) : null}
           </div>
+          <p className="sr-only">{tool.imageCaption || translatedTool[1]}</p>
         </div>
 
         <div className="flex flex-1 flex-col p-5 pt-4">
@@ -1050,9 +1167,9 @@ function ToolCard({ tool, activeTab = 'All Tools', eagerPreview = false }) {
           <h3 className="mt-4 text-lg font-black leading-tight tracking-tight text-black">{translatedTool[0]}</h3>
           <p className="mt-2 flex-1 text-sm leading-6 text-black/60">{translatedTool[1]}</p>
 
-          <span className="mt-5 inline-flex items-center gap-2 text-sm font-black text-black">
+          <span className="mt-auto inline-flex w-full items-center justify-center gap-2 rounded-xl bg-black px-4 py-3 text-sm font-bold text-white transition hover:bg-gray-900 active:scale-[0.98] group-focus-visible:ring-2 group-focus-visible:ring-red-500 group-focus-visible:ring-offset-2">
             {text.common.openTool}
-            <ArrowRight className={`h-4 w-4 ${color.text}`} />
+            <ArrowRight className="h-4 w-4 text-white" />
           </span>
         </div>
       </div>

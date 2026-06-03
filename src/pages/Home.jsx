@@ -3,8 +3,9 @@ import { Component, Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
-import { organizationSchema, websiteSchema } from '../components/seo/schema.js';
+import { organizationSchema, toolItemListSchema, websiteSchema } from '../components/seo/schema.js';
 import { SITE_URL } from '../data/siteMetadata.js';
+import { allTools } from '../data/tools.js';
 import { useLanguage } from '../i18n.jsx';
 import { lazyWithRetry } from '../utils/lazyPage.js';
 
@@ -85,7 +86,7 @@ export default function Home() {
           'image tools',
           'document tools India',
         ]}
-        jsonLd={[websiteSchema(), organizationSchema()]}
+        jsonLd={[websiteSchema(), organizationSchema(), toolItemListSchema(allTools)]}
       />
       <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       <SilentToolGridBoundary>
