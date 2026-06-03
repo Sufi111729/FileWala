@@ -74,7 +74,7 @@ export default function Hero({ searchTerm, onSearchChange }) {
         </div>
 
         <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-black sm:text-5xl">
-          {text.hero.title}
+          Free Online Image &amp; PDF Tools
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-black/60 sm:text-lg sm:leading-8">
           {text.hero.description}
@@ -106,7 +106,7 @@ export default function Hero({ searchTerm, onSearchChange }) {
                     return (
                       <Link
                         key={tool.slug}
-                        to={`/tools/${tool.slug}`}
+                        to={tool.href ?? `/tools/${tool.slug}`}
                         className={`flex items-center gap-3 px-4 py-3 transition-colors duration-150 ${color.hover} focus:outline-none focus-visible:bg-black/5`}
                       >
                         <span className={`flex h-9 w-9 flex-none items-center justify-center rounded-md ${color.softBg}`}>

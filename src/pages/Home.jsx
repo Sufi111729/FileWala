@@ -3,7 +3,7 @@ import { Component, Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
-import { organizationSchema, toolItemListSchema, websiteSchema } from '../components/seo/schema.js';
+import { organizationSchema, toolItemListSchema, webApplicationSchema, websiteSchema } from '../components/seo/schema.js';
 import { SITE_URL } from '../data/siteMetadata.js';
 import { allTools } from '../data/tools.js';
 import { useLanguage } from '../i18n.jsx';
@@ -74,8 +74,8 @@ export default function Home() {
   return (
     <>
       <SeoHelmet
-        title="FileWalaTool - Free PDF, Image, and Document Tools Online"
-        description="FileWalaTool, also known as File Wala Tool and Filewala, offers free online PDF, image, compression, resize, and document tools for everyday file work."
+        title="FileWalaTool - Free Online Image & PDF Tools"
+        description="Resize images, compress files, convert JPG to PDF, merge PDF, split PDF, remove backgrounds, and edit documents online for free with FileWalaTool."
         canonical={SITE_URL}
         keywords={[
           'FileWalaTool',
@@ -86,7 +86,7 @@ export default function Home() {
           'image tools',
           'document tools India',
         ]}
-        jsonLd={[websiteSchema(), organizationSchema(), toolItemListSchema(allTools)]}
+        jsonLd={[websiteSchema(), organizationSchema(), webApplicationSchema(), toolItemListSchema(allTools)]}
       />
       <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       <SilentToolGridBoundary>

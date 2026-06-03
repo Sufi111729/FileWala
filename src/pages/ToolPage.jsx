@@ -11,9 +11,10 @@ import { useLanguage } from '../i18n.jsx';
 
 const safeList = (items) => (Array.isArray(items) ? items.filter(Boolean) : []);
 
-export default function ToolPage() {
+export default function ToolPage({ slugOverride }) {
   const { text, tCategory, tSeo, tToolTitle, tToolDescription } = useLanguage();
-  const { slug } = useParams();
+  const { slug: routeSlug } = useParams();
+  const slug = slugOverride ?? routeSlug;
   const tool = allTools.find((item) => item.slug === slug) ?? defaultTool;
   const seo = tSeo(getToolSeoBySlug(tool.slug));
   const relatedTools = allTools.filter((item) => item.category === tool.category && item.slug !== tool.slug).slice(0, 4);

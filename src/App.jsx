@@ -87,6 +87,13 @@ export default function App() {
         <Route path="/pdf-tools/compress-pdf" element={<RouteView><CompressPdf /></RouteView>} />
         <Route path="/pdf-tools/pdf-page-delete" element={<RouteView><PdfPageDelete /></RouteView>} />
         <Route path="/pdf-tools/pdf-rotate" element={<RouteView><PdfRotate /></RouteView>} />
+        <Route path="/merge-pdf" element={<RouteView><MergePdf /></RouteView>} />
+        <Route path="/split-pdf" element={<RouteView><SplitPdf /></RouteView>} />
+        <Route path="/compress-pdf" element={<RouteView><CompressPdf /></RouteView>} />
+        <Route path="/pdf-to-jpg" element={<RouteView><ToolPage slugOverride="pdf-to-jpg" /></RouteView>} />
+        <Route path="/image-to-pdf" element={<RouteView><ToolPage slugOverride="image-to-pdf" /></RouteView>} />
+        <Route path="/passport-photo-maker" element={<RouteView><PassportPhotoMaker /></RouteView>} />
+        <Route path="/background-remover" element={<RouteView><ToolPage slugOverride="background-remover" /></RouteView>} />
         <Route path="/tools/merge-pdf" element={<RouteView><MergePdf /></RouteView>} />
         <Route path="/tools/split-pdf" element={<RouteView><SplitPdf /></RouteView>} />
         <Route path="/tools/compress-pdf" element={<RouteView><CompressPdf /></RouteView>} />

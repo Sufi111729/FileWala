@@ -33,6 +33,30 @@ export function websiteSchema() {
   };
 }
 
+export function webApplicationSchema() {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: BRAND_NAME,
+    alternateName: BRAND_ALIASES,
+    url: SITE_URL,
+    applicationCategory: 'UtilitiesApplication',
+    operatingSystem: 'Web Browser',
+    description: 'Free online image, PDF, compression, resize, converter, and document tools.',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: BRAND_NAME,
+      url: SITE_URL,
+      logo: BRAND_LOGO_URL,
+    },
+  };
+}
+
 export function breadcrumbSchema(items) {
   const cleanItems = items.filter((item) => item?.name && item?.url);
 

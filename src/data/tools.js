@@ -80,7 +80,7 @@ export const toolCategories = [
       {
         title: 'Merge PDF',
         slug: 'merge-pdf',
-        href: '/pdf-tools/merge-pdf',
+        href: '/merge-pdf',
         description: 'Combine multiple PDFs into one organized document.',
         category: 'PDF Tools',
         groups: ['PDF Tools'],
@@ -89,7 +89,7 @@ export const toolCategories = [
       {
         title: 'Split PDF',
         slug: 'split-pdf',
-        href: '/pdf-tools/split-pdf',
+        href: '/split-pdf',
         description: 'Extract selected pages or split PDFs into smaller files.',
         category: 'PDF Tools',
         groups: ['PDF Tools'],
@@ -98,7 +98,7 @@ export const toolCategories = [
       {
         title: 'Compress PDF',
         slug: 'compress-pdf',
-        href: '/pdf-tools/compress-pdf',
+        href: '/compress-pdf',
         description: 'Reduce PDF file size while keeping documents clear.',
         category: 'PDF Tools',
         groups: ['PDF Tools', 'Compress'],
@@ -277,7 +277,7 @@ export const toolCategories = [
       {
         title: 'Passport Photo Maker',
         slug: 'passport-photo-maker',
-        href: '/documents/passport-photo-maker',
+        href: '/passport-photo-maker',
         description: 'Create passport-size photos with clean alignment.',
         category: 'Passport Tools',
         groups: ['Image Tools', 'Documents'],
@@ -366,11 +366,11 @@ export const toolCategories = [
 export const allTools = toolCategories.flatMap((category) => category.tools);
 
 export const toolRouteBySlug = {
-  'merge-pdf': '/pdf-tools/merge-pdf',
-  'split-pdf': '/pdf-tools/split-pdf',
-  'compress-pdf': '/pdf-tools/compress-pdf',
-  'pdf-to-jpg': '/tools/pdf-to-jpg',
-  'image-to-pdf': '/tools/image-to-pdf',
+  'merge-pdf': '/merge-pdf',
+  'split-pdf': '/split-pdf',
+  'compress-pdf': '/compress-pdf',
+  'pdf-to-jpg': '/pdf-to-jpg',
+  'image-to-pdf': '/image-to-pdf',
   'pdf-to-word': '/tools/pdf-to-word',
   'word-to-pdf': '/tools/word-to-pdf',
   'protect-pdf': '/tools/protect-pdf',
@@ -385,10 +385,10 @@ export const toolRouteBySlug = {
   'batch-image-cropper': '/batch-image-cropper',
   'jpg-to-png': '/tools/jpg-to-png',
   'png-to-jpg': '/tools/png-to-jpg',
-  'background-remover': '/tools/background-remover',
+  'background-remover': '/background-remover',
   'image-upscaler': '/tools/image-upscaler',
   'image-downscaler': '/tools/image-downscaler',
-  'passport-photo-maker': '/documents/passport-photo-maker',
+  'passport-photo-maker': '/passport-photo-maker',
   'signature-resize': '/documents/signature-resize',
   'photo-to-20kb': '/compress/image-to-20kb',
   'photo-to-50kb': '/compress/image-to-50kb',

@@ -12,13 +12,16 @@ const quickLinks = [
 const categories = [
   ['Resize', '/?category=Resize#tools'],
   ['Documents', '/documents'],
-  ['Passport Photos', '/documents/passport-photo-maker'],
-  ['Background Remover', '/tools/background-remover'],
+  ['Passport Photos', '/passport-photo-maker'],
+  ['Background Remover', '/background-remover'],
 ];
 
 const legalLinks = [
+  ['About Us', '/about-us'],
+  ['Contact Us', '/contact-us'],
   ['Privacy Policy', '/privacy-policy'],
   ['Terms & Conditions', '/terms-and-conditions'],
+  ['Sitemap', '/sitemap.xml'],
 ];
 
 export default function Footer() {
@@ -85,6 +88,10 @@ export default function Footer() {
                   ? text.common.privacy
                   : label === 'Terms & Conditions'
                     ? text.common.terms
+                    : label === 'About Us'
+                      ? 'About Us'
+                      : label === 'Contact Us'
+                        ? 'Contact Us'
                     : label}
               </Link>
             ))}
