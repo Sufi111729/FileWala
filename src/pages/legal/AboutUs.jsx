@@ -58,7 +58,7 @@ export default function AboutUs() {
       ctaTitle={text.home.title}
       ctaDescription={text.info.ctaDescription}
       ctaLabel={text.info.exploreAllTools}
-      canonicalPath="/about-us"
+      canonicalPath="/about"
     >
       <div className="grid gap-8 lg:grid-cols-[1fr_0.9fr]">
         <div className="grid gap-5">

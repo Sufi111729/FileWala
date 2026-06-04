@@ -33,7 +33,7 @@ const compressTools = [
   {
     title: 'Custom Image KB Resizer',
     slug: 'image-kb-resizer',
-    href: '/compress/custom-image-kb-resizer',
+    href: '/kb-resizer',
     description: 'Choose your own target KB and compress using canvas.',
   },
   {

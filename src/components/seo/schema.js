@@ -137,7 +137,7 @@ export function toolSchemas(seo) {
   const schemas = [
     {
       '@context': 'https://schema.org',
-      '@type': 'SoftwareApplication',
+      '@type': 'WebApplication',
       name: seo.title,
       alternateName: seo.alternateNames,
       applicationCategory: seo.schema?.applicationCategory ?? 'UtilitiesApplication',

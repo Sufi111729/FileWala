@@ -1,20 +1,20 @@
 {
   "redirects": [
     {
-      "source": "/:path*",
+      "source": "/(.*)",
       "has": [
         {
           "type": "host",
           "value": "filewalatool.com"
         }
       ],
-      "destination": "https://www.filewalatool.com/:path*",
+      "destination": "https://www.filewalatool.com/$1",
       "permanent": true
     }
   ],
   "rewrites": [
     {
-      "source": "/:path((?!.*\\.).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ],

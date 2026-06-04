@@ -19,8 +19,8 @@ const metaTitle = 'Contact Muhammad Sufiyan Dev - FileWalaTool Developer';
 const metaDescription = 'Contact Muhammad Sufiyan Dev, creator of FileWalaTool, for support, feedback, suggestions, web development, image tools, PDF tools, and online file solutions.';
 const ogTitle = 'Contact Muhammad Sufiyan Dev - FileWalaTool';
 const ogDescription = 'Get in touch with Muhammad Sufiyan Dev for FileWalaTool support, feedback, suggestions, and online image or PDF tool related queries.';
-const canonicalUrl = 'https://filewalatool.com/contact';
-const ogImage = 'https://filewalatool.com/assets/contact/devloper.jpeg';
+const canonicalUrl = `${SITE_URL}/contact`;
+const ogImage = `${SITE_URL}/assets/contact/devloper.jpeg`;
 
 const contactKeywords = [
   'Muhammad Sufiyan Dev',

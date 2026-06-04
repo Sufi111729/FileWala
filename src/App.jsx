@@ -66,9 +66,11 @@ export default function App() {
         <Route path="/batch-image-cropper" element={<RouteView><BatchImageCropper /></RouteView>} />
         <Route path="/privacy-policy" element={<RouteView><PrivacyPolicy /></RouteView>} />
         <Route path="/terms-and-conditions" element={<RouteView><TermsConditions /></RouteView>} />
+        <Route path="/about" element={<RouteView><AboutUs /></RouteView>} />
+        <Route path="/contact" element={<RouteView><ContactUs /></RouteView>} />
         <Route path="/about-us" element={<RouteView><AboutUs /></RouteView>} />
         <Route path="/contact-us" element={<RouteView><ContactUs /></RouteView>} />
-        <Route path="/contact" element={<RouteView><ContactMessagesAdmin /></RouteView>} />
+        <Route path="/admin/contact-messages" element={<RouteView><ContactMessagesAdmin /></RouteView>} />
         <Route path="/compress" element={<RouteView><CompressTools /></RouteView>} />
         <Route path="/compress/image-compressor" element={<RouteView><ImageCompressor /></RouteView>} />
         <Route path="/compress/image-to-20kb" element={<RouteView><ImageTo20KB /></RouteView>} />
@@ -82,11 +84,18 @@ export default function App() {
         <Route path="/documents/pan-photo-resize" element={<RouteView><PanPhotoResize /></RouteView>} />
         <Route path="/documents/resume-builder" element={<RouteView><ResumeBuilder /></RouteView>} />
         <Route path="/documents/document-scanner" element={<RouteView><DocumentScanner /></RouteView>} />
+        <Route path="/signature-resize" element={<RouteView><SignatureResize /></RouteView>} />
+        <Route path="/aadhaar-photo-resize" element={<RouteView><AadhaarPhotoResize /></RouteView>} />
+        <Route path="/pan-photo-resize" element={<RouteView><PanPhotoResize /></RouteView>} />
+        <Route path="/resume-builder" element={<RouteView><ResumeBuilder /></RouteView>} />
+        <Route path="/document-scanner" element={<RouteView><DocumentScanner /></RouteView>} />
         <Route path="/pdf-tools/merge-pdf" element={<RouteView><MergePdf /></RouteView>} />
         <Route path="/pdf-tools/split-pdf" element={<RouteView><SplitPdf /></RouteView>} />
         <Route path="/pdf-tools/compress-pdf" element={<RouteView><CompressPdf /></RouteView>} />
         <Route path="/pdf-tools/pdf-page-delete" element={<RouteView><PdfPageDelete /></RouteView>} />
         <Route path="/pdf-tools/pdf-rotate" element={<RouteView><PdfRotate /></RouteView>} />
+        <Route path="/pdf-page-delete" element={<RouteView><PdfPageDelete /></RouteView>} />
+        <Route path="/pdf-rotate" element={<RouteView><PdfRotate /></RouteView>} />
         <Route path="/merge-pdf" element={<RouteView><MergePdf /></RouteView>} />
         <Route path="/split-pdf" element={<RouteView><SplitPdf /></RouteView>} />
         <Route path="/compress-pdf" element={<RouteView><CompressPdf /></RouteView>} />
@@ -94,6 +103,11 @@ export default function App() {
         <Route path="/image-to-pdf" element={<RouteView><ToolPage slugOverride="image-to-pdf" /></RouteView>} />
         <Route path="/passport-photo-maker" element={<RouteView><PassportPhotoMaker /></RouteView>} />
         <Route path="/background-remover" element={<RouteView><ToolPage slugOverride="background-remover" /></RouteView>} />
+        <Route path="/jpg-to-png" element={<RouteView><ToolPage slugOverride="jpg-to-png" /></RouteView>} />
+        <Route path="/png-to-jpg" element={<RouteView><ToolPage slugOverride="png-to-jpg" /></RouteView>} />
+        <Route path="/kb-resizer" element={<RouteView><CustomImageKBResizer /></RouteView>} />
+        <Route path="/image-upscaler" element={<RouteView><ImageUpscaler /></RouteView>} />
+        <Route path="/image-downscaler" element={<RouteView><ImageDownscaler /></RouteView>} />
         <Route path="/tools/merge-pdf" element={<RouteView><MergePdf /></RouteView>} />
         <Route path="/tools/split-pdf" element={<RouteView><SplitPdf /></RouteView>} />
         <Route path="/tools/compress-pdf" element={<RouteView><CompressPdf /></RouteView>} />

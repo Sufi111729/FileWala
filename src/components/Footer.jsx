@@ -17,8 +17,8 @@ const categories = [
 ];
 
 const legalLinks = [
-  ['About Us', '/about-us'],
-  ['Contact Us', '/contact-us'],
+  ['About Us', '/about'],
+  ['Contact Us', '/contact'],
   ['Privacy Policy', '/privacy-policy'],
   ['Terms & Conditions', '/terms-and-conditions'],
   ['Sitemap', '/sitemap.xml'],

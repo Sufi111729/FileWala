@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint .",
-    "submit:indexnow": "node scripts/submit-indexnow.js"
+    "submit:indexnow": "node scripts/indexnow-submit.js"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.0.0",
