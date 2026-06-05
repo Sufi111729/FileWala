@@ -1,6 +1,5 @@
 import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import ToolCard from '../ToolCard.jsx';
 import CategoryTabs from '../navigation/CategoryTabs.jsx';
 import SeoHelmet from '../seo/SeoHelmet.jsx';
 import ToolSeoSections from '../seo/ToolSeoSections.jsx';
@@ -9,32 +8,11 @@ import { allTools } from '../../data/tools.js';
 import { absoluteUrl } from '../../data/siteMetadata.js';
 import { useLanguage } from '../../i18n.jsx';
 
-const workflowSteps = [
-  'Upload your file using the secure drag and drop area.',
-  'Choose a processing mode that fits quality or file size.',
-  'Process the file and download the finished result.',
-];
-
-const aboutBullets = [
-  'Works directly in your browser.',
-  'Designed for fast document upload requirements.',
-  'Keeps the tool simple on mobile and desktop.',
-];
-
-const defaultRelatedTitles = [
-  'Compress Image',
-  'Crop Image',
-  'JPG to PNG',
-  'Signature Resize',
-  'Document Scanner',
-];
-
 export default function ToolPageLayout({
   title,
   description,
   category = 'Documents',
   activeTab = 'Documents',
-  relatedTitles = defaultRelatedTitles,
   seo,
   children,
 }) {
@@ -43,10 +21,6 @@ export default function ToolPageLayout({
   const currentTool = allTools.find((tool) => tool.title === title);
   const localizedTitle = currentTool ? tToolTitle(currentTool) : title;
   const localizedDescription = currentTool ? tToolDescription(currentTool) : description;
-  const relatedTools = relatedTitles
-    .map((toolTitle) => allTools.find((tool) => tool.title === toolTitle))
-    .filter((tool) => tool && tool.title !== title)
-    .slice(0, 5);
 
   return (
     <section className="bg-white py-10 sm:py-14">
@@ -109,25 +83,6 @@ export default function ToolPageLayout({
             ))}
           </div>
         </section>
-
-        {relatedTools.length > 0 && (
-          <section className="mt-12">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.documentTool.related}</p>
-                <h2 className="mt-1 text-2xl font-black text-black">{text.documentTool.moreTools}</h2>
-              </div>
-              <Link to="/#tools" className="text-sm font-black text-black transition-colors duration-150 hover:text-black/70">
-                {text.common.viewAllTools}
-              </Link>
-            </div>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              {relatedTools.map((tool) => (
-                <ToolCard key={tool.slug} tool={tool} activeTab={activeTab} />
-              ))}
-            </div>
-          </section>
-        )}
 
         <div className="mt-8 flex justify-center">
           <Link

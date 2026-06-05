@@ -124,6 +124,16 @@ function joinFileNames(files) {
   return `${files.length} files selected`;
 }
 
+function totalFileSize(files) {
+  return files.reduce((sum, file) => sum + file.size, 0);
+}
+
+function formatUploadSize(bytes) {
+  if (!bytes) return '0 KB';
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+}
+
 function qualityForMode(mode) {
   if (mode === 'best-quality') return 0.96;
   if (mode === 'fast-export') return 0.72;
@@ -421,6 +431,15 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
     handleFiles(event.dataTransfer.files);
   };
 
+  const removeFiles = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setFiles([]);
+    onFilesSelected?.([]);
+    resetResult();
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
   const handleProcess = async () => {
     if (!canConvert) return;
 
@@ -619,6 +638,24 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
             <FileUp className="h-5 w-5 text-brand-red" />
             {text.upload.select}
           </span>
+          {files.length > 0 && (
+            <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
+              <span className="font-black text-green-700">
+                ✓ {files.length > 1 ? `${files.length} Files Selected` : 'File Selected'}
+              </span>
+              {files.length === 1 ? (
+                <>
+                  <span>File Name: {files[0].name}</span>
+                  <span>Size: {formatUploadSize(files[0].size)}</span>
+                </>
+              ) : (
+                <span>Total Size: {formatUploadSize(totalFileSize(files))}</span>
+              )}
+              <button type="button" onClick={removeFiles} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
+                Remove
+              </button>
+            </span>
+          )}
           <input
             ref={fileInputRef}
             id="file-upload"

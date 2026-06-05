@@ -4,12 +4,13 @@ import {
   Download,
   FileText,
   Loader2,
+  SlidersHorizontal,
   UploadCloud,
   Wand2,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  basicCompressPdf,
+  compressPdfToTarget,
   deletePdfPages,
   downloadBlob,
   formatFileSize,
@@ -31,6 +32,13 @@ const actionLabels = {
   rotate: 'Rotate PDF',
 };
 
+const targetSizePresets = [
+  { value: '100', label: 'PDF to 100 KB' },
+  { value: '300', label: 'PDF to 300 KB' },
+  { value: '500', label: 'PDF to 500 KB' },
+  { value: 'custom', label: 'Custom KB' },
+];
+
 function outputName(file, suffix) {
   const base = file?.name?.replace(/\.pdf$/i, '') || 'filewalatool';
   return `${base}-${suffix}.pdf`;
@@ -51,25 +59,37 @@ export default function PdfToolPanel({ title, description, tool }) {
   const [file, setFile] = useState(null);
   const [pageCount, setPageCount] = useState(0);
   const [rangeInput, setRangeInput] = useState('');
+  const [targetPreset, setTargetPreset] = useState('300');
+  const [targetSizeKB, setTargetSizeKB] = useState('300');
   const [rotationMode, setRotationMode] = useState('all');
   const [rotationDegrees, setRotationDegrees] = useState(90);
   const [outputBlob, setOutputBlob] = useState(null);
   const [status, setStatus] = useState('');
+  const [statusMessage, setStatusMessage] = useState('');
   const [error, setError] = useState('');
   const [warning, setWarning] = useState('');
 
-  const isProcessing = status === 'processing';
+  const isProcessing = ['uploading', 'processing', 'preparing'].includes(status);
   const actionLabel = text.pdf.actions[tool] ?? actionLabels[tool];
   const outputSize = outputBlob?.size || 0;
+  const targetSizeBytes = Number(targetSizeKB) > 0 ? Number(targetSizeKB) * 1024 : 0;
   const reducedBytes = useMemo(() => Math.max(0, (file?.size || 0) - outputSize), [file?.size, outputSize]);
   const compressionPercent = file?.size && outputSize ? Math.max(0, Math.round((reducedBytes / file.size) * 100)) : 0;
 
   useEffect(() => {
     setOutputBlob(null);
     setStatus('');
+    setStatusMessage('');
     setError('');
     setWarning('');
-  }, [file, rangeInput, rotationMode, rotationDegrees]);
+  }, [file, rangeInput, targetSizeKB, rotationMode, rotationDegrees]);
+
+  const handleTargetPreset = (preset) => {
+    setTargetPreset(preset);
+    if (preset !== 'custom') {
+      setTargetSizeKB(preset);
+    }
+  };
 
   const handleFile = async (selectedFile) => {
     setFile(null);
@@ -77,6 +97,7 @@ export default function PdfToolPanel({ title, description, tool }) {
     setRangeInput('');
     setOutputBlob(null);
     setStatus('');
+    setStatusMessage('');
     setError('');
     setWarning('');
 
@@ -88,18 +109,36 @@ export default function PdfToolPanel({ title, description, tool }) {
       return;
     }
 
+    if (selectedFile.size === 0) {
+      setError('Empty file. Please upload a PDF with content.');
+      return;
+    }
+
     try {
+      setStatus('uploading');
+      setStatusMessage('Uploading...');
       const count = await getPdfPageCount(selectedFile);
       setFile(selectedFile);
       setPageCount(count);
+      setStatus('');
+      setStatusMessage('');
     } catch (caughtError) {
-      setError(caughtError.message);
+      setError(caughtError.message || 'Invalid PDF. The file may be corrupted or password-protected.');
+      setStatus('');
+      setStatusMessage('');
     }
   };
 
   const handleDrop = (event) => {
     event.preventDefault();
     handleFile(event.dataTransfer.files?.[0]);
+  };
+
+  const removeFile = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    handleFile(null);
+    if (inputRef.current) inputRef.current.value = '';
   };
 
   const processPdf = async () => {
@@ -109,6 +148,7 @@ export default function PdfToolPanel({ title, description, tool }) {
     }
 
     setStatus('processing');
+    setStatusMessage(tool === 'compress' ? 'Compressing PDF...' : 'Processing PDF...');
     setError('');
     setWarning('');
     setOutputBlob(null);
@@ -132,19 +172,40 @@ export default function PdfToolPanel({ title, description, tool }) {
       }
 
       if (tool === 'compress') {
-        blob = await basicCompressPdf(file);
-        setWarning(
-          blob.size < file.size
-            ? text.pdf.compressLimited
-            : tLiteral('This PDF could not be reduced much in the browser.'),
-        );
+        const targetKB = Number(targetSizeKB);
+        if (!Number.isFinite(targetKB) || targetKB <= 0) {
+          throw new Error('Enter a valid target size in KB.');
+        }
+
+        const result = await compressPdfToTarget(file, targetKB, {
+          onProgress: ({ phase, pageNumber, pageCount: totalPages }) => {
+            if (phase === 'preparing') {
+              setStatus('preparing');
+              setStatusMessage('Preparing download...');
+              return;
+            }
+            if (phase === 'checking') {
+              setStatusMessage('Compressing PDF... checking size');
+              return;
+            }
+            setStatusMessage(`Compressing PDF... ${pageNumber}/${totalPages}`);
+          },
+        });
+        blob = result.blob;
+        if (!result.reachedTarget) {
+          setWarning('Closest possible size achieved while preserving document readability.');
+        } else if (blob.size >= file.size) {
+          setWarning(tLiteral('This PDF was already optimized, so the compressed file is not smaller.'));
+        }
       }
 
       setOutputBlob(blob);
-      setStatus(`${localizedTitle} ${text.pdf.outputReady}`);
+      setStatus('success');
+      setStatusMessage(tool === 'compress' ? 'PDF compressed successfully' : `${localizedTitle} ${text.pdf.outputReady}`);
     } catch (caughtError) {
-      setError(caughtError.message || tLiteral('Could not process this PDF.'));
+      setError(caughtError.message || (tool === 'compress' ? 'Compression failed. Please try another PDF.' : tLiteral('Could not process this PDF.')));
       setStatus('');
+      setStatusMessage('');
     }
   };
 
@@ -159,6 +220,7 @@ export default function PdfToolPanel({ title, description, tool }) {
     };
     downloadBlob(outputBlob, outputName(file, suffixes[tool]));
     setStatus(text.pdf.downloaded);
+    setStatusMessage(text.pdf.downloaded);
   };
 
   return (
@@ -191,6 +253,16 @@ export default function PdfToolPanel({ title, description, tool }) {
               <span className="mt-2 max-w-md text-sm leading-6 text-black/55">
                 {file?.name || text.pdf.uploadFirst}
               </span>
+              {file && (
+                <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
+                  <span className="font-black text-green-700">✓ File Selected</span>
+                  <span>File Name: {file.name}</span>
+                  <span>Size: {formatFileSize(file.size)}</span>
+                  <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
+                    Remove
+                  </button>
+                </span>
+              )}
               <input
                 ref={inputRef}
                 type="file"
@@ -201,7 +273,9 @@ export default function PdfToolPanel({ title, description, tool }) {
             </label>
 
             <p className="mt-3 text-sm font-semibold text-black/50">
-              {text.pdf.browserHint}
+              {tool === 'compress'
+                ? 'PDF pages are compressed in your browser and rebuilt as a smaller optimized PDF.'
+                : text.pdf.browserHint}
             </p>
 
             {file && (
@@ -281,26 +355,69 @@ export default function PdfToolPanel({ title, description, tool }) {
             )}
 
             {tool === 'compress' && (
-              <div className="mt-4 rounded-md border border-black/10 bg-slate-50 p-4 text-sm leading-6 text-black/60">
-                {text.pdf.compressLimited}
+              <div className="mt-4 grid gap-3">
+                <fieldset className="grid gap-2">
+                  <legend className="flex items-center gap-2 text-sm font-bold text-black/70">
+                    <SlidersHorizontal className="h-4 w-4 text-blue-700" />
+                    Target size
+                  </legend>
+                  {targetSizePresets.map((preset) => (
+                    <label key={preset.value} className="flex items-center gap-3 rounded-md border border-black/10 bg-slate-50 px-3 py-2 text-sm font-bold text-black/70">
+                      <input
+                        type="radio"
+                        name="target-size"
+                        value={preset.value}
+                        checked={targetPreset === preset.value}
+                        onChange={() => handleTargetPreset(preset.value)}
+                        className="h-4 w-4 accent-blue-700"
+                      />
+                      {preset.label}
+                    </label>
+                  ))}
+                </fieldset>
+
+                {targetPreset === 'custom' && (
+                  <label className="grid gap-2 text-sm font-bold text-black/70">
+                    Target size in KB
+                    <input
+                      type="number"
+                      min="10"
+                      step="1"
+                      value={targetSizeKB}
+                      onChange={(event) => setTargetSizeKB(event.target.value)}
+                      placeholder="Example: 1024"
+                      className="rounded-md border border-black/10 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    />
+                  </label>
+                )}
               </div>
             )}
 
             <div className="mt-5 grid gap-2 rounded-md border border-black/10 bg-slate-50 p-4 text-sm font-semibold text-black/65">
               <span>{text.pdf.original}: {formatFileSize(file?.size || 0)}</span>
+              {tool === 'compress' && <span>Target: {formatFileSize(targetSizeBytes)}</span>}
               <span>{text.pdf.output}: {formatFileSize(outputSize)}</span>
               {tool === 'compress' && <span>{text.pdf.reduced}: {compressionPercent}%</span>}
               <span>{text.pdf.totalPages}: {pageCount || '-'}</span>
             </div>
 
+            {tool === 'compress' && outputBlob && (
+              <div className="mt-4 grid gap-2 rounded-md border border-blue-100 bg-blue-50 p-4 text-sm font-black text-black/75">
+                <span>Original Size: {formatFileSize(file?.size || 0)}</span>
+                <span>Target Size: {formatFileSize(targetSizeBytes)}</span>
+                <span>Final Size: {formatFileSize(outputSize)}</span>
+                <span>Saved: {compressionPercent}%</span>
+              </div>
+            )}
+
             <button
               type="button"
               onClick={processPdf}
-              disabled={isProcessing}
+              disabled={!file || isProcessing}
               className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
             >
               {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-              {actionLabel}
+              {isProcessing ? statusMessage : actionLabel}
             </button>
 
             <button
@@ -325,16 +442,16 @@ export default function PdfToolPanel({ title, description, tool }) {
                 {error}
               </p>
             )}
-            {status && status !== 'processing' && (
+            {statusMessage && status !== 'processing' && status !== 'preparing' && status !== 'uploading' && (
               <p className="mt-4 flex gap-2 rounded-md border border-green-200 bg-green-50 px-4 py-3 text-sm font-bold text-green-700">
                 <CheckCircle2 className="mt-0.5 h-4 w-4 flex-none" />
-                {status}
+                {statusMessage}
               </p>
             )}
           </aside>
         </div>
-        <ToolSeoSections seo={seo} activeTab="PDF Tools" />
       </div>
+      <ToolSeoSections seo={seo} activeTab="PDF Tools" />
     </section>
   );
 }

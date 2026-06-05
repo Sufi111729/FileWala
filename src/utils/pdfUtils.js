@@ -19,10 +19,22 @@ function isPdfFile(file) {
   return Boolean(file && (file.type === 'application/pdf' || file.name?.toLowerCase().endsWith('.pdf')));
 }
 
-async function loadPdfDocument(file, action) {
-  if (!isPdfFile(file)) {
-    throw new Error('Please upload a PDF file.');
+function validatePdfFile(file) {
+  if (!file) {
+    throw new Error('Upload a PDF first.');
   }
+
+  if (!isPdfFile(file)) {
+    throw new Error('Invalid PDF. Please upload a PDF file.');
+  }
+
+  if (file.size === 0) {
+    throw new Error('Empty file. Please upload a PDF with content.');
+  }
+}
+
+async function loadPdfDocument(file, action) {
+  validatePdfFile(file);
 
   try {
     const { PDFDocument } = await import('pdf-lib');
@@ -149,7 +161,258 @@ export async function rotatePdfPages(file, pages, rotationDegrees) {
 }
 
 export async function basicCompressPdf(file) {
-  const pdf = await loadPdfDocument(file, 'compressed');
+  const { blob } = await compressPdf(file, 'medium');
+  return blob;
+}
+
+const compressionProfiles = {
+  low: {
+    label: 'Low Compression (Best Quality)',
+    dpi: 150,
+    quality: 0.82,
+    maxPixels: 4200000,
+  },
+  medium: {
+    label: 'Medium Compression (Balanced)',
+    dpi: 120,
+    quality: 0.68,
+    maxPixels: 3000000,
+  },
+  high: {
+    label: 'High Compression (Maximum Reduction)',
+    dpi: 96,
+    quality: 0.52,
+    maxPixels: 1800000,
+  },
+};
+
+const targetCompressionPasses = [
+  { dpi: 140, quality: 0.74, maxPixels: 3600000 },
+  { dpi: 120, quality: 0.66, maxPixels: 2800000 },
+  { dpi: 105, quality: 0.58, maxPixels: 2200000 },
+  { dpi: 92, quality: 0.5, maxPixels: 1600000 },
+  { dpi: 82, quality: 0.42, maxPixels: 1200000 },
+  { dpi: 72, quality: 0.35, maxPixels: 900000 },
+  { dpi: 64, quality: 0.28, maxPixels: 650000 },
+];
+
+function canvasToJpegBlob(canvas, quality) {
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (blob) resolve(blob);
+        else reject(new Error('Compression failed. Could not encode PDF page image.'));
+      },
+      'image/jpeg',
+      quality,
+    );
+  });
+}
+
+function fitScaleToPixelLimit(viewport, maxPixels) {
+  const pixels = viewport.width * viewport.height;
+  if (pixels <= maxPixels) return 1;
+  return Math.sqrt(maxPixels / pixels);
+}
+
+async function openPdfForCompression(file) {
+  validatePdfFile(file);
+
+  const sourceBytes = await file.arrayBuffer();
+
+  try {
+    const pdfjsLib = await import('pdfjs-dist/build/pdf.mjs');
+    const worker = await import('pdfjs-dist/build/pdf.worker.min.mjs?url');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = worker.default;
+    return pdfjsLib.getDocument({
+      data: sourceBytes.slice(0),
+      disableFontFace: true,
+      useSystemFonts: true,
+    }).promise;
+  } catch {
+    throw new Error('Corrupted PDF. This file could not be opened for compression.');
+  }
+}
+
+async function buildCompressedPdf(pdfDocument, profile, options = {}) {
+  const { PDFDocument } = await import('pdf-lib');
+  const outputPdf = await PDFDocument.create();
+  const pageCount = pdfDocument.numPages;
+
+  outputPdf.setTitle('');
+  outputPdf.setAuthor('');
+  outputPdf.setSubject('');
+  outputPdf.setKeywords([]);
+  outputPdf.setProducer('FileWalaTool');
+  outputPdf.setCreator('FileWalaTool');
+
+  for (let pageNumber = 1; pageNumber <= pageCount; pageNumber += 1) {
+    options.onProgress?.({
+      phase: 'compressing',
+      pageNumber,
+      pageCount,
+      pass: options.pass,
+      passCount: options.passCount,
+    });
+
+    const page = await pdfDocument.getPage(pageNumber);
+    const baseViewport = page.getViewport({ scale: 1 });
+    const renderScale = (profile.dpi / 72) * fitScaleToPixelLimit(
+      page.getViewport({ scale: profile.dpi / 72 }),
+      profile.maxPixels,
+    );
+    const viewport = page.getViewport({ scale: renderScale });
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d', { alpha: false });
+    const width = Math.max(1, Math.floor(viewport.width));
+    const height = Math.max(1, Math.floor(viewport.height));
+
+    canvas.width = width;
+    canvas.height = height;
+    context.fillStyle = '#ffffff';
+    context.fillRect(0, 0, width, height);
+
+    const renderTask = page.render({
+      canvasContext: context,
+      viewport,
+      background: 'white',
+    });
+    await renderTask.promise;
+
+    const jpegBlob = await canvasToJpegBlob(canvas, profile.quality);
+    const jpegBytes = await jpegBlob.arrayBuffer();
+    const image = await outputPdf.embedJpg(jpegBytes);
+    const outputPage = outputPdf.addPage([baseViewport.width, baseViewport.height]);
+
+    outputPage.drawImage(image, {
+      x: 0,
+      y: 0,
+      width: baseViewport.width,
+      height: baseViewport.height,
+    });
+
+    page.cleanup();
+    canvas.width = 1;
+    canvas.height = 1;
+  }
+
+  options.onProgress?.({ phase: 'preparing', pageNumber: pageCount, pageCount, pass: options.pass, passCount: options.passCount });
+
+  const bytes = await outputPdf.save({
+    useObjectStreams: true,
+    addDefaultPage: false,
+    objectsPerTick: 50,
+  });
+
+  return new Blob([bytes], { type: 'application/pdf' });
+}
+
+export async function compressPdf(file, level = 'medium', options = {}) {
+  const profile = compressionProfiles[level] || compressionProfiles.medium;
+  let pdfDocument;
+
+  try {
+    pdfDocument = await openPdfForCompression(file);
+    const pageCount = pdfDocument.numPages;
+    const blob = await buildCompressedPdf(pdfDocument, profile, options);
+    return {
+      blob,
+      originalSize: file.size,
+      compressedSize: blob.size,
+      savedPercent: file.size ? Math.max(0, Math.round(((file.size - blob.size) / file.size) * 100)) : 0,
+      level,
+      levelLabel: profile.label,
+      pageCount,
+    };
+  } catch (caughtError) {
+    throw new Error(caughtError.message || 'Compression failed. Please try another PDF.');
+  } finally {
+    await pdfDocument?.destroy?.();
+  }
+}
+
+export async function compressPdfToTarget(file, targetKB, options = {}) {
+  const targetBytes = Number(targetKB) * 1024;
+
+  if (!Number.isFinite(targetBytes) || targetBytes < 10 * 1024) {
+    throw new Error('Enter a valid target size in KB.');
+  }
+
+  if (file?.size && targetBytes >= file.size) {
+    throw new Error('Target size must be smaller than the original PDF size.');
+  }
+
+  let pdfDocument;
+  let bestBlob = null;
+  let bestProfile = null;
+  let reachedTarget = false;
+
+  try {
+    pdfDocument = await openPdfForCompression(file);
+    const pageCount = pdfDocument.numPages;
+
+    for (let passIndex = 0; passIndex < targetCompressionPasses.length; passIndex += 1) {
+      const profile = targetCompressionPasses[passIndex];
+      const blob = await buildCompressedPdf(pdfDocument, profile, {
+        ...options,
+        pass: passIndex + 1,
+        passCount: targetCompressionPasses.length,
+      });
+
+      if (!bestBlob || blob.size < bestBlob.size) {
+        bestBlob = blob;
+        bestProfile = profile;
+      }
+
+      options.onProgress?.({
+        phase: 'checking',
+        currentSize: blob.size,
+        targetSize: targetBytes,
+        pass: passIndex + 1,
+        passCount: targetCompressionPasses.length,
+        pageCount,
+      });
+
+      if (blob.size <= targetBytes) {
+        reachedTarget = true;
+        break;
+      }
+    }
+
+    if (!bestBlob) {
+      throw new Error('Compression failed. Please try another PDF.');
+    }
+
+    return {
+      blob: bestBlob,
+      originalSize: file.size,
+      compressedSize: bestBlob.size,
+      targetSize: targetBytes,
+      savedPercent: file.size ? Math.max(0, Math.round(((file.size - bestBlob.size) / file.size) * 100)) : 0,
+      reachedTarget,
+      profile: bestProfile,
+      pageCount,
+    };
+  } catch (caughtError) {
+    throw new Error(caughtError.message || 'Compression failed. Please try another PDF.');
+  } finally {
+    await pdfDocument?.destroy?.();
+  }
+}
+
+export function getPdfCompressionLevels() {
+  return Object.entries(compressionProfiles).map(([value, profile]) => ({
+    value,
+    label: profile.label,
+  }));
+}
+
+export async function rebuildPdf(file) {
+  const pdf = await loadPdfDocument(file, 'rebuilt');
+  pdf.setTitle('');
+  pdf.setAuthor('');
+  pdf.setSubject('');
+  pdf.setKeywords([]);
   const bytes = await pdf.save({
     useObjectStreams: true,
     addDefaultPage: false,

@@ -159,6 +159,25 @@ export default function MergePdf() {
             <span className="mt-2 max-w-md text-sm leading-6 text-black/55">
               {text.upload.drop}
             </span>
+            {files.length > 0 && (
+              <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
+                <span className="font-black text-green-700">✓ {files.length} Files Selected</span>
+                <span>Total Size: {formatFileSize(totalSize)}</span>
+                <button
+                  type="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    clearOutput();
+                    setFiles([]);
+                    if (inputRef.current) inputRef.current.value = '';
+                  }}
+                  className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2"
+                >
+                  Remove
+                </button>
+              </span>
+            )}
             <input
               ref={inputRef}
               type="file"
@@ -246,7 +265,7 @@ export default function MergePdf() {
             <button
               type="button"
               onClick={handleMerge}
-              disabled={isMerging}
+              disabled={files.length < 2 || isMerging}
               className="focus-ring inline-flex items-center justify-center gap-2 rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
             >
               {isMerging && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -282,8 +301,8 @@ export default function MergePdf() {
             </p>
           )}
         </div>
-        <ToolSeoSections seo={seo} activeTab="PDF Tools" />
       </div>
+      <ToolSeoSections seo={seo} activeTab="PDF Tools" />
     </section>
   );
 }

@@ -98,6 +98,17 @@ export default function ImageScaleTool({
     }
   };
 
+  const removeFile = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    clearResult();
+    if (originalUrl) URL.revokeObjectURL(originalUrl);
+    setOriginalUrl('');
+    setFile(null);
+    setOriginalDimensions(null);
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
   const syncCustomWidth = (value) => {
     const width = Math.max(1, Number(value) || 1);
     setCustomWidth(String(width));
@@ -211,6 +222,16 @@ export default function ImageScaleTool({
               <ImagePlus className="h-10 w-10 text-green-700" />
               <span className="mt-4 text-lg font-black text-black">{text.image.uploadImage}</span>
               <span className="mt-2 text-sm text-black/55">{file?.name || tLiteral('JPG, JPEG, PNG, or WEBP up to 10MB')}</span>
+              {file && (
+                <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
+                  <span className="font-black text-green-700">✓ File Selected</span>
+                  <span>File Name: {file.name}</span>
+                  <span>Size: {formatFileSize(file.size)}</span>
+                  <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
+                    Remove
+                  </button>
+                </span>
+              )}
               <input
                 ref={inputRef}
                 type="file"

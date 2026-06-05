@@ -33,6 +33,15 @@ export default function PdfCompressor() {
     handleFile(event.dataTransfer.files?.[0]);
   };
 
+  const removeFile = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setFile(null);
+    setResult(null);
+    setStatus('');
+    setError('');
+  };
+
   const processPdf = async () => {
     if (!file) {
       setError(text.pdf.uploadFirst);
@@ -84,6 +93,16 @@ export default function PdfCompressor() {
             <UploadCloud className="h-10 w-10 text-green-700" />
             <span className="mt-4 text-lg font-black text-black">{text.pdf.uploadPdf}</span>
             <span className="mt-2 text-sm text-black/55">{file?.name || text.upload.drop}</span>
+            {file && (
+              <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
+                <span className="font-black text-green-700">✓ File Selected</span>
+                <span>File Name: {file.name}</span>
+                <span>Size: {formatFileSize(file.size)}</span>
+                <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
+                  Remove
+                </button>
+              </span>
+            )}
             <input type="file" accept="application/pdf" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
           </label>
 
@@ -95,7 +114,7 @@ export default function PdfCompressor() {
               <span>{text.pdf.output}: {formatFileSize(result?.size || 0)}</span>
               <span>{text.image.reduction}: {reduction}%</span>
             </div>
-            <button type="button" onClick={processPdf} disabled={status === 'processing'} className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-bold text-white hover:bg-black/85 disabled:bg-black/25">
+            <button type="button" onClick={processPdf} disabled={!file || status === 'processing'} className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-bold text-white hover:bg-black/85 disabled:bg-black/25">
               {status === 'processing' ? <Loader2 className="h-4 w-4 animate-spin text-green-400" /> : <Wand2 className="h-4 w-4 text-green-400" />}
               {text.pdf.actions.compress}
             </button>

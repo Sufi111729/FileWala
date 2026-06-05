@@ -1,7 +1,6 @@
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import UploadBox from '../components/UploadBox.jsx';
-import ToolCard from '../components/ToolCard.jsx';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
 import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../components/seo/schema.js';
@@ -17,7 +16,6 @@ export default function ToolPage({ slugOverride }) {
   const slug = slugOverride ?? routeSlug;
   const tool = allTools.find((item) => item.slug === slug) ?? defaultTool;
   const seo = tSeo(getToolSeoBySlug(tool.slug));
-  const relatedTools = allTools.filter((item) => item.category === tool.category && item.slug !== tool.slug).slice(0, 4);
   const keywords = seo
     ? [
         seo.primaryKeyword,
@@ -87,27 +85,6 @@ export default function ToolPage({ slugOverride }) {
             ))}
           </div>
         </section>
-
-        {relatedTools.length > 0 && (
-          <div className="mt-12">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.toolPage.related}</p>
-                <h2 className="mt-1 text-2xl font-black text-black">
-                  {text.toolPage.more} {tCategory(tool.category)}
-                </h2>
-              </div>
-              <Link to="/#tools" className="text-sm font-black text-black transition-colors duration-150 hover:text-black/70">
-                {text.common.viewAllTools}
-              </Link>
-            </div>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {relatedTools.map((item) => (
-                <ToolCard key={item.slug} tool={item} />
-              ))}
-            </div>
-          </div>
-        )}
 
         <ToolSeoSections seo={seo} />
       </div>

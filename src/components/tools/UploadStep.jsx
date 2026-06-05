@@ -56,6 +56,13 @@ export default function UploadStep({ file, previewUrl, dimensions, onFileReady, 
           <ImagePlus className="h-4 w-4" />
           {text.upload.select}
         </button>
+        {file && (
+          <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
+            <span className="font-black text-green-700">✓ File Selected</span>
+            <span>File Name: {file.name}</span>
+            <span>Size: {formatFileSize(file.size)}</span>
+          </span>
+        )}
         <input
           ref={inputRef}
           type="file"

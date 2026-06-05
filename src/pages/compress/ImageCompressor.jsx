@@ -98,6 +98,16 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
     handleFile(event.dataTransfer.files?.[0]);
   };
 
+  const removeFile = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    resetResult();
+    if (originalUrl) URL.revokeObjectURL(originalUrl);
+    setOriginalUrl('');
+    setFile(null);
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
   const processImage = async () => {
     if (!file) {
       setError(text.image.selectFirst);
@@ -167,6 +177,16 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
               <UploadCloud className="h-10 w-10 text-green-700" />
               <span className="mt-4 text-lg font-black text-black">{text.image.uploadImage}</span>
               <span className="mt-2 text-sm text-black/55">{file?.name || text.image.uploadHint}</span>
+              {file && (
+                <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
+                  <span className="font-black text-green-700">✓ File Selected</span>
+                  <span>File Name: {file.name}</span>
+                  <span>Size: {formatFileSize(file.size)}</span>
+                  <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
+                    Remove
+                  </button>
+                </span>
+              )}
               <input
                 ref={inputRef}
                 type="file"
@@ -225,7 +245,7 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
             <button
               type="button"
               onClick={processImage}
-              disabled={isProcessing}
+              disabled={!file || isProcessing}
               className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-bold text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:bg-black/25"
             >
               {isProcessing ? <Loader2 className="h-4 w-4 animate-spin text-green-400" /> : <Wand2 className="h-4 w-4 text-green-400" />}
