@@ -1,7 +1,1 @@
-<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="FileWalaTool">
-  <path d="M16 6h24l10 10v42H16V6Z" fill="#111111"/>
-  <path d="M40 6v10h10" fill="#FFFFFF" fill-opacity=".18"/>
-  <path d="M22 18h16v7h-9v7h11v7H29v13h-7V18Z" fill="#FFFFFF"/>
-  <path d="M43 22h11v6h-6v7h-6V22Z" fill="#E11D2E"/>
-  <path d="M51 25L39 37" stroke="#E11D2E" stroke-width="5" stroke-linecap="round"/>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="none" aria-label="FileWalaTool" role="img" viewBox="0 0 64 64"><path fill="#111" d="M16 6h24l10 10v42H16V6Z"/><path fill="#FFF" fill-opacity=".18" d="M40 6v10h10"/><path fill="#FFF" d="M22 18h16v7h-9v7h11v7H29v13h-7V18Z"/><path fill="#E11D2E" d="M43 22h11v6h-6v7h-6V22Z"/><path stroke="#E11D2E" stroke-linecap="round" stroke-width="5" d="M51 25L39 37"/></svg>
