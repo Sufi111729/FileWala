@@ -46,15 +46,38 @@ const converterConfig = {
   },
   'pdf-to-word': {
     accept: 'application/pdf',
-    outputName: 'pdf-to-word-filewalatool.docx',
+    outputName: 'converted.docx',
     outputType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    needsLibrary: 'PDF to Word needs a frontend PDF/DOCX conversion library.',
+    extensions: ['pdf'],
+    maxSize: 50 * 1024 * 1024,
   },
   'word-to-pdf': {
-    accept: '.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    outputName: 'word-to-pdf-filewalatool.pdf',
+    accept: '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    outputName: 'converted.pdf',
     outputType: 'application/pdf',
-    needsLibrary: 'Word to PDF needs a frontend DOCX renderer/converter library.',
+    extensions: ['docx'],
+    maxSize: 50 * 1024 * 1024,
+    rejectedMessages: { doc: 'DOC format is not supported in browser-only mode. Please upload DOCX.' },
+  },
+  'protect-pdf': {
+    accept: 'application/pdf,.pdf',
+    extensions: ['pdf'],
+    maxSize: 50 * 1024 * 1024,
+  },
+  'unlock-pdf': {
+    accept: 'application/pdf,.pdf',
+    extensions: ['pdf'],
+    maxSize: 50 * 1024 * 1024,
+  },
+  'watermark-pdf': {
+    accept: 'application/pdf,.pdf',
+    extensions: ['pdf'],
+    maxSize: 50 * 1024 * 1024,
+  },
+  'resize-image': {
+    accept: 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp',
+    extensions: ['jpg', 'jpeg', 'png', 'webp'],
+    maxSize: 50 * 1024 * 1024,
   },
 };
 
@@ -387,6 +410,27 @@ function previewType(contentType) {
   return '';
 }
 
+function fileExtension(fileName) {
+  return fileName.split('.').pop()?.toLowerCase() ?? '';
+}
+
+function validateFiles(files, config) {
+  if (files.length === 0) return '';
+  const invalidFile = config.extensions
+    ? files.find((file) => !config.extensions.includes(fileExtension(file.name)))
+    : null;
+  if (invalidFile) {
+    const rejectedMessage = config.rejectedMessages?.[fileExtension(invalidFile.name)];
+    if (rejectedMessage) return rejectedMessage;
+    return `Please select a ${config.extensions.map((extension) => `.${extension}`).join(' or ')} file.`;
+  }
+  if (files.some((file) => file.size === 0)) return 'The selected file is empty.';
+  if (files.some((file) => config.maxSize && file.size > config.maxSize)) {
+    return `File size must be ${formatUploadSize(config.maxSize)} or smaller.`;
+  }
+  return '';
+}
+
 export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, helperText = '' }) {
   const { text, tLiteral, tToolTitle } = useLanguage();
   const fileInputRef = useRef(null);
@@ -417,6 +461,16 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
   const handleFiles = (fileList) => {
     const selectedFiles = Array.from(fileList ?? []);
     const nextFiles = config.multiple ? selectedFiles : selectedFiles.slice(0, 1);
+    const validationError = validateFiles(nextFiles, config);
+    if (validationError) {
+      setFiles([]);
+      onFilesSelected?.([]);
+      resetResult();
+      setError(validationError);
+      setStatus('error');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
     setFiles(nextFiles);
     onFilesSelected?.(nextFiles);
     resetResult();
@@ -448,12 +502,10 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
     setStatus('processing');
 
     try {
+      let blob;
       if (config.needsLibrary) {
         throw new Error(`${config.needsLibrary} Java/backend is not used in this frontend-only flow.`);
-      }
-
-      let blob;
-      if (tool.slug === 'image-to-pdf') {
+      } else if (tool.slug === 'image-to-pdf') {
         blob = await convertImagesToPdf(files, mode);
       } else if (tool.slug === 'jpg-to-png') {
         blob = await convertImageFormat(files[0], 'image/png', mode);
@@ -641,7 +693,7 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
           {files.length > 0 && (
             <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
               <span className="font-black text-green-700">
-                ✓ {files.length > 1 ? `${files.length} Files Selected` : 'File Selected'}
+                Ready: {files.length > 1 ? `${files.length} Files Selected` : 'File Selected'}
               </span>
               {files.length === 1 ? (
                 <>
@@ -708,7 +760,11 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
               {text.upload.process}
             </button>
 
-            {isWorking && <p className="mt-3 text-sm font-semibold text-black/60">{text.upload.processingBrowser}</p>}
+            {isWorking && (
+              <p className="mt-3 text-sm font-semibold text-black/60">
+                {text.upload.processingBrowser}
+              </p>
+            )}
             {error && (
               <p className="mt-3 flex items-center gap-2 text-sm font-semibold text-red-700">
                 <AlertCircle className="h-4 w-4" />

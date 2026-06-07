@@ -24,6 +24,7 @@ import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../../components/seo/schema.js';
 import { absoluteUrl, getToolSeoBySlug } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
+import createObjectUrl, { revokeObjectUrl } from '../../utils/createObjectUrl.js';
 
 const actionLabels = {
   split: 'Split PDF',
@@ -64,6 +65,8 @@ export default function PdfToolPanel({ title, description, tool }) {
   const [rotationMode, setRotationMode] = useState('all');
   const [rotationDegrees, setRotationDegrees] = useState(90);
   const [outputBlob, setOutputBlob] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  const [outputUrl, setOutputUrl] = useState('');
   const [status, setStatus] = useState('');
   const [statusMessage, setStatusMessage] = useState('');
   const [error, setError] = useState('');
@@ -83,6 +86,18 @@ export default function PdfToolPanel({ title, description, tool }) {
     setError('');
     setWarning('');
   }, [file, rangeInput, targetSizeKB, rotationMode, rotationDegrees]);
+
+  useEffect(() => {
+    const url = file ? createObjectUrl(file) : '';
+    setPreviewUrl(url);
+    return () => revokeObjectUrl(url);
+  }, [file]);
+
+  useEffect(() => {
+    const url = outputBlob ? createObjectUrl(outputBlob) : '';
+    setOutputUrl(url);
+    return () => revokeObjectUrl(url);
+  }, [outputBlob]);
 
   const handleTargetPreset = (preset) => {
     setTargetPreset(preset);
@@ -116,7 +131,7 @@ export default function PdfToolPanel({ title, description, tool }) {
 
     try {
       setStatus('uploading');
-      setStatusMessage('Uploading...');
+      setStatusMessage('Reading PDF...');
       const count = await getPdfPageCount(selectedFile);
       setFile(selectedFile);
       setPageCount(count);
@@ -218,7 +233,8 @@ export default function PdfToolPanel({ title, description, tool }) {
       delete: 'pages-removed',
       rotate: 'rotated',
     };
-    downloadBlob(outputBlob, outputName(file, suffixes[tool]));
+    const fixedNames = { delete: 'pages-deleted.pdf', rotate: 'rotated.pdf' };
+    downloadBlob(outputBlob, fixedNames[tool] || outputName(file, suffixes[tool]));
     setStatus(text.pdf.downloaded);
     setStatusMessage(text.pdf.downloaded);
   };
@@ -255,9 +271,10 @@ export default function PdfToolPanel({ title, description, tool }) {
               </span>
               {file && (
                 <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
-                  <span className="font-black text-green-700">✓ File Selected</span>
+                  <span className="font-black text-green-700">Ready: File Selected</span>
                   <span>File Name: {file.name}</span>
                   <span>Size: {formatFileSize(file.size)}</span>
+                  <span>Type: {file.type || 'application/pdf'}</span>
                   <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
                     Remove
                   </button>
@@ -275,7 +292,7 @@ export default function PdfToolPanel({ title, description, tool }) {
             <p className="mt-3 text-sm font-semibold text-black/50">
               {tool === 'compress'
                 ? 'PDF pages are compressed in your browser and rebuilt as a smaller optimized PDF.'
-                : text.pdf.browserHint}
+                : 'Files are processed in your browser and are not uploaded to any server.'}
             </p>
 
             {file && (
@@ -289,8 +306,25 @@ export default function PdfToolPanel({ title, description, tool }) {
                     <p className="mt-1 text-xs font-semibold text-black/50">
                       {formatFileSize(file.size)} - {pageCount} {pageCount === 1 ? text.pdf.page : text.pdf.pages}
                     </p>
+                    {(tool === 'rotate' || tool === 'delete') && (
+                      <p className="mt-2 break-words text-xs font-semibold leading-5 text-black/50">
+                        Pages: {Array.from({ length: pageCount }, (_, index) => index + 1).join(', ')}
+                      </p>
+                    )}
                   </div>
                 </div>
+                {(tool === 'rotate' || tool === 'delete') && (
+                  <div className="mt-4 min-h-[300px] w-full rounded-xl border border-black/10 bg-slate-50 p-2 md:min-h-[420px]">
+                    <iframe
+                      src={outputUrl || previewUrl}
+                      title={outputUrl ? 'Processed PDF preview' : 'PDF preview'}
+                      className="min-h-[300px] w-full rounded-lg bg-white md:min-h-[420px]"
+                    />
+                    <p className="mt-2 px-2 text-xs font-semibold text-black/50">
+                      PDF preview is not supported in some browsers. You can still process and download the file.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -346,9 +380,9 @@ export default function PdfToolPanel({ title, description, tool }) {
                     onChange={(event) => setRotationDegrees(Number(event.target.value))}
                     className="rounded-md border border-black/10 px-3 py-2 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   >
-                    <option value={90}>90°</option>
+                    <option value={90}>Right 90 degrees</option>
                     <option value={180}>180°</option>
-                    <option value={270}>270°</option>
+                    <option value={270}>Left 90 degrees</option>
                   </select>
                 </label>
               </div>

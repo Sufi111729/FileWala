@@ -17,6 +17,7 @@ export default async function handler(req, res) {
     const body = await readJson(req);
     const name = cleanText(body.name, 120);
     const email = cleanText(body.email, 180).toLowerCase();
+    const phone = cleanText(body.phone, 40);
     const subject = cleanText(body.subject, 180);
     const message = cleanText(body.message, 4000);
 
@@ -35,7 +36,7 @@ export default async function handler(req, res) {
       return;
     }
 
-    const savedMessage = await addMessage({ name, email, subject, message });
+    const savedMessage = await addMessage({ name, email, phone, subject, message });
     sendJson(res, 201, { message: 'Message saved.', id: savedMessage.id });
   } catch {
     sendJson(res, 500, { error: 'Could not save your message right now.' });

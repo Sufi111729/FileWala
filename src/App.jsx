@@ -10,7 +10,7 @@ const AboutUs = lazyPage(() => import('./pages/legal/AboutUs.jsx'));
 const ContactUs = lazyPage(() => import('./pages/legal/ContactUs.jsx'));
 const PrivacyPolicy = lazyPage(() => import('./pages/legal/PrivacyPolicy.jsx'));
 const TermsConditions = lazyPage(() => import('./pages/legal/TermsConditions.jsx'));
-const ContactMessagesAdmin = lazyPage(() => import('./pages/admin/ContactMessagesAdmin.jsx'));
+const Contact = lazyPage(() => import('./pages/admin/Contact.jsx'));
 const CompressTools = lazyPage(() => import('./pages/compress/CompressTools.jsx'));
 const CustomImageKBResizer = lazyPage(() => import('./pages/compress/CustomImageKBResizer.jsx'));
 const ImageCompressor = lazyPage(() => import('./pages/compress/ImageCompressor.jsx'));
@@ -19,6 +19,7 @@ const ImageTo20KB = lazyPage(() => import('./pages/compress/ImageTo20KB.jsx'));
 const ImageTo50KB = lazyPage(() => import('./pages/compress/ImageTo50KB.jsx'));
 const ImageDownscaler = lazyPage(() => import('./pages/image/ImageDownscaler.jsx'));
 const ImageUpscaler = lazyPage(() => import('./pages/image/ImageUpscaler.jsx'));
+const BackgroundRemover = lazyPage(() => import('./pages/image/BackgroundRemover.jsx'));
 const BatchImageCropper = lazyPage(() => import('./pages/BatchImageCropper.jsx'));
 const AadhaarPhotoResize = lazyPage(() => import('./pages/documents/AadhaarPhotoResize.jsx'));
 const DocumentScanner = lazyPage(() => import('./pages/documents/DocumentScanner.jsx'));
@@ -33,6 +34,7 @@ const PdfPageDelete = lazyPage(() => import('./pages/pdf/PdfPageDelete.jsx'));
 const PdfRotate = lazyPage(() => import('./pages/pdf/PdfRotate.jsx'));
 const SplitPdf = lazyPage(() => import('./pages/pdf/SplitPdf.jsx'));
 const ToolPage = lazyPage(() => import('./pages/ToolPage.jsx'));
+const BrowserToolPage = lazyPage(() => import('./pages/BrowserToolPage.jsx'));
 
 function PageLoader() {
   return (
@@ -67,10 +69,10 @@ export default function App() {
         <Route path="/privacy-policy" element={<RouteView><PrivacyPolicy /></RouteView>} />
         <Route path="/terms-and-conditions" element={<RouteView><TermsConditions /></RouteView>} />
         <Route path="/about" element={<RouteView><AboutUs /></RouteView>} />
-        <Route path="/contact" element={<RouteView><ContactUs /></RouteView>} />
+        <Route path="/contact" element={<RouteView><Contact /></RouteView>} />
         <Route path="/about-us" element={<RouteView><AboutUs /></RouteView>} />
         <Route path="/contact-us" element={<RouteView><ContactUs /></RouteView>} />
-        <Route path="/admin/contact-messages" element={<RouteView><ContactMessagesAdmin /></RouteView>} />
+        <Route path="/admin/contact-messages" element={<RouteView><Contact /></RouteView>} />
         <Route path="/compress" element={<RouteView><CompressTools /></RouteView>} />
         <Route path="/compress/image-compressor" element={<RouteView><ImageCompressor /></RouteView>} />
         <Route path="/compress/image-to-20kb" element={<RouteView><ImageTo20KB /></RouteView>} />
@@ -100,9 +102,15 @@ export default function App() {
         <Route path="/split-pdf" element={<RouteView><SplitPdf /></RouteView>} />
         <Route path="/compress-pdf" element={<RouteView><CompressPdf /></RouteView>} />
         <Route path="/pdf-to-jpg" element={<RouteView><ToolPage slugOverride="pdf-to-jpg" /></RouteView>} />
+        <Route path="/pdf-to-word" element={<RouteView><BrowserToolPage slug="pdf-to-word" /></RouteView>} />
+        <Route path="/word-to-pdf" element={<RouteView><BrowserToolPage slug="word-to-pdf" /></RouteView>} />
+        <Route path="/protect-pdf" element={<RouteView><BrowserToolPage slug="protect-pdf" /></RouteView>} />
+        <Route path="/unlock-pdf" element={<RouteView><BrowserToolPage slug="unlock-pdf" /></RouteView>} />
+        <Route path="/watermark-pdf" element={<RouteView><BrowserToolPage slug="watermark-pdf" /></RouteView>} />
+        <Route path="/image-resizer" element={<RouteView><BrowserToolPage slug="resize-image" /></RouteView>} />
         <Route path="/image-to-pdf" element={<RouteView><ToolPage slugOverride="image-to-pdf" /></RouteView>} />
         <Route path="/passport-photo-maker" element={<RouteView><PassportPhotoMaker /></RouteView>} />
-        <Route path="/background-remover" element={<RouteView><ToolPage slugOverride="background-remover" /></RouteView>} />
+        <Route path="/background-remover" element={<RouteView><BackgroundRemover /></RouteView>} />
         <Route path="/jpg-to-png" element={<RouteView><ToolPage slugOverride="jpg-to-png" /></RouteView>} />
         <Route path="/png-to-jpg" element={<RouteView><ToolPage slugOverride="png-to-jpg" /></RouteView>} />
         <Route path="/kb-resizer" element={<RouteView><CustomImageKBResizer /></RouteView>} />
@@ -121,6 +129,12 @@ export default function App() {
         <Route path="/tools/image-kb-resizer" element={<RouteView><CustomImageKBResizer /></RouteView>} />
         <Route path="/tools/image-upscaler" element={<RouteView><ImageUpscaler /></RouteView>} />
         <Route path="/tools/image-downscaler" element={<RouteView><ImageDownscaler /></RouteView>} />
+        <Route path="/tools/pdf-to-word" element={<RouteView><BrowserToolPage slug="pdf-to-word" /></RouteView>} />
+        <Route path="/tools/word-to-pdf" element={<RouteView><BrowserToolPage slug="word-to-pdf" /></RouteView>} />
+        <Route path="/tools/protect-pdf" element={<RouteView><BrowserToolPage slug="protect-pdf" /></RouteView>} />
+        <Route path="/tools/unlock-pdf" element={<RouteView><BrowserToolPage slug="unlock-pdf" /></RouteView>} />
+        <Route path="/tools/watermark-pdf" element={<RouteView><BrowserToolPage slug="watermark-pdf" /></RouteView>} />
+        <Route path="/tools/resize-image" element={<RouteView><BrowserToolPage slug="resize-image" /></RouteView>} />
         <Route path="/tools/batch-image-cropper" element={<RouteView><BatchImageCropper /></RouteView>} />
         <Route path="/tools/:slug" element={<RouteView><ToolPage /></RouteView>} />
       </Route>

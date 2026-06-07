@@ -389,7 +389,7 @@ export default function Navbar() {
               {text.common.about}
             </Link>
             <Link
-              to="/contact"
+              to="/contact-us"
               className="focus-ring rounded-md bg-brand-red px-4 py-2 text-sm font-bold text-white transition-colors duration-150 hover:bg-black"
             >
               {text.common.contact}
@@ -430,7 +430,7 @@ export default function Navbar() {
               {text.common.about}
             </Link>
             <Link
-              to="/contact"
+              to="/contact-us"
               className="focus-ring rounded-md bg-brand-red px-4 py-3 text-center text-sm font-bold text-white transition-colors duration-150 hover:bg-black"
             >
               {text.common.contact}

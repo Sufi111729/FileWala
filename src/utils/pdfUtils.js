@@ -125,7 +125,7 @@ export async function deletePdfPages(file, pagesToDelete) {
   }
 
   if (keepPages.length === 0) {
-    throw new Error('You cannot delete every page. Keep at least one page.');
+    throw new Error('At least one page must remain in the PDF.');
   }
 
   const outputPdf = await createPdfDocument();

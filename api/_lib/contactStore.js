@@ -44,12 +44,13 @@ export async function listMessages() {
   return messages.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
 }
 
-export async function addMessage({ name, email, subject = '', message }) {
+export async function addMessage({ name, email, phone = '', subject = '', message }) {
   const messages = await cleanupExpiredMessages();
   const nextMessage = {
     id: crypto.randomUUID(),
     name,
     email,
+    phone,
     subject,
     message,
     createdAt: new Date().toISOString(),

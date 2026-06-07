@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom';
 import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
 import { breadcrumbSchema, webPageSchema } from '../../components/seo/schema.js';
 import { absoluteUrl, SITE_URL } from '../../data/siteMetadata.js';
+import founderImage from '../../assets/contact/founder.png';
 
 const metaTitle = 'About FileWalaTool - Free Image, PDF & Document Tools';
 const metaDescription = 'Learn about FileWalaTool, an online platform for PDF editing, image processing, document preparation, and file conversion. Built to make everyday file tasks simple and accessible.';
@@ -155,7 +156,7 @@ export default function AboutUs() {
                   Explore Tools
                   <ArrowRight className="h-4 w-4" />
                 </Link>
-                <Link to="/contact" className="focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-black/15 bg-white px-6 py-3 text-sm font-black text-black hover:border-brand-red hover:text-brand-red">
+                <Link to="/contact-us" className="focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-black/15 bg-white px-6 py-3 text-sm font-black text-black hover:border-brand-red hover:text-brand-red">
                   Contact Us
                   <Mail className="h-4 w-4" />
                 </Link>
@@ -263,11 +264,13 @@ export default function AboutUs() {
               </p>
             </div>
             <article className="grid gap-6 rounded-md border border-black/10 bg-white p-6 shadow-sm sm:grid-cols-[180px_1fr]">
-              <div className="flex aspect-square items-center justify-center rounded-md border border-dashed border-black/15 bg-gray-50 text-center">
-                <div>
-                  <UserRound className="mx-auto h-12 w-12 text-brand-red" />
-                  <p className="mt-3 text-xs font-black uppercase tracking-wide text-black/45">Founder Image</p>
-                </div>
+              <div className="aspect-square overflow-hidden rounded-md border border-black/10 bg-gray-50">
+                <img
+                  src={founderImage}
+                  alt="Muhammad Sufiyan, Founder and Developer of FileWalaTool"
+                  className="h-full w-full object-cover object-top"
+                  loading="lazy"
+                />
               </div>
               <div>
                 <h3 className="text-2xl font-black text-black">Muhammad Sufiyan</h3>
@@ -338,7 +341,7 @@ export default function AboutUs() {
                 We welcome feedback, suggestions, and ideas that help improve FileWalaTool.
               </p>
               <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
-                <Link to="/contact" className="focus-ring inline-flex items-center justify-center gap-2 rounded-md bg-black px-6 py-3 text-sm font-black text-white hover:bg-black/85">
+                <Link to="/contact-us" className="focus-ring inline-flex items-center justify-center gap-2 rounded-md bg-black px-6 py-3 text-sm font-black text-white hover:bg-black/85">
                   Contact Us
                   <Mail className="h-4 w-4" />
                 </Link>
