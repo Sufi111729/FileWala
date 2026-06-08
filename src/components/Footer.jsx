@@ -21,11 +21,8 @@ const categories = [
 ];
 
 const legalLinks = [
-  ['About Us', '/about'],
-  ['Contact', '/contact'],
   ['Privacy Policy', '/privacy-policy'],
   ['Terms & Conditions', '/terms-and-conditions'],
-  ['Sitemap', '/sitemap.xml'],
 ];
 
 export default function Footer() {
