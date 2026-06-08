@@ -9,7 +9,7 @@ const compressTools = [
   {
     title: 'Image Compressor',
     slug: 'compress-image',
-    href: '/compress/image-compressor',
+    href: '/compress-image',
     description: 'Compress JPG, PNG, and WEBP images with quality presets.',
   },
   {

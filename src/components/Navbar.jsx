@@ -353,15 +353,15 @@ export default function Navbar() {
         <nav className="relative flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:h-[68px] lg:px-8">
           <Link to="/" className="focus-ring flex min-w-0 items-center rounded-lg" aria-label="FileWalaTool home">
             <picture>
-              <source srcSet="/assets/logofilewalatoo-538.webp" type="image/webp" />
+              <source srcSet="/logo.webp" type="image/webp" />
               <img
-                src="/assets/logofilewalatoo-538.png"
+                src="/logo.png"
                 alt="FileWalaTool"
-                width="538"
-                height="140"
+                width="512"
+                height="512"
                 fetchPriority="high"
                 decoding="async"
-                className="h-[36px] w-auto max-w-[168px] object-contain sm:h-[39px] sm:max-w-[203px]"
+                className="h-10 w-10 rounded-md object-contain sm:h-11 sm:w-11 lg:h-12 lg:w-12"
               />
             </picture>
           </Link>

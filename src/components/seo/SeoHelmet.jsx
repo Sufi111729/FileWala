@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { BRAND_ICON_URL, BRAND_LOGO_URL, BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
+import { BRAND_ICON_URL, BRAND_NAME, SITE_URL, toolImageUrl } from '../../data/siteMetadata.js';
 
 const managedAttribute = 'data-filewala-seo';
 
@@ -48,15 +48,20 @@ export default function SeoHelmet({
   canonical = SITE_URL,
   keywords = [],
   robots = 'index, follow',
-  image = BRAND_LOGO_URL,
+  image,
   ogTitle,
   ogDescription,
   type = 'website',
   jsonLd = [],
+  schema,
 }) {
   useEffect(() => {
-    const keywordContent = Array.isArray(keywords) ? keywords.filter(Boolean).join(', ') : keywords;
-    const schemaItems = Array.isArray(jsonLd) ? jsonLd.filter(Boolean) : [jsonLd].filter(Boolean);
+    const resolvedImage = image ?? toolImageUrl(canonical);
+    const keywordContent = Array.isArray(keywords)
+      ? [...new Set(keywords.filter(Boolean))].slice(0, 8).join(', ')
+      : keywords;
+    const suppliedSchemas = schema ?? jsonLd;
+    const schemaItems = Array.isArray(suppliedSchemas) ? suppliedSchemas.filter(Boolean) : [suppliedSchemas].filter(Boolean);
 
     if (title) document.title = title;
     if (description) upsertMeta('meta[name="description"]', { name: 'description', content: description });
@@ -69,17 +74,19 @@ export default function SeoHelmet({
     upsertMeta('meta[property="og:title"]', { property: 'og:title', content: ogTitle ?? title });
     if (description || ogDescription) upsertMeta('meta[property="og:description"]', { property: 'og:description', content: ogDescription ?? description });
     upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonical });
-    upsertMeta('meta[property="og:image"]', { property: 'og:image', content: image });
+    upsertMeta('meta[property="og:image"]', { property: 'og:image', content: resolvedImage });
+    upsertMeta('meta[property="og:image:alt"]', { property: 'og:image:alt', content: ogTitle ?? title });
     upsertMeta('meta[property="og:logo"]', { property: 'og:logo', content: BRAND_ICON_URL });
 
     upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' });
     upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
     if (description) upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
-    upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: image });
+    upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: resolvedImage });
+    upsertMeta('meta[name="twitter:image:alt"]', { name: 'twitter:image:alt', content: ogTitle ?? title });
 
     removeManagedSchemas();
     schemaItems.forEach(appendSchema);
-  }, [canonical, description, image, jsonLd, keywords, ogDescription, ogTitle, robots, title, type]);
+  }, [canonical, description, image, jsonLd, keywords, ogDescription, ogTitle, robots, schema, title, type]);
 
   return null;
 }

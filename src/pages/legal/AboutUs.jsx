@@ -27,7 +27,7 @@ import { Link } from 'react-router-dom';
 import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
 import { breadcrumbSchema, webPageSchema } from '../../components/seo/schema.js';
 import { absoluteUrl, SITE_URL } from '../../data/siteMetadata.js';
-import founderImage from '../../assets/contact/founder.png';
+import founderImage from '../../assets/contact/founder.webp';
 
 const metaTitle = 'About FileWalaTool - Free Image, PDF & Document Tools';
 const metaDescription = 'Learn about FileWalaTool, an online platform for PDF editing, image processing, document preparation, and file conversion. Built to make everyday file tasks simple and accessible.';

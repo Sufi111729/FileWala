@@ -10,6 +10,7 @@ import {
   UploadCloud,
 } from 'lucide-react';
 import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
+import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../../components/seo/schema.js';
 import { getToolSeoBySlug } from '../../data/toolsSeoData.js';
 
@@ -194,9 +195,9 @@ export default function BackgroundRemover() {
           <p className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-black uppercase tracking-wide text-black">
             <Sparkles className="h-4 w-4 text-brand-red" /> Image Tool
           </p>
-          <h1 className="mt-4 text-4xl font-black tracking-tight text-black sm:text-5xl">Background Remover</h1>
+          <h1 className="mt-4 text-4xl font-black tracking-tight text-black sm:text-5xl">{seo.h1}</h1>
           <p className="mt-4 text-base leading-7 text-black/60 sm:text-lg sm:leading-8">
-            Remove image background automatically and download a transparent PNG.
+            {seo.shortIntro}
           </p>
         </div>
 
@@ -280,6 +281,7 @@ export default function BackgroundRemover() {
             <div key={item} className="rounded-lg border border-black/10 bg-white p-5 shadow-sm"><CheckCircle2 className="h-5 w-5 text-brand-red" /><p className="mt-3 text-sm font-bold leading-6 text-black/70">{item}</p></div>
           ))}
         </div>
+        <ToolSeoSections seo={seo} activeTab="Image Tools" />
       </div>
     </section>
   );

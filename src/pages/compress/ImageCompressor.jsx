@@ -154,7 +154,7 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
       <SeoHelmet
         title={seo?.seoTitle ?? `${localizedTitle || title} - FileWalaTool`}
         description={seo?.metaDescription ?? localizedDescription}
-        canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? '/compress/image-compressor')}
+        canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? '/compress-image')}
         keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [localizedTitle || title, 'compress image']}
         jsonLd={seo ? toolSchemas(seo) : []}
       />

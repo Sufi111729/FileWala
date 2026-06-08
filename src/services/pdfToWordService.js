@@ -1,7 +1,7 @@
-import { Document, Packer, PageBreak, Paragraph, TextRun } from 'docx';
 import { loadPdfJsDocument } from '../utils/pdfHelpers.js';
 
 export async function convertPdfToWord(file, onProgress) {
+  const { Document, Packer, PageBreak, Paragraph, TextRun } = await import('docx');
   const pdf = await loadPdfJsDocument(file);
   const children = [];
   let extractedCharacters = 0;

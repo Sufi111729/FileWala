@@ -1,8 +1,9 @@
-import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
-
 export async function loadPdfJsDocument(file) {
-  const pdfjs = await import('pdfjs-dist/build/pdf.mjs');
-  pdfjs.GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
+  const [pdfjs, pdfWorker] = await Promise.all([
+    import('pdfjs-dist/build/pdf.mjs'),
+    import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+  ]);
+  pdfjs.GlobalWorkerOptions.workerSrc = pdfWorker.default;
   return pdfjs.getDocument({ data: await file.arrayBuffer() }).promise;
 }
 

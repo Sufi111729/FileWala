@@ -16,7 +16,6 @@ import {
   ZoomOut,
 } from 'lucide-react';
 import { saveAs } from 'file-saver';
-import JSZip from 'jszip';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
 import UploadBox from '../components/UploadBox.jsx';
 import { absoluteUrl } from '../data/siteMetadata.js';
@@ -390,6 +389,7 @@ export default function BatchImageCropper() {
 
   const downloadAllAsZip = async () => {
     if (!results.length) return;
+    const JSZip = (await import('jszip')).default;
     const zip = new JSZip();
     results.forEach((result) => zip.file(result.fileName, result.blob));
     const zipBlob = await zip.generateAsync({ type: 'blob' });

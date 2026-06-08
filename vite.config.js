@@ -29,22 +29,44 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('ThirdPartyScripts.jsx')) {
+          const normalizedId = id.replaceAll('\\', '/');
+
+          if (normalizedId.includes('ThirdPartyScripts.jsx')) {
             return 'ads';
           }
 
-          if (!id.includes('node_modules')) return undefined;
+          if (!normalizedId.includes('node_modules')) return undefined;
 
-          if (id.includes('lucide-react')) {
+          if (normalizedId.includes('lucide-react')) {
             return 'icons';
           }
 
-          if (id.includes('/react/') || id.includes('/react-dom/') || id.includes('/react-router-dom/')) {
+          if (normalizedId.includes('/react/') || normalizedId.includes('/react-dom/') || normalizedId.includes('/react-router-dom/')) {
             return 'react-vendor';
           }
 
-          if (id.includes('pdf-lib')) {
-            return 'pdf-tools';
+          if (normalizedId.includes('pdfjs-dist')) {
+            return 'pdfjs';
+          }
+
+          if (normalizedId.includes('pdf-lib')) {
+            return 'pdf-lib';
+          }
+
+          if (normalizedId.includes('mammoth')) {
+            return 'mammoth';
+          }
+
+          if (normalizedId.includes('/docx/')) {
+            return 'docx';
+          }
+
+          if (normalizedId.includes('html2canvas') || normalizedId.includes('jszip')) {
+            return 'image-tools';
+          }
+
+          if (normalizedId.includes('jspdf')) {
+            return 'pdf-export';
           }
 
           return undefined;

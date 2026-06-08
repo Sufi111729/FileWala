@@ -2,107 +2,6 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../i18n.jsx';
-import mergePdfPreview from '../assets/tool-previews/marge pdf.png';
-import splitPdfPreview from '../assets/tool-previews/split pdf.png';
-import compressPdfPreview from '../assets/tool-previews/compress pdf.png';
-import pdfToJpgPreview from '../assets/tool-previews/pdf to jpg.png';
-import imageToPdfPreview from '../assets/tool-previews/img to pdf.png';
-import pdfToWordPreview from '../assets/tool-previews/pdf to word.png';
-import wordToPdfPreview from '../assets/tool-previews/word to pdf.png';
-import protectPdfPreview from '../assets/tool-previews/protect pdf.png';
-import unlockPdfPreview from '../assets/tool-previews/unlock pdf.png';
-import pdfRotatePreview from '../assets/tool-previews/rotate pdf.png';
-import pdfPageDeletePreview from '../assets/tool-previews/pdf page delete.png';
-import watermarkPdfPreview from '../assets/tool-previews/watermark pdf.png';
-import resizeImagePreview from '../assets/tool-previews/img resize.png';
-import compressImagePreview from '../assets/tool-previews/compress img.png';
-import imageKbResizerPreview from '../assets/tool-previews/kb resizer.png';
-import cropImagePreview from '../assets/tool-previews/crop img.png';
-import jpgToPngPreview from '../assets/tool-previews/jpg to png.png';
-import pngToJpgPreview from '../assets/tool-previews/png to jpg.png';
-import backgroundRemoverPreview from '../assets/tool-previews/background remover.png';
-import imageUpscalerPreview from '../assets/tool-previews/img upplerscaling.png';
-import imageDownscalerPreview from '../assets/tool-previews/img downscaling.png';
-import passportPhotoMakerPreview from '../assets/tool-previews/passport photo maker.png';
-import signatureResizePreview from '../assets/tool-previews/signature resizer.png';
-import imageTo20kbPreview from '../assets/tool-previews/img 20 kb.png';
-import imageTo50kbPreview from '../assets/tool-previews/img 50 kb.png';
-import imageTo100kbPreview from '../assets/tool-previews/img 100kb.png';
-import aadhaarPhotoResizePreview from '../assets/tool-previews/Aadhar photo resizer.png';
-import panPhotoResizePreview from '../assets/tool-previews/pan photo resizer.png';
-import resumeBuilderPreview from '../assets/tool-previews/resume builder.png';
-import documentScannerPreview from '../assets/tool-previews/Doc scanner.png';
-
-const toolPreviewImages = {
-  'merge-pdf': mergePdfPreview,
-  'split-pdf': splitPdfPreview,
-  'compress-pdf': compressPdfPreview,
-  'pdf-to-jpg': pdfToJpgPreview,
-  'image-to-pdf': imageToPdfPreview,
-  'pdf-to-word': pdfToWordPreview,
-  'word-to-pdf': wordToPdfPreview,
-  'protect-pdf': protectPdfPreview,
-  'unlock-pdf': unlockPdfPreview,
-  'rotate-pdf': pdfRotatePreview,
-  'pdf-page-delete': pdfPageDeletePreview,
-  'watermark-pdf': watermarkPdfPreview,
-  'resize-image': resizeImagePreview,
-  'compress-image': compressImagePreview,
-  'image-kb-resizer': imageKbResizerPreview,
-  'crop-image': cropImagePreview,
-  'batch-image-cropper': cropImagePreview,
-  'jpg-to-png': jpgToPngPreview,
-  'png-to-jpg': pngToJpgPreview,
-  'background-remover': backgroundRemoverPreview,
-  'image-upscaler': imageUpscalerPreview,
-  'image-downscaler': imageDownscalerPreview,
-  'photo-to-20kb': imageTo20kbPreview,
-  'photo-to-50kb': imageTo50kbPreview,
-  'photo-to-100kb': imageTo100kbPreview,
-  'passport-photo-maker': passportPhotoMakerPreview,
-  'signature-resize': signatureResizePreview,
-  'aadhaar-photo-resize': aadhaarPhotoResizePreview,
-  'pan-photo-resize': panPhotoResizePreview,
-  'resume-builder': resumeBuilderPreview,
-  'document-scanner': documentScannerPreview,
-};
-
-const normalizePreviewKey = (value = '') => value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
-
-const toolPreviewImagesByTitle = {
-  'merge-pdf': mergePdfPreview,
-  'split-pdf': splitPdfPreview,
-  'compress-pdf': compressPdfPreview,
-  'pdf-to-jpg': pdfToJpgPreview,
-  'image-to-pdf': imageToPdfPreview,
-  'pdf-to-word': pdfToWordPreview,
-  'word-to-pdf': wordToPdfPreview,
-  'protect-pdf': protectPdfPreview,
-  'unlock-pdf': unlockPdfPreview,
-  'pdf-rotate': pdfRotatePreview,
-  'pdf-page-delete': pdfPageDeletePreview,
-  'watermark-pdf': watermarkPdfPreview,
-  'image-resizer': resizeImagePreview,
-  'compress-image': compressImagePreview,
-  'custom-kb-resizer': imageKbResizerPreview,
-  'crop-image': cropImagePreview,
-  'batch-image-cropper': cropImagePreview,
-  'jpg-to-png': jpgToPngPreview,
-  'png-to-jpg': pngToJpgPreview,
-  'background-remover': backgroundRemoverPreview,
-  'image-upscaler': imageUpscalerPreview,
-  'image-downscaler': imageDownscalerPreview,
-  'passport-photo-maker': passportPhotoMakerPreview,
-  'signature-resize': signatureResizePreview,
-  'image-to-20kb': imageTo20kbPreview,
-  'image-to-50kb': imageTo50kbPreview,
-  'image-to-100kb': imageTo100kbPreview,
-  'aadhaar-photo-resize': aadhaarPhotoResizePreview,
-  'pan-photo-resize': panPhotoResizePreview,
-  'resume-builder': resumeBuilderPreview,
-  'document-scanner': documentScannerPreview,
-};
-
 /* ── Color palette ────────────────────────────────── */
 const cardColors = {
   Resize: {
@@ -1122,7 +1021,7 @@ function ToolCard({ tool, activeTab = 'All Tools', eagerPreview = false }) {
   const categoryLabel = (text.categories[tool.category] ?? tool.category).replace(' Tools', '');
   const previewBadge = tLiteral(tool.previewBadge ?? categoryLabel);
   const previewType = getPreviewType(tool);
-  const resolvedPreviewImage = tool.previewImage || tool.preview || toolPreviewImages[tool.slug] || toolPreviewImagesByTitle[normalizePreviewKey(tool.title)];
+  const resolvedPreviewImage = tool.previewImage || tool.preview;
   const previewAlt = tool.imageAlt || `${translatedTool[0]} online tool preview`;
   const previewTitle = tool.imageTitle || `${translatedTool[0]} - FileWalaTool`;
   const [previewRef, shouldRenderPreview] = useNearViewport(eagerPreview || Boolean(tool.previewImage));
@@ -1143,7 +1042,8 @@ function ToolCard({ tool, activeTab = 'All Tools', eagerPreview = false }) {
                 title={previewTitle}
                 width="800"
                 height="500"
-                loading="lazy"
+                loading={eagerPreview ? 'eager' : 'lazy'}
+                fetchPriority={eagerPreview ? 'high' : 'auto'}
                 decoding="async"
                 className="h-full w-full object-contain"
               />

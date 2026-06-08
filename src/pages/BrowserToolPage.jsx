@@ -1,7 +1,7 @@
 import { AlertCircle, CheckCircle2, Download, Eye, EyeOff, Loader2, ShieldCheck, Wand2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import UploadBox from '../components/UploadBox.jsx';
-import SeoHelmet from '../components/seo/SeoHelmet.jsx';
+import SEO from '../components/SEO.jsx';
 import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../components/seo/schema.js';
 import { allTools } from '../data/tools.js';
@@ -13,11 +13,6 @@ import formatFileSize from '../utils/formatFileSize.js';
 import { getFileInfo, validateFile } from '../utils/fileValidation.js';
 import { getImageDimensions } from '../utils/imagePreview.js';
 import { extractPdfTextPreview } from '../utils/pdfPreview.js';
-import { convertPdfToWord } from '../services/pdfToWordService.js';
-import { convertWordToPdf } from '../services/wordToPdfService.js';
-import { protectPdf, unlockPdf } from '../services/pdfSecurityService.js';
-import { watermarkPdf } from '../services/pdfEditService.js';
-import { resizeImage } from '../services/imageResizeService.js';
 
 const definitions = {
   'pdf-to-word': { extensions: ['pdf'], action: 'Convert to Word', loading: 'Converting...', filename: 'converted.docx' },
@@ -142,8 +137,8 @@ export default function BrowserToolPage({ slug }) {
       setIsPreviewLoading(true);
       try {
         const blob = slug === 'watermark-pdf'
-          ? await watermarkPdf(file, watermark)
-          : await resizeImage(file, imageOptions);
+          ? await (await import('../services/pdfEditService.js')).watermarkPdf(file, watermark)
+          : await (await import('../services/imageResizeService.js')).resizeImage(file, imageOptions);
         if (!cancelled) setOutput(blob);
       } catch (caughtError) {
         if (!cancelled) setError(caughtError?.message || 'Live preview could not be generated.');
@@ -199,23 +194,33 @@ export default function BrowserToolPage({ slug }) {
     try {
       validateFile(file, definition.extensions);
       let blob;
-      if (slug === 'pdf-to-word') blob = await convertPdfToWord(file, setStatus);
-      if (slug === 'word-to-pdf') blob = await convertWordToPdf(file, wordPreviewRef.current);
+      if (slug === 'pdf-to-word') {
+        const { convertPdfToWord } = await import('../services/pdfToWordService.js');
+        blob = await convertPdfToWord(file, setStatus);
+      }
+      if (slug === 'word-to-pdf') {
+        const { convertWordToPdf } = await import('../services/wordToPdfService.js');
+        blob = await convertWordToPdf(file, wordPreviewRef.current);
+      }
       if (slug === 'protect-pdf') {
         if (password.length < 4) throw new Error('Password must be at least 4 characters.');
         if (password !== confirmation) throw new Error('Passwords do not match.');
+        const { protectPdf } = await import('../services/pdfSecurityService.js');
         blob = await protectPdf(file, password);
       }
       if (slug === 'unlock-pdf') {
         if (!password) throw new Error('Please enter the PDF password.');
+        const { unlockPdf } = await import('../services/pdfSecurityService.js');
         blob = await unlockPdf(file, password);
       }
       if (slug === 'watermark-pdf') {
         if (!watermark.text.trim() && !watermark.imageFile) throw new Error('Enter watermark text or select a watermark image.');
+        const { watermarkPdf } = await import('../services/pdfEditService.js');
         blob = await watermarkPdf(file, watermark);
       }
       if (slug === 'resize-image') {
         if (imageOptions.width < 1 || imageOptions.height < 1) throw new Error('Width and height must be greater than zero.');
+        const { resizeImage } = await import('../services/imageResizeService.js');
         blob = await resizeImage(file, imageOptions);
       }
       setOutput(blob);
@@ -236,12 +241,13 @@ export default function BrowserToolPage({ slug }) {
 
   return (
     <section className="bg-white py-8 sm:py-12">
-      <SeoHelmet
+      <SEO
         title={seo?.seoTitle ?? `${tToolTitle(tool)} - FileWalaTool`}
         description={seo?.metaDescription ?? tToolDescription(tool)}
         canonical={seo?.canonicalUrl ?? absoluteUrl(`/${slug}`)}
         keywords={seo ? [seo.primaryKeyword, ...(seo.secondaryKeywords ?? [])] : [tToolTitle(tool)]}
-        jsonLd={seo ? toolSchemas(seo) : []}
+        image={tool.imageUrl}
+        schema={seo ? toolSchemas({ ...seo, imageUrl: tool.imageUrl }) : []}
       />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         <div className="text-center">

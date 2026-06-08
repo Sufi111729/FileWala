@@ -2,7 +2,7 @@ import { MonitorSmartphone, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { Component, Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
-import SeoHelmet from '../components/seo/SeoHelmet.jsx';
+import SEO from '../components/SEO.jsx';
 import { organizationSchema, toolItemListSchema, webApplicationSchema, websiteSchema } from '../components/seo/schema.js';
 import { SITE_URL } from '../data/siteMetadata.js';
 import { allTools } from '../data/tools.js';
@@ -73,10 +73,10 @@ export default function Home() {
 
   return (
     <>
-      <SeoHelmet
+      <SEO
         title="FileWalaTool - Free Online Image & PDF Tools"
         description="Resize images, compress files, convert JPG to PDF, merge PDF, split PDF, remove backgrounds, and edit documents online for free with FileWalaTool."
-        canonical={SITE_URL}
+        canonical={`${SITE_URL}/`}
         keywords={[
           'FileWalaTool',
           'File Wala Tool',
@@ -86,7 +86,7 @@ export default function Home() {
           'image tools',
           'document tools India',
         ]}
-        jsonLd={[websiteSchema(), organizationSchema(), webApplicationSchema(), toolItemListSchema(allTools)]}
+        schema={[websiteSchema(), organizationSchema(), webApplicationSchema(), toolItemListSchema(allTools)]}
       />
       <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       <SilentToolGridBoundary>

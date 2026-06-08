@@ -10,15 +10,19 @@ const quickLinks = [
 ];
 
 const categories = [
-  ['Resize', '/?category=Resize#tools'],
-  ['Documents', '/documents'],
-  ['Passport Photos', '/passport-photo-maker'],
+  ['Merge PDF', '/merge-pdf'],
+  ['Split PDF', '/split-pdf'],
+  ['Compress PDF', '/compress-pdf'],
+  ['Image to PDF', '/image-to-pdf'],
+  ['PDF to JPG', '/pdf-to-jpg'],
+  ['Image Resizer', '/image-resizer'],
+  ['Compress Image', '/compress-image'],
   ['Background Remover', '/background-remover'],
 ];
 
 const legalLinks = [
   ['About Us', '/about'],
-  ['Contact Us', '/contact-us'],
+  ['Contact', '/contact'],
   ['Privacy Policy', '/privacy-policy'],
   ['Terms & Conditions', '/terms-and-conditions'],
   ['Sitemap', '/sitemap.xml'],

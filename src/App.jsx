@@ -69,11 +69,12 @@ export default function App() {
         <Route path="/privacy-policy" element={<RouteView><PrivacyPolicy /></RouteView>} />
         <Route path="/terms-and-conditions" element={<RouteView><TermsConditions /></RouteView>} />
         <Route path="/about" element={<RouteView><AboutUs /></RouteView>} />
-        <Route path="/contact" element={<RouteView><Contact /></RouteView>} />
+        <Route path="/contact" element={<RouteView><ContactUs /></RouteView>} />
         <Route path="/about-us" element={<RouteView><AboutUs /></RouteView>} />
         <Route path="/contact-us" element={<RouteView><ContactUs /></RouteView>} />
         <Route path="/admin/contact-messages" element={<RouteView><Contact /></RouteView>} />
         <Route path="/compress" element={<RouteView><CompressTools /></RouteView>} />
+        <Route path="/compress-image" element={<RouteView><ImageCompressor /></RouteView>} />
         <Route path="/compress/image-compressor" element={<RouteView><ImageCompressor /></RouteView>} />
         <Route path="/compress/image-to-20kb" element={<RouteView><ImageTo20KB /></RouteView>} />
         <Route path="/compress/image-to-50kb" element={<RouteView><ImageTo50KB /></RouteView>} />

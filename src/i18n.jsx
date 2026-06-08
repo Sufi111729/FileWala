@@ -1381,15 +1381,15 @@ function getInitialLanguage() {
 function makeSeoText(seo, text) {
   if (!seo) return null;
   const tool = text.tools?.[seo.slug];
-  const title = tool?.[0] ?? seo.h1 ?? seo.title;
-  const description = tool?.[1] ?? seo.shortIntro ?? seo.metaDescription;
+  const title = seo.h1 ?? tool?.[0] ?? seo.title;
+  const description = seo.shortIntro ?? tool?.[1] ?? seo.metaDescription;
   const intro = `${title} ${description}`;
 
   return {
     ...seo,
     title,
-    seoTitle: `${title} | FileWalaTool`,
-    metaDescription: description,
+    seoTitle: seo.seoTitle ?? `${title} | FileWalaTool`,
+    metaDescription: seo.metaDescription ?? description,
     h1: title,
     shortIntro: description,
     intro,

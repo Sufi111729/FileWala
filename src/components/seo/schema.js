@@ -1,4 +1,4 @@
-import { absoluteUrl, BRAND_ALIASES, BRAND_LOGO_URL, BRAND_NAME, SITE_URL } from '../../data/siteMetadata.js';
+import { absoluteUrl, BRAND_ALIASES, BRAND_FOUNDER, BRAND_LOGO_URL, BRAND_NAME, SITE_URL, toolImageUrl } from '../../data/siteMetadata.js';
 
 const categoryPathByName = {
   'PDF Tools': '/pdf-tools',
@@ -20,6 +20,10 @@ export function organizationSchema() {
     alternateName: BRAND_ALIASES,
     url: SITE_URL,
     logo: BRAND_LOGO_URL,
+    founder: {
+      '@type': 'Person',
+      name: BRAND_FOUNDER,
+    },
   };
 }
 
@@ -144,6 +148,7 @@ export function toolSchemas(seo) {
       operatingSystem: 'Web Browser',
       url,
       description: seo.metaDescription,
+      image: seo.imageUrl ?? toolImageUrl(seo.route),
       keywords: [
         seo.primaryKeyword,
         ...seo.secondaryKeywords,
@@ -160,6 +165,10 @@ export function toolSchemas(seo) {
         name: BRAND_NAME,
         url: SITE_URL,
         logo: BRAND_LOGO_URL,
+        founder: {
+          '@type': 'Person',
+          name: BRAND_FOUNDER,
+        },
       },
     },
     {

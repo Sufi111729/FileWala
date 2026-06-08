@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import ToolCard from './ToolCard.jsx';
 import CategoryTabs from './navigation/CategoryTabs.jsx';
 import { allTools } from '../data/tools.js';
+import { keywordMapBySlug } from '../data/seoKeywords.js';
 import { useLanguage } from '../i18n.jsx';
 
 export default function ToolGrid({ searchTerm, activeTab, onTabChange }) {
@@ -12,7 +13,7 @@ export default function ToolGrid({ searchTerm, activeTab, onTabChange }) {
       const matchesTab = activeTab === 'All Tools' || tool.groups?.includes(activeTab) || tool.category === activeTab;
       const matchesSearch =
         !normalizedSearch ||
-        [tool.title, tool.description, tool.category, ...(tool.groups ?? [])].some((value) =>
+        [tool.title, tool.description, tool.category, ...(tool.groups ?? []), ...(tool.keywords ?? []), ...(keywordMapBySlug[tool.slug] ?? [])].some((value) =>
           value.toLowerCase().includes(normalizedSearch),
         );
 
@@ -46,7 +47,7 @@ export default function ToolGrid({ searchTerm, activeTab, onTabChange }) {
         {filteredTools.length > 0 ? (
           <div className="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredTools.map((tool, index) => (
-              <ToolCard key={tool.slug} tool={tool} activeTab={activeTab} eagerPreview={index < 8} />
+              <ToolCard key={tool.slug} tool={tool} activeTab={activeTab} eagerPreview={index < 4} />
             ))}
           </div>
         ) : (

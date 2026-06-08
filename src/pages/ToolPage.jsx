@@ -1,7 +1,7 @@
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Link, useParams } from 'react-router-dom';
 import UploadBox from '../components/UploadBox.jsx';
-import SeoHelmet from '../components/seo/SeoHelmet.jsx';
+import SEO from '../components/SEO.jsx';
 import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../components/seo/schema.js';
 import { allTools, defaultTool } from '../data/tools.js';
@@ -30,13 +30,13 @@ export default function ToolPage({ slugOverride }) {
 
   return (
     <section className="bg-white py-8 sm:py-12">
-      <SeoHelmet
+      <SEO
         title={seo?.seoTitle ?? `${tToolTitle(tool)} - FileWalaTool`}
         description={seo?.metaDescription ?? tToolDescription(tool)}
         canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? `/tools/${tool.slug}`)}
         keywords={keywords}
         image={tool.imageUrl}
-        jsonLd={seo ? toolSchemas(seo) : []}
+        schema={seo ? toolSchemas({ ...seo, imageUrl: tool.imageUrl }) : []}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <Link
