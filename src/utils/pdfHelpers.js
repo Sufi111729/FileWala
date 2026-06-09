@@ -8,7 +8,7 @@ export async function loadPdfJsDocument(file) {
 }
 
 export async function getPdfPageCount(file) {
-  const { PDFDocument } = await import('pdf-lib');
+  const { default: PDFDocument } = await import('pdf-lib/es/api/PDFDocument.js');
   const pdf = await PDFDocument.load(await file.arrayBuffer());
   return pdf.getPageCount();
 }

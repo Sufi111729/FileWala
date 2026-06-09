@@ -37,7 +37,7 @@ async function loadPdfDocument(file, action) {
   validatePdfFile(file);
 
   try {
-    const { PDFDocument } = await import('pdf-lib');
+    const { default: PDFDocument } = await import('pdf-lib/es/api/PDFDocument.js');
     const bytes = await file.arrayBuffer();
     return PDFDocument.load(bytes);
   } catch {
@@ -46,7 +46,7 @@ async function loadPdfDocument(file, action) {
 }
 
 async function createPdfDocument() {
-  const { PDFDocument } = await import('pdf-lib');
+  const { default: PDFDocument } = await import('pdf-lib/es/api/PDFDocument.js');
   return PDFDocument.create();
 }
 
@@ -149,7 +149,7 @@ export async function rotatePdfPages(file, pages, rotationDegrees) {
     throw new Error('Choose a valid rotation angle.');
   }
 
-  const { degrees } = await import('pdf-lib');
+  const { degrees } = await import('pdf-lib/es/api/rotations.js');
   selectedPages.forEach((pageNumber) => {
     const page = sourcePdf.getPage(pageNumber - 1);
     const currentAngle = page.getRotation().angle || 0;
@@ -235,7 +235,7 @@ async function openPdfForCompression(file) {
 }
 
 async function buildCompressedPdf(pdfDocument, profile, options = {}) {
-  const { PDFDocument } = await import('pdf-lib');
+  const { default: PDFDocument } = await import('pdf-lib/es/api/PDFDocument.js');
   const outputPdf = await PDFDocument.create();
   const pageCount = pdfDocument.numPages;
 
@@ -426,7 +426,7 @@ export async function mergePdfFiles(files) {
     throw new Error('Please select at least 2 PDF files to merge.');
   }
 
-  const { PDFDocument } = await import('pdf-lib');
+  const { default: PDFDocument } = await import('pdf-lib/es/api/PDFDocument.js');
   const mergedPdf = await PDFDocument.create();
 
   for (const file of files) {

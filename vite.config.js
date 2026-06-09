@@ -45,30 +45,6 @@ export default defineConfig({
             return 'react-vendor';
           }
 
-          if (normalizedId.includes('pdfjs-dist')) {
-            return 'pdfjs';
-          }
-
-          if (normalizedId.includes('pdf-lib')) {
-            return 'pdf-lib';
-          }
-
-          if (normalizedId.includes('mammoth')) {
-            return 'mammoth';
-          }
-
-          if (normalizedId.includes('/docx/')) {
-            return 'docx';
-          }
-
-          if (normalizedId.includes('html2canvas') || normalizedId.includes('jszip')) {
-            return 'image-tools';
-          }
-
-          if (normalizedId.includes('jspdf')) {
-            return 'pdf-export';
-          }
-
           return undefined;
         },
       },

@@ -74,7 +74,7 @@ export default function Hero({ searchTerm, onSearchChange }) {
         </div>
 
         <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-black sm:text-5xl">
-          Free Online Image and PDF Tools
+          Free PDF Tools and Image Compressor Online
         </h1>
         <p className="mt-4 max-w-2xl text-base leading-7 text-black/60 sm:text-lg sm:leading-8">
           {text.hero.description}

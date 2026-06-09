@@ -13,7 +13,12 @@ function positionFor(page, position, width, height) {
 }
 
 export async function watermarkPdf(file, options) {
-  const { PDFDocument, StandardFonts, degrees, rgb } = await import('pdf-lib');
+  const [{ default: PDFDocument }, { StandardFonts }, { degrees }, { rgb }] = await Promise.all([
+    import('pdf-lib/es/api/PDFDocument.js'),
+    import('pdf-lib/es/api/StandardFonts.js'),
+    import('pdf-lib/es/api/rotations.js'),
+    import('pdf-lib/es/api/colors.js'),
+  ]);
   const pdf = await PDFDocument.load(await file.arrayBuffer());
   const pages = pdf.getPages();
   const selected = new Set(parsePageRange(options.pages, pages.length, true));

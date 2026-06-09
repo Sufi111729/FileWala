@@ -1,6 +1,7 @@
 import { Suspense } from 'react';
 import { Route, Routes, useLocation } from 'react-router-dom';
 import ErrorBoundary from './components/ErrorBoundary.jsx';
+import LoadingFallback from './components/LoadingFallback.jsx';
 import MainLayout from './layouts/MainLayout.jsx';
 import Home from './pages/Home.jsx';
 import { lazyPage } from './utils/lazyPage.js';
@@ -36,22 +37,12 @@ const SplitPdf = lazyPage(() => import('./pages/pdf/SplitPdf.jsx'));
 const ToolPage = lazyPage(() => import('./pages/ToolPage.jsx'));
 const BrowserToolPage = lazyPage(() => import('./pages/BrowserToolPage.jsx'));
 
-function PageLoader() {
-  return (
-    <section className="bg-white py-16">
-      <div className="mx-auto max-w-7xl px-4 text-center text-sm font-bold text-black/60 sm:px-6 lg:px-8">
-        Loading...
-      </div>
-    </section>
-  );
-}
-
 function RouteView({ children }) {
   const location = useLocation();
 
   return (
     <ErrorBoundary resetKey={location.pathname}>
-      <Suspense fallback={<PageLoader />}>
+      <Suspense fallback={<LoadingFallback />}>
         {children}
       </Suspense>
     </ErrorBoundary>
