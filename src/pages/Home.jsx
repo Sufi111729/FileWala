@@ -111,14 +111,14 @@ export default function Home() {
 
               <div className="flex flex-col items-start gap-3 lg:items-end">
                 <a
-                  href="/downloads/FileWalaTool.apk"
-                  download="FileWalaTool.apk"
+                  href="/downloads/Filewalatool.apk"
+                  download="Filewalatool.apk"
                   className="focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-brand-red px-6 py-3 text-base font-black text-white transition-colors hover:bg-white hover:text-black"
                 >
                   <Download className="h-5 w-5" aria-hidden="true" />
                   Download APK
                 </a>
-                <p className="text-sm font-semibold text-white/55">Android APK · 46 MB</p>
+                <p className="text-sm font-semibold text-white/55">Android APK · 21 MB</p>
               </div>
             </div>
           </div>
