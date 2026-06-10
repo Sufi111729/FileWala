@@ -3,6 +3,7 @@ import { useLanguage } from '../i18n.jsx';
 
 const quickLinks = [
   ['All Tools', '/#tools'],
+  ['Download Android App', '/#download-app'],
   ['Image Tools', '/image-tools'],
   ['PDF Tools', '/pdf-tools'],
   ['Compress', '/compress'],

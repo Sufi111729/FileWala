@@ -1,4 +1,4 @@
-import { MonitorSmartphone, ShieldCheck, Sparkles, Zap } from 'lucide-react';
+import { Download, MonitorSmartphone, ShieldCheck, Sparkles, Zap } from 'lucide-react';
 import { Component, Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
@@ -94,6 +94,36 @@ export default function Home() {
           <ToolGrid searchTerm={searchTerm} activeTab={activeTab} onTabChange={handleTabChange} />
         </Suspense>
       </SilentToolGridBoundary>
+      <section id="download-app" className="below-fold-section scroll-mt-36 border-y border-black/10 bg-white py-12 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="overflow-hidden rounded-2xl bg-slate-950 px-6 py-8 text-white shadow-lg sm:px-10 sm:py-10">
+            <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl">
+                <span className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-brand-red">
+                  <MonitorSmartphone className="h-6 w-6" aria-hidden="true" />
+                </span>
+                <p className="mt-5 text-xs font-black uppercase tracking-[0.2em] text-red-300">FileWalaTool for Android</p>
+                <h2 className="mt-2 text-3xl font-black tracking-tight sm:text-4xl">Download the FileWalaTool app</h2>
+                <p className="mt-3 text-base leading-7 text-white/70">
+                  Use FileWalaTool on your Android phone. Download the APK directly and install the latest available app package.
+                </p>
+              </div>
+
+              <div className="flex flex-col items-start gap-3 lg:items-end">
+                <a
+                  href="/downloads/FileWalaTool.apk"
+                  download="FileWalaTool.apk"
+                  className="focus-ring inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-brand-red px-6 py-3 text-base font-black text-white transition-colors hover:bg-white hover:text-black"
+                >
+                  <Download className="h-5 w-5" aria-hidden="true" />
+                  Download APK
+                </a>
+                <p className="text-sm font-semibold text-white/55">Android APK · 46 MB</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
       <section className="why-section below-fold-section bg-white py-12 sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="mb-8 max-w-2xl">
