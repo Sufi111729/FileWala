@@ -1,8 +1,9 @@
 import fs from 'node:fs';
 import { allTools } from '../src/data/tools.js';
+import { getToolSeoBySlug } from '../src/data/toolsSeoData.js';
 
 const baseUrl = 'https://www.filewalatool.com';
-const lastModified = '2026-06-08';
+const lastModified = new Date().toISOString().slice(0, 10);
 const escapeXml = (value) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 const staticPaths = ['/', '/pdf-tools', '/image-tools', '/compress', '/documents', '/about', '/contact', '/privacy-policy', '/terms-and-conditions'];
 
@@ -11,6 +12,7 @@ const toolEntries = allTools.map((tool) => ({
   image: tool.imageUrl,
   title: tool.imageTitle,
   caption: tool.imageCaption,
+  priority: getToolSeoBySlug(tool.slug)?.priority ?? 0.85,
 }));
 
 const imageXml = ({ loc, image, title, caption }) =>
@@ -23,7 +25,7 @@ const sitemap = [
     `  <url><loc>${baseUrl}${path}</loc><lastmod>${lastModified}</lastmod><changefreq>${index === 0 ? 'daily' : 'monthly'}</changefreq><priority>${index === 0 ? '1.0' : '0.6'}</priority></url>`,
   ),
   ...toolEntries.map((entry) =>
-    `  <url><loc>${entry.loc}</loc><lastmod>${lastModified}</lastmod><changefreq>monthly</changefreq><priority>0.85</priority>${imageXml(entry)}</url>`,
+    `  <url><loc>${entry.loc}</loc><lastmod>${lastModified}</lastmod><changefreq>monthly</changefreq><priority>${entry.priority}</priority>${imageXml(entry)}</url>`,
   ),
   '</urlset>',
 ].join('\n');

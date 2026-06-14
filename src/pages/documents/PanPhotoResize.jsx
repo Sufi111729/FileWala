@@ -3,7 +3,7 @@ import PhotoResizeTool from '../../components/tools/PhotoResizeTool.jsx';
 export default function PanPhotoResize() {
   return (
     <PhotoResizeTool
-      title="PAN Photo Resize"
+      title="PAN Photo"
       description="Resize PAN card photos for online upload."
       requirementTitle="PAN Photo Requirements"
       requirements={[

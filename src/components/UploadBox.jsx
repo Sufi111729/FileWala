@@ -41,8 +41,9 @@ const converterConfig = {
     needsLibrary: 'PDF to JPG needs a frontend PDF renderer such as pdf.js.',
   },
   'batch-image-cropper': {
-    accept: 'image/jpeg,image/png,image/webp,image/bmp',
+    accept: 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp',
     multiple: true,
+    maxSize: 30 * 1024 * 1024,
   },
   'pdf-to-word': {
     accept: 'application/pdf',
@@ -808,7 +809,7 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
           <p className="mt-2 font-black text-black">{text.upload.ready}</p>
           <p className="mt-1 text-sm text-black/50">{result.fileName}</p>
           {preview === 'image' && (
-            <img src={result.downloadUrl} alt="Converted preview" className="mx-auto mt-4 max-h-64 rounded-md border border-black/10 object-contain" />
+            <img src={result.downloadUrl} alt="Converted preview" title="Converted file preview" loading="lazy" decoding="async" className="mx-auto mt-4 max-h-64 rounded-md border border-black/10 object-contain" />
           )}
           {preview === 'pdf' && (
             <iframe title="Converted PDF preview" src={result.downloadUrl} className="mx-auto mt-4 h-64 w-full max-w-2xl rounded-md border border-black/10" />

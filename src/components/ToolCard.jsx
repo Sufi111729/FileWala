@@ -1023,7 +1023,7 @@ function ToolCard({ tool, activeTab = 'All Tools', eagerPreview = false }) {
   const previewType = getPreviewType(tool);
   const resolvedPreviewImage = tool.previewImage || tool.preview;
   const previewAlt = tool.imageAlt || `${translatedTool[0]} online tool preview`;
-  const previewTitle = tool.imageTitle || `${translatedTool[0]} - FileWalaTool`;
+  const previewTitle = tool.previewImageTitle || tool.imageTitle || `${translatedTool[0]} - FileWalaTool`;
   const [previewRef, shouldRenderPreview] = useNearViewport(eagerPreview || Boolean(tool.previewImage));
 
   return (

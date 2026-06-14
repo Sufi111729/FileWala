@@ -5,12 +5,13 @@ export default function RelatedTools({
   tools = [],
   activeTab = 'All Tools',
   currentSlug,
+  maxItems = 4,
   title = 'More useful FileWalaTool options',
 }) {
   const { text, tLiteral } = useLanguage();
   const relatedTools = (Array.isArray(tools) ? tools : [])
     .filter((tool) => tool?.slug && tool.slug !== currentSlug)
-    .slice(0, 4);
+    .slice(0, maxItems);
 
   if (relatedTools.length === 0) return null;
 

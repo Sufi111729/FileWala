@@ -230,13 +230,13 @@ export default function BackgroundRemover() {
               <div className={`grid gap-5 ${resultUrl ? 'lg:grid-cols-2' : 'mx-auto w-full max-w-xl'}`}>
                 <figure className="overflow-hidden rounded-xl border border-black/10 bg-white">
                   <figcaption className="border-b border-black/10 px-4 py-3 text-sm font-black text-black">Before</figcaption>
-                  <div className="flex min-h-72 items-center justify-center bg-black/[0.02] p-4"><img src={originalUrl} alt="Original upload" className="max-h-[480px] w-full object-contain" /></div>
+                  <div className="flex min-h-72 items-center justify-center bg-black/[0.02] p-4"><img src={originalUrl} alt="Original upload" title="Original image" loading="lazy" decoding="async" className="max-h-[480px] w-full object-contain" /></div>
                 </figure>
                 {resultUrl && (
                   <figure className="overflow-hidden rounded-xl border border-black/10 bg-white">
                     <figcaption className="flex items-center justify-between border-b border-black/10 px-4 py-3 text-sm font-black text-black"><span>After</span><span className="text-xs font-bold text-green-700">Background removed</span></figcaption>
                     <div className="flex min-h-72 items-center justify-center p-4" style={checkerboardStyle}>
-                      <div className="flex min-h-64 w-full items-center justify-center" style={{ backgroundColor: resultBackground }}><img src={resultUrl} alt="Background removed result" className="max-h-[480px] w-full object-contain" /></div>
+                      <div className="flex min-h-64 w-full items-center justify-center" style={{ backgroundColor: resultBackground }}><img src={resultUrl} alt="Background removed result" title="Background removed image" loading="lazy" decoding="async" className="max-h-[480px] w-full object-contain" /></div>
                     </div>
                   </figure>
                 )}

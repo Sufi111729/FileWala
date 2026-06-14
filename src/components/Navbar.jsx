@@ -359,6 +359,7 @@ export default function Navbar() {
                 alt="FileWalaTool"
                 width="538"
                 height="140"
+                loading="eager"
                 fetchPriority="high"
                 decoding="async"
                 className="h-9 w-auto max-w-[138px] object-contain sm:h-10 sm:max-w-[154px] lg:h-11 lg:max-w-[170px]"

@@ -127,7 +127,6 @@ export default function App() {
         <Route path="/tools/unlock-pdf" element={<RouteView><BrowserToolPage slug="unlock-pdf" /></RouteView>} />
         <Route path="/tools/watermark-pdf" element={<RouteView><BrowserToolPage slug="watermark-pdf" /></RouteView>} />
         <Route path="/tools/resize-image" element={<RouteView><BrowserToolPage slug="resize-image" /></RouteView>} />
-        <Route path="/tools/batch-image-cropper" element={<RouteView><BatchImageCropper /></RouteView>} />
         <Route path="/tools/:slug" element={<RouteView><ToolPage /></RouteView>} />
       </Route>
     </Routes>

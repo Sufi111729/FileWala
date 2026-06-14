@@ -37,11 +37,11 @@ const toolImageSeoBySlug = {
   'rotate-pdf': ['rotate-pdf-tool-filewalatool.webp', 'Rotate PDF pages online with FileWalaTool', 'PDF Rotate Online Tool - FileWalaTool', 'Rotate pages and fix PDF orientation quickly online.'],
   'pdf-page-delete': ['delete-pdf-pages-tool-filewalatool.webp', 'Delete unwanted PDF pages online', 'PDF Page Delete Tool - FileWalaTool', 'Remove unwanted pages from a PDF document online.'],
   'watermark-pdf': ['watermark-pdf-tool-filewalatool.webp', 'Add a watermark to PDF online', 'Watermark PDF Online Tool - FileWalaTool', 'Apply text or image watermarks across PDF pages online.'],
-  'resize-image': ['image-resizer-tool-filewalatool.webp', 'Resize image online free with FileWalaTool', 'Image Resizer Online Tool - FileWalaTool', 'Resize images for web, social media, forms, and documents.'],
+  'resize-image': ['image-resizer-tool-filewalatool.webp', 'Image Resizer Online Tool - FileWalaTool', 'Image Resizer Online Tool - FileWalaTool', 'Resize images for web, social media, forms, and documents.'],
   'compress-image': ['image-compressor-tool-filewalatool.webp', 'Compress image file size online', 'Compress Image Online Tool - FileWalaTool', 'Make images smaller without losing visual quality.'],
-  'image-kb-resizer': ['image-kb-resizer-filewalatool.webp', 'Resize an image to a target KB size online', 'Custom KB Resizer - FileWalaTool', 'Resize image file weight to match upload limits.'],
+  'image-kb-resizer': ['image-kb-resizer-filewalatool.webp', 'Custom KB Resizer - FileWalaTool', 'Custom KB Resizer - FileWalaTool', 'Resize image file weight to match upload limits.', 'KB Resizer Online Tool - FileWalaTool'],
   'crop-image': ['crop-image-tool-filewalatool.webp', 'Crop image online with FileWalaTool', 'Crop Image Online Tool - FileWalaTool', 'Crop photos to exact dimensions and aspect ratios.'],
-  'batch-image-cropper': ['batch-image-cropper-filewalatool.webp', 'Crop multiple image areas online', 'Batch Image Cropper - FileWalaTool', 'Create multiple crop selections and export every crop area as separate images.'],
+  'batch-image-cropper': ['batch-image-cropper-filewalatool.webp', 'Batch Image Cropper - FileWalaTool', 'Batch Image Cropper - FileWalaTool', 'Create multiple crop selections and export every crop area as separate images.', 'Batch Image Cropper Online Tool - FileWalaTool'],
   'jpg-to-png': ['jpg-to-png-converter-filewalatool.webp', 'Convert JPG to PNG online', 'JPG to PNG Converter - FileWalaTool', 'Convert JPG files into transparent-ready PNG images online.'],
   'png-to-jpg': ['png-to-jpg-converter-filewalatool.webp', 'Convert PNG to JPG online', 'PNG to JPG Converter - FileWalaTool', 'Create lightweight JPG files from PNG images online.'],
   'background-remover': ['background-remover-filewalatool.webp', 'Remove image background online with FileWalaTool', 'Background Remover Tool - FileWalaTool', 'Remove image backgrounds for profiles and products.'],
@@ -49,8 +49,8 @@ const toolImageSeoBySlug = {
   'image-downscaler': ['image-downscaler-filewalatool.webp', 'Downscale image dimensions online', 'Image Downscaler Online Tool - FileWalaTool', 'Reduce image dimensions for faster sharing and uploads.'],
   'passport-photo-maker': ['passport-photo-maker-filewalatool.webp', 'Make passport size photo online', 'Passport Photo Maker - FileWalaTool', 'Create passport-size photos with clean alignment online.'],
   'signature-resize': ['signature-resize-tool-filewalatool.webp', 'Resize signature image online for forms', 'Signature Resize Online Tool - FileWalaTool', 'Resize signatures for online forms and document uploads.'],
-  'photo-to-20kb': ['photo-to-20kb-resizer-filewalatool.webp', 'Resize photo to 20KB online', 'Image to 20KB Tool - FileWalaTool', 'Compress application photos to a 20KB target online.'],
-  'photo-to-50kb': ['photo-to-50kb-resizer-filewalatool.webp', 'Resize photo to 50KB online', 'Image to 50KB Tool - FileWalaTool', 'Optimize photo uploads for a 50KB requirement.'],
+  'photo-to-20kb': ['photo-to-20kb-resizer-filewalatool.webp', 'Image to 20KB Tool - FileWalaTool', 'Image to 20KB Tool - FileWalaTool', 'Compress application photos to a 20KB target online.', 'Compress Image to 20KB Online Tool - FileWalaTool'],
+  'photo-to-50kb': ['photo-to-50kb-resizer-filewalatool.webp', 'Image to 50KB Tool - FileWalaTool', 'Image to 50KB Tool - FileWalaTool', 'Optimize photo uploads for a 50KB requirement.', 'Compress Image to 50KB Online Tool - FileWalaTool'],
   'photo-to-100kb': ['photo-to-100kb-resizer-filewalatool.webp', 'Resize photo to 100KB online', 'Image to 100KB Tool - FileWalaTool', 'Create clear photos under a 100KB limit online.'],
   'aadhaar-photo-resize': ['aadhaar-photo-resizer-filewalatool.webp', 'Resize Aadhaar photo online for document upload', 'Aadhaar Photo Resize - FileWalaTool', 'Prepare Aadhaar photos for document and form uploads.'],
   'pan-photo-resize': ['pan-photo-resizer-filewalatool.webp', 'Resize PAN card photo online', 'PAN Photo Resize - FileWalaTool', 'Resize PAN card photos to accepted upload dimensions.'],
@@ -59,7 +59,7 @@ const toolImageSeoBySlug = {
 };
 
 function imageSeo(slug) {
-  const [fileName, imageAlt, imageTitle, imageCaption] = toolImageSeoBySlug[slug] ?? [];
+  const [fileName, imageAlt, imageTitle, imageCaption, previewImageTitle] = toolImageSeoBySlug[slug] ?? [];
   if (!fileName) return {};
   const preview = `/tool-previews/${fileName}`;
   return {
@@ -69,6 +69,7 @@ function imageSeo(slug) {
     imageUrl: absoluteUrl(preview),
     imageAlt,
     imageTitle,
+    previewImageTitle,
     imageCaption,
   };
 }
@@ -154,7 +155,7 @@ export const toolCategories = [
         icon: KeyRound,
       },
       {
-        title: 'PDF Rotate',
+        title: 'Rotate PDF',
         slug: 'rotate-pdf',
         href: '/pdf-rotate',
         description: 'Rotate pages and fix document orientation quickly.',
@@ -163,7 +164,7 @@ export const toolCategories = [
         icon: RotateCw,
       },
       {
-        title: 'PDF Page Delete',
+        title: 'Delete Pages',
         slug: 'pdf-page-delete',
         href: '/pdf-page-delete',
         description: 'Remove unwanted pages from a PDF document.',
@@ -203,7 +204,7 @@ export const toolCategories = [
         icon: ImageMinus,
       },
       {
-        title: 'Custom KB Resizer',
+        title: 'KB Resizer',
         slug: 'image-kb-resizer',
         href: '/kb-resizer',
         description: 'Resize image file weight to match upload limits.',
@@ -246,7 +247,7 @@ export const toolCategories = [
         icon: ImageDown,
       },
       {
-        title: 'Background Remover',
+        title: 'BG Remover',
         slug: 'background-remover',
         description: 'Remove image backgrounds for profiles and products.',
         category: 'Image Tools',
@@ -276,7 +277,7 @@ export const toolCategories = [
     description: 'Prepare official photos for applications and uploads.',
     tools: [
       {
-        title: 'Passport Photo Maker',
+        title: 'Passport Photo',
         slug: 'passport-photo-maker',
         href: '/passport-photo-maker',
         description: 'Create passport-size photos with clean alignment.',
@@ -323,7 +324,7 @@ export const toolCategories = [
         icon: ShieldCheck,
       },
       {
-        title: 'Aadhaar Photo Resize',
+        title: 'Aadhaar Photo',
         slug: 'aadhaar-photo-resize',
         href: '/aadhaar-photo-resize',
         description: 'Prepare Aadhaar photos for document and form uploads.',
@@ -333,7 +334,7 @@ export const toolCategories = [
         previewBadge: 'Aadhaar',
       },
       {
-        title: 'PAN Photo Resize',
+        title: 'PAN Photo',
         slug: 'pan-photo-resize',
         href: '/pan-photo-resize',
         description: 'Resize PAN card photos to accepted upload dimensions.',
@@ -352,7 +353,7 @@ export const toolCategories = [
         icon: FileText,
       },
       {
-        title: 'Document Scanner',
+        title: 'Doc Scanner',
         slug: 'document-scanner',
         href: '/document-scanner',
         description: 'Scan and clean document photos for sharing.',
@@ -419,7 +420,7 @@ export const navTools = [
       'Image to 20KB',
       'Image to 50KB',
       'Image to 100KB',
-      'Custom KB Resizer',
+      'KB Resizer',
       'Image Upscaler',
       'Image Downscaler',
       'Signature Resize',
@@ -428,7 +429,7 @@ export const navTools = [
   {
     label: 'Compress',
     href: '/compress',
-    tools: ['Compress Image', 'Image to 20KB', 'Image to 50KB', 'Image to 100KB', 'Custom KB Resizer', 'Compress PDF'],
+    tools: ['Compress Image', 'Image to 20KB', 'Image to 50KB', 'Image to 100KB', 'KB Resizer', 'Compress PDF'],
   },
   {
     label: 'Convert',
@@ -436,7 +437,7 @@ export const navTools = [
   },
   {
     label: 'PDF Tools',
-    tools: ['Merge PDF', 'Split PDF', 'Compress PDF', 'Image to PDF', 'PDF to JPG', 'PDF Page Delete', 'PDF Rotate'],
+    tools: ['Merge PDF', 'Split PDF', 'Compress PDF', 'Image to PDF', 'PDF to JPG', 'Delete Pages', 'Rotate PDF'],
   },
   {
     label: 'Image Tools',
@@ -446,10 +447,10 @@ export const navTools = [
       'Batch Image Cropper',
       'JPG to PNG',
       'PNG to JPG',
-      'Background Remover',
+      'BG Remover',
       'Image Upscaler',
       'Image Downscaler',
-      'Passport Photo Maker',
+      'Passport Photo',
       'Signature Resize',
     ],
   },
@@ -457,12 +458,12 @@ export const navTools = [
     label: 'Documents',
     href: '/documents',
     tools: [
-      'Passport Photo Maker',
+      'Passport Photo',
       'Signature Resize',
-      'Aadhaar Photo Resize',
-      'PAN Photo Resize',
+      'Aadhaar Photo',
+      'PAN Photo',
       'Resume Builder',
-      'Document Scanner',
+      'Doc Scanner',
     ],
   },
 ].map((item) => ({

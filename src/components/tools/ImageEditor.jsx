@@ -194,6 +194,9 @@ export default function ImageEditor({
               ref={imageRef}
               src={imageUrl}
               alt="Editor preview"
+              title="Image editor preview"
+              loading="lazy"
+              decoding="async"
               onPointerMove={handlePointerMove}
               onPointerUp={endPointer}
               onPointerCancel={endPointer}
@@ -294,7 +297,7 @@ export default function ImageEditor({
           <h2 className="text-sm font-black uppercase tracking-wide text-black/55">{text.common.preview}</h2>
           <div className="mt-3 flex min-h-36 items-center justify-center rounded-md border border-dashed border-black/10 bg-black/[0.015] p-3">
             {resultUrl ? (
-              <img src={resultUrl} alt="Processed preview" className="max-h-48 max-w-full rounded-md object-contain" />
+              <img src={resultUrl} alt="Processed preview" title="Processed image preview" loading="lazy" decoding="async" className="max-h-48 max-w-full rounded-md object-contain" />
             ) : (
               <p className="text-center text-sm font-semibold text-black/55">{text.documentTool.processedPreviewHint}</p>
             )}

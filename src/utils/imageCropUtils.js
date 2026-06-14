@@ -145,15 +145,29 @@ function canvasToBlob(canvas, mimeType, quality) {
   });
 }
 
-export async function cropImageToBlob(file, cropArea, outputFormat, quality) {
+export function getSafeOutputDimensions(width, height, { maxDimension = Infinity, maxPixels = Infinity } = {}) {
+  const safeWidth = Math.max(1, Math.round(width));
+  const safeHeight = Math.max(1, Math.round(height));
+  const dimensionScale = Math.min(1, maxDimension / Math.max(safeWidth, safeHeight));
+  const pixelScale = Math.min(1, Math.sqrt(maxPixels / (safeWidth * safeHeight)));
+  const scale = Math.min(dimensionScale, pixelScale);
+
+  return {
+    width: Math.max(1, Math.round(safeWidth * scale)),
+    height: Math.max(1, Math.round(safeHeight * scale)),
+  };
+}
+
+export async function cropImageToBlob(file, cropArea, outputFormat, quality, outputLimits) {
   const image = await loadImage(file);
   const sourceWidth = image.naturalWidth || image.width;
   const sourceHeight = image.naturalHeight || image.height;
   const safeCrop = clampCropArea(cropArea, sourceWidth, sourceHeight);
+  const outputSize = getSafeOutputDimensions(safeCrop.width, safeCrop.height, outputLimits);
   const mimeType = resolveOutputMime(file, outputFormat);
   const canvas = document.createElement('canvas');
-  canvas.width = safeCrop.width;
-  canvas.height = safeCrop.height;
+  canvas.width = outputSize.width;
+  canvas.height = outputSize.height;
   const context = canvas.getContext('2d', { alpha: mimeType !== 'image/jpeg' });
 
   if (mimeType === 'image/jpeg') {
@@ -169,11 +183,14 @@ export async function cropImageToBlob(file, cropArea, outputFormat, quality) {
     safeCrop.height,
     0,
     0,
-    safeCrop.width,
-    safeCrop.height,
+    outputSize.width,
+    outputSize.height,
   );
 
-  return canvasToBlob(canvas, mimeType, quality);
+  const blob = await canvasToBlob(canvas, mimeType, quality);
+  canvas.width = 1;
+  canvas.height = 1;
+  return blob;
 }
 
 export async function cropImageFile({ file, cropPixels, outputFormat, qualityMode }) {

@@ -247,6 +247,9 @@ export default function BrowserToolPage({ slug }) {
         canonical={seo?.canonicalUrl ?? absoluteUrl(`/${slug}`)}
         keywords={seo ? [seo.primaryKeyword, ...(seo.secondaryKeywords ?? [])] : [tToolTitle(tool)]}
         image={tool.imageUrl}
+        imageAlt={seo?.imageAlt ?? tool.imageAlt}
+        ogDescription={seo?.ogDescription}
+        twitterDescription={seo?.twitterDescription}
         schema={seo ? toolSchemas({ ...seo, imageUrl: tool.imageUrl }) : []}
       />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
@@ -328,7 +331,7 @@ export default function BrowserToolPage({ slug }) {
                     <div ref={wordPreviewRef} className="prose max-h-[500px] max-w-none overflow-auto rounded-lg bg-white p-4 text-black" dangerouslySetInnerHTML={{ __html: previewHtml }} />
                   )}
                   {!isPreviewLoading && slug === 'word-to-pdf' && !previewHtml && <p className="p-4 text-sm font-semibold text-black/60">DOCX preview could not be generated, but you can still try converting.</p>}
-                  {!isPreviewLoading && slug === 'resize-image' && previewUrl && <img src={previewUrl} alt="Original preview" className="mx-auto max-h-[420px] max-w-full object-contain" />}
+                  {!isPreviewLoading && slug === 'resize-image' && previewUrl && <img src={previewUrl} alt="Original preview" title="Original image preview" loading="lazy" decoding="async" className="mx-auto max-h-[420px] max-w-full object-contain" />}
                 </div>
               )}
 
@@ -360,7 +363,7 @@ export default function BrowserToolPage({ slug }) {
             {error && <p className="mt-4 flex gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700"><AlertCircle className="h-4 w-4 flex-none" />{error}</p>}
             {status && !error && <p className="mt-4 flex gap-2 rounded-md border border-green-200 bg-green-50 p-3 text-sm font-bold text-green-700"><CheckCircle2 className="h-4 w-4 flex-none" />{status}</p>}
             {showOutputPdf && <iframe title="Output PDF preview" src={outputUrl} className="mt-4 min-h-[300px] w-full rounded-lg border border-black/10 md:min-h-[420px]" />}
-            {previewType === 'image' && <img src={outputUrl} alt="Resized preview" className="mt-4 max-h-72 w-full rounded-md border border-black/10 object-contain" />}
+            {previewType === 'image' && <img src={outputUrl} alt="Resized preview" title="Processed image preview" loading="lazy" decoding="async" className="mt-4 max-h-72 w-full rounded-md border border-black/10 object-contain" />}
             {(slug === 'protect-pdf' || slug === 'unlock-pdf') && <ShieldCheck className="mx-auto mt-5 h-6 w-6 text-brand-red" />}
           </aside>
         </form>

@@ -277,27 +277,28 @@ const en = {
     'word-to-pdf': ['Word to PDF', 'Turn Word documents into polished PDF files.'],
     'protect-pdf': ['Protect PDF', 'Add password protection to sensitive PDF files.'],
     'unlock-pdf': ['Unlock PDF', 'Remove passwords from PDFs you are allowed to access.'],
-    'rotate-pdf': ['PDF Rotate', 'Rotate pages and fix document orientation quickly.'],
-    'pdf-page-delete': ['PDF Page Delete', 'Remove unwanted pages from a PDF document.'],
+    'rotate-pdf': ['Rotate PDF', 'Rotate pages and fix document orientation quickly.'],
+    'pdf-page-delete': ['Delete Pages', 'Remove unwanted pages from a PDF document.'],
     'watermark-pdf': ['Watermark PDF', 'Apply text or image watermarks across PDF pages.'],
     'resize-image': ['Image Resizer', 'Resize images for web, social, forms, or documents.'],
     'compress-image': ['Compress Image', 'Make images smaller without losing visual quality.'],
-    'image-kb-resizer': ['Custom KB Resizer', 'Resize image file weight to match upload limits.'],
+    'image-kb-resizer': ['KB Resizer', 'Resize image file weight to match upload limits.'],
     'crop-image': ['Crop Image', 'Crop photos to exact dimensions and aspect ratios.'],
+    'batch-image-cropper': ['Batch Image Cropper', 'Crop multiple images together with custom aspect ratios.'],
     'jpg-to-png': ['JPG to PNG', 'Convert JPG files into transparent-ready PNG images.'],
     'png-to-jpg': ['PNG to JPG', 'Create lightweight JPG files from PNG images.'],
-    'background-remover': ['Background Remover', 'Remove image backgrounds for profiles and products.'],
+    'background-remover': ['BG Remover', 'Remove image backgrounds for profiles and products.'],
     'image-upscaler': ['Image Upscaler', 'Increase image dimensions while keeping edges clear.'],
     'image-downscaler': ['Image Downscaler', 'Reduce image dimensions for faster sharing and uploads.'],
-    'passport-photo-maker': ['Passport Photo Maker', 'Create passport-size photos with clean alignment.'],
+    'passport-photo-maker': ['Passport Photo', 'Create passport-size photos with clean alignment.'],
     'signature-resize': ['Signature Resize', 'Resize signatures for online forms and document uploads.'],
     'photo-to-20kb': ['Image to 20KB', 'Compress application photos to a 20KB target.'],
     'photo-to-50kb': ['Image to 50KB', 'Optimize photo uploads for a 50KB requirement.'],
     'photo-to-100kb': ['Image to 100KB', 'Create clear photos under a 100KB limit.'],
-    'aadhaar-photo-resize': ['Aadhaar Photo Resize', 'Prepare Aadhaar photos for document and form uploads.'],
-    'pan-photo-resize': ['PAN Photo Resize', 'Resize PAN card photos to accepted upload dimensions.'],
+    'aadhaar-photo-resize': ['Aadhaar Photo', 'Prepare Aadhaar photos for document and form uploads.'],
+    'pan-photo-resize': ['PAN Photo', 'Resize PAN card photos to accepted upload dimensions.'],
     'resume-builder': ['Resume Builder', 'Create a clean resume document for applications.'],
-    'document-scanner': ['Document Scanner', 'Scan and clean document photos for sharing.'],
+    'document-scanner': ['Doc Scanner', 'Scan and clean document photos for sharing.'],
   },
 };
 
@@ -1380,6 +1381,7 @@ function getInitialLanguage() {
 
 function makeSeoText(seo, text) {
   if (!seo) return null;
+  if (seo.preserveSeoContent) return seo;
   const tool = text.tools?.[seo.slug];
   const title = seo.h1 ?? tool?.[0] ?? seo.title;
   const description = seo.shortIntro ?? tool?.[1] ?? seo.metaDescription;

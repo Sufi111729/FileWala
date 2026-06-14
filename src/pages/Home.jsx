@@ -3,9 +3,8 @@ import { Component, Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import Hero from '../components/Hero.jsx';
 import SEO from '../components/SEO.jsx';
-import { organizationSchema, toolItemListSchema, webApplicationSchema, websiteSchema } from '../components/seo/schema.js';
+import { organizationSchema, websiteSchema } from '../components/seo/schema.js';
 import { SITE_URL } from '../data/siteMetadata.js';
-import { allTools } from '../data/tools.js';
 import { useLanguage } from '../i18n.jsx';
 import { lazyWithRetry } from '../utils/lazyPage.js';
 
@@ -61,9 +60,11 @@ export default function Home() {
 
   useEffect(() => {
     const category = searchParams.get('category');
+    const query = searchParams.get('q');
     if (category && validTabs.includes(category)) {
       setActiveTab(category);
     }
+    if (query) setSearchTerm(query);
   }, [searchParams]);
 
   const handleTabChange = (tab) => {
@@ -75,18 +76,22 @@ export default function Home() {
     <>
       <SEO
         title="FileWalaTool - Free Online Image & PDF Tools"
-        description="Resize images, compress files, convert JPG to PDF, merge PDF, split PDF, remove backgrounds, and edit documents online for free with FileWalaTool."
+        description="Use FileWalaTool to resize images, compress files, convert JPG to PDF, merge PDF, split PDF, remove backgrounds, and edit documents online for free."
         canonical={`${SITE_URL}/`}
+        image={`${SITE_URL}/logo.png?v=2`}
+        ogDescription="Resize images, compress files, convert JPG to PDF, merge PDF, split PDF, remove backgrounds, and edit documents online for free with FileWalaTool."
+        twitterDescription="Free online PDF and image tools to resize images, compress photos, convert files, merge PDFs, split PDFs, and remove backgrounds."
         keywords={[
           'FileWalaTool',
           'File Wala Tool',
+          'FileWala',
+          'File Wala',
           'file wala tool',
           'free online file tools',
-          'pdf tools',
-          'image tools',
-          'document tools India',
+          'free pdf tools',
+          'free image tools',
         ]}
-        schema={[websiteSchema(), organizationSchema(), webApplicationSchema(), toolItemListSchema(allTools)]}
+        schema={[organizationSchema(), websiteSchema()]}
       />
       <Hero searchTerm={searchTerm} onSearchChange={setSearchTerm} />
       <SilentToolGridBoundary>
@@ -133,7 +138,7 @@ export default function Home() {
             </h2>
             <p className="mt-3 text-base leading-7 text-black/60">
               {text.home.description}
-              {' '}FileWalaTool is a free online file tool platform for PDF, image, document, resize, compress, and converter tools.
+              {' '}FileWalaTool is a free online toolkit for PDF tools, image tools, file conversion, image compression, PDF compression, document tools, and form-ready photo resizing.
             </p>
           </div>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">

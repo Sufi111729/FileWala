@@ -1,6 +1,50 @@
 {
   "redirects": [
     {
+      "source": "/batchimgcropper",
+      "destination": "/batch-image-cropper",
+      "permanent": true
+    },
+    {
+      "source": "/tools/batch-image-cropper",
+      "destination": "/batch-image-cropper",
+      "permanent": true
+    },
+    { "source": "/about-us", "destination": "/about", "permanent": true },
+    { "source": "/contact-us", "destination": "/contact", "permanent": true },
+    { "source": "/compress/image-compressor", "destination": "/compress-image", "permanent": true },
+    { "source": "/compress/custom-image-kb-resizer", "destination": "/kb-resizer", "permanent": true },
+    { "source": "/documents/passport-photo-maker", "destination": "/passport-photo-maker", "permanent": true },
+    { "source": "/documents/signature-resize", "destination": "/signature-resize", "permanent": true },
+    { "source": "/documents/aadhaar-photo-resize", "destination": "/aadhaar-photo-resize", "permanent": true },
+    { "source": "/documents/pan-photo-resize", "destination": "/pan-photo-resize", "permanent": true },
+    { "source": "/documents/resume-builder", "destination": "/resume-builder", "permanent": true },
+    { "source": "/documents/document-scanner", "destination": "/document-scanner", "permanent": true },
+    { "source": "/pdf-tools/merge-pdf", "destination": "/merge-pdf", "permanent": true },
+    { "source": "/pdf-tools/split-pdf", "destination": "/split-pdf", "permanent": true },
+    { "source": "/pdf-tools/compress-pdf", "destination": "/compress-pdf", "permanent": true },
+    { "source": "/pdf-tools/pdf-page-delete", "destination": "/pdf-page-delete", "permanent": true },
+    { "source": "/pdf-tools/pdf-rotate", "destination": "/pdf-rotate", "permanent": true },
+    { "source": "/compress/pdf-compressor", "destination": "/compress-pdf", "permanent": true },
+    { "source": "/tools/merge-pdf", "destination": "/merge-pdf", "permanent": true },
+    { "source": "/tools/split-pdf", "destination": "/split-pdf", "permanent": true },
+    { "source": "/tools/compress-pdf", "destination": "/compress-pdf", "permanent": true },
+    { "source": "/tools/pdf-page-delete", "destination": "/pdf-page-delete", "permanent": true },
+    { "source": "/tools/rotate-pdf", "destination": "/pdf-rotate", "permanent": true },
+    { "source": "/tools/pdf-to-word", "destination": "/pdf-to-word", "permanent": true },
+    { "source": "/tools/word-to-pdf", "destination": "/word-to-pdf", "permanent": true },
+    { "source": "/tools/protect-pdf", "destination": "/protect-pdf", "permanent": true },
+    { "source": "/tools/unlock-pdf", "destination": "/unlock-pdf", "permanent": true },
+    { "source": "/tools/watermark-pdf", "destination": "/watermark-pdf", "permanent": true },
+    { "source": "/tools/resize-image", "destination": "/image-resizer", "permanent": true },
+    { "source": "/tools/compress-image", "destination": "/compress-image", "permanent": true },
+    { "source": "/tools/photo-to-20kb", "destination": "/compress/image-to-20kb", "permanent": true },
+    { "source": "/tools/photo-to-50kb", "destination": "/compress/image-to-50kb", "permanent": true },
+    { "source": "/tools/photo-to-100kb", "destination": "/compress/image-to-100kb", "permanent": true },
+    { "source": "/tools/image-kb-resizer", "destination": "/kb-resizer", "permanent": true },
+    { "source": "/tools/image-upscaler", "destination": "/image-upscaler", "permanent": true },
+    { "source": "/tools/image-downscaler", "destination": "/image-downscaler", "permanent": true },
+    {
       "source": "/(.*)",
       "has": [
         {

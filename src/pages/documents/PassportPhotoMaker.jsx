@@ -3,7 +3,7 @@ import PhotoResizeTool from '../../components/tools/PhotoResizeTool.jsx';
 export default function PassportPhotoMaker() {
   return (
     <PhotoResizeTool
-      title="Passport Photo Maker"
+      title="Passport Photo"
       description="Create passport-size photos for online applications."
       requirementTitle="Passport Photo Requirements"
       requirements={[

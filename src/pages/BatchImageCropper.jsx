@@ -15,11 +15,17 @@ import {
   ZoomIn,
   ZoomOut,
 } from 'lucide-react';
-import { saveAs } from 'file-saver';
 import SeoHelmet from '../components/seo/SeoHelmet.jsx';
+import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
+import { toolSchemas } from '../components/seo/schema.js';
 import UploadBox from '../components/UploadBox.jsx';
 import { absoluteUrl } from '../data/siteMetadata.js';
-import { cropImageToBlob, formatFileSize, getImageDimensions, isSupportedImage } from '../utils/imageCropUtils.js';
+import { getToolSeoBySlug } from '../data/toolsSeoData.js';
+import { cropImageToBlob, formatFileSize, getImageDimensions, getSafeOutputDimensions, isSupportedImage } from '../utils/imageCropUtils.js';
+
+const MAX_BATCH_FILES = 20;
+const MAX_BATCH_BYTES = 150 * 1024 * 1024;
+const MOBILE_SAFE_OUTPUT_LIMITS = { maxDimension: 4096, maxPixels: 16_000_000 };
 
 const aspectOptions = [
   { id: 'free', label: 'Free Crop', value: null },
@@ -38,6 +44,7 @@ const cropperTool = {
   slug: 'batch-image-cropper',
   description: 'Crop multiple areas from one image or sheet.',
 };
+const cropperSeo = getToolSeoBySlug('batch-image-cropper');
 
 function dimensionsText(width, height) {
   return `${Math.round(width)} x ${Math.round(height)}px`;
@@ -90,9 +97,10 @@ function cropAreaFromBox(box, image) {
   };
 }
 
-function outputFileName(originalName, index) {
+function outputFileName(originalName, index, imageIndex = null) {
   const baseName = (originalName || 'image').replace(/\.[^.]+$/, '');
-  return `${baseName}-crop-${index + 1}.png`;
+  const imagePart = imageIndex === null ? '' : `-image-${imageIndex + 1}`;
+  return `${baseName}${imagePart}-crop-${index + 1}.png`;
 }
 
 export default function BatchImageCropper() {
@@ -179,19 +187,32 @@ export default function BatchImageCropper() {
     clearResults();
     const invalidFiles = files.filter((file) => !isSupportedImage(file));
     if (invalidFiles.length) {
-      setError('Please upload only JPG, JPEG, PNG, WEBP, or BMP images.');
+      setError('Please upload only JPG, JPEG, PNG, or WEBP images.');
+      return;
+    }
+    if (files.length > MAX_BATCH_FILES) {
+      setError(`Please upload no more than ${MAX_BATCH_FILES} images at once.`);
+      return;
+    }
+    if (files.reduce((total, file) => total + file.size, 0) > MAX_BATCH_BYTES) {
+      setError('The selected images exceed the 150 MB batch limit. Please use a smaller batch.');
       return;
     }
 
     setIsPreparing(true);
+    const nextImages = [];
     try {
-      const nextImages = await Promise.all(files.map(async (file) => createImageItem(file, await getImageDimensions(file))));
+      for (const file of files) {
+        nextImages.push(createImageItem(file, await getImageDimensions(file)));
+        await new Promise((resolve) => window.setTimeout(resolve, 0));
+      }
       images.forEach((image) => URL.revokeObjectURL(image.url));
       setImages(nextImages);
       setActiveImageId(nextImages[0]?.id ?? '');
       setSelectionsByImage({});
       setActiveSelectionId('');
     } catch (caughtError) {
+      nextImages.forEach((image) => URL.revokeObjectURL(image.url));
       setError(caughtError.message);
     } finally {
       setIsPreparing(false);
@@ -355,28 +376,32 @@ export default function BatchImageCropper() {
   };
 
   const cropAllSelections = async () => {
-    if (!activeImage || !selections.length || isExporting) return;
+    const exportQueue = images.flatMap((image, imageIndex) =>
+      (selectionsByImage[image.id] ?? []).map((selection, selectionIndex) => ({ image, imageIndex, selection, selectionIndex })),
+    );
+    if (!exportQueue.length || isExporting) return;
     setError('');
     clearResults();
     setIsExporting(true);
-    setProgress({ current: 0, total: selections.length });
+    setProgress({ current: 0, total: exportQueue.length });
 
     try {
       const nextResults = [];
-      for (let index = 0; index < selections.length; index += 1) {
-        const selection = selections[index];
-        const cropArea = cropAreaFromBox(selection, activeImage);
-        const blob = await cropImageToBlob(activeImage.file, cropArea, 'png', 1);
+      for (let index = 0; index < exportQueue.length; index += 1) {
+        const { image, imageIndex, selection, selectionIndex } = exportQueue[index];
+        const cropArea = cropAreaFromBox(selection, image);
+        const outputSize = getSafeOutputDimensions(cropArea.width, cropArea.height, MOBILE_SAFE_OUTPUT_LIMITS);
+        const blob = await cropImageToBlob(image.file, cropArea, 'png', 1, MOBILE_SAFE_OUTPUT_LIMITS);
         nextResults.push({
-          id: selection.id,
+          id: `${image.id}-${selection.id}`,
           cropName: selection.name,
-          fileName: outputFileName(activeImage.file.name, index),
-          dimensions: dimensionsText(cropArea.width, cropArea.height),
+          fileName: outputFileName(image.file.name, selectionIndex, images.length > 1 ? imageIndex : null),
+          dimensions: dimensionsText(outputSize.width, outputSize.height),
           size: blob.size,
           blob,
           url: URL.createObjectURL(blob),
         });
-        setProgress({ current: index + 1, total: selections.length });
+        setProgress({ current: index + 1, total: exportQueue.length });
         await new Promise((resolve) => window.setTimeout(resolve, 0));
       }
       setResults(nextResults);
@@ -389,11 +414,20 @@ export default function BatchImageCropper() {
 
   const downloadAllAsZip = async () => {
     if (!results.length) return;
-    const JSZip = (await import('jszip')).default;
-    const zip = new JSZip();
-    results.forEach((result) => zip.file(result.fileName, result.blob));
-    const zipBlob = await zip.generateAsync({ type: 'blob' });
-    saveAs(zipBlob, 'filewalatool-crop-selections.zip');
+    setIsExporting(true);
+    try {
+      const [zipModule, fileSaverModule] = await Promise.all([import('jszip'), import('file-saver')]);
+      const JSZip = zipModule.default;
+      const saveAs = fileSaverModule.saveAs ?? fileSaverModule.default?.saveAs ?? fileSaverModule.default;
+      const zip = new JSZip();
+      results.forEach((result) => zip.file(result.fileName, result.blob));
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      saveAs(zipBlob, 'filewalatool-batch-cropped-images.zip');
+    } catch (caughtError) {
+      setError(caughtError.message || 'Could not create the ZIP download.');
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   const openInBrowser = (result) => {
@@ -424,10 +458,15 @@ export default function BatchImageCropper() {
   return (
     <section className="bg-zinc-50 py-10 sm:py-14">
       <SeoHelmet
-        title="Batch Image Cropper - Multiple Crop Selection | FileWalaTool"
-        description="Create multiple crop selections on one image, export every selected area as separate image files, preview crops, and download all as ZIP using FileWalaTool."
+        title={cropperSeo.seoTitle}
+        description={cropperSeo.metaDescription}
         canonical={absoluteUrl('/batch-image-cropper')}
-        keywords={['multiple crop selection', 'crop sheet into images', 'batch crop areas', 'thumbnail sheet cropper']}
+        keywords={[cropperSeo.primaryKeyword, ...cropperSeo.secondaryKeywords, ...cropperSeo.longTailKeywords]}
+        image={cropperSeo.imageUrl}
+        imageAlt={cropperSeo.imageAlt}
+        ogDescription={cropperSeo.ogDescription}
+        twitterDescription={cropperSeo.twitterDescription}
+        jsonLd={toolSchemas(cropperSeo)}
       />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -435,7 +474,7 @@ export default function BatchImageCropper() {
           <p className="text-xs font-black uppercase tracking-wide text-brand-red">Image Tools / Editor</p>
           <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">Batch Image Cropper</h1>
           <p className="mt-4 text-base leading-7 text-black/60">
-            Open one image or thumbnail sheet, mark multiple crop areas, then export every selected crop as a separate image.
+            Batch crop multiple images, preview every result, and download individual crops or one ZIP file.
           </p>
         </div>
 
@@ -448,7 +487,7 @@ export default function BatchImageCropper() {
                 tool={cropperTool}
                 uploadOnly
                 onFilesSelected={handleFilesSelected}
-                helperText="Select or drop JPG, JPEG, PNG, WEBP, or BMP images."
+                helperText="Select or drop up to 20 JPG, JPEG, PNG, or WEBP images."
               />
             </div>
             {isPreparing && (
@@ -475,9 +514,10 @@ export default function BatchImageCropper() {
                     }}
                     className={`rounded-md border p-2 text-left ${activeImage?.id === image.id ? 'border-brand-red bg-red-50' : 'border-black/10 bg-white'}`}
                   >
-                    <img src={image.url} alt={image.file.name} className="h-28 w-full rounded object-cover" />
+                    <img src={image.url} alt={image.file.name} title={image.file.name} loading="lazy" decoding="async" className="h-28 w-full rounded object-cover" />
                     <span className="mt-2 block truncate text-sm font-black text-black">{image.file.name}</span>
                     <span className="text-xs font-semibold text-black/50">{dimensionsText(image.width, image.height)}</span>
+                    <span className="block text-xs font-semibold text-black/50">Original size: {formatFileSize(image.file.size)}</span>
                   </button>
                 ))}
               </div>
@@ -603,7 +643,7 @@ export default function BatchImageCropper() {
                         Delete Selected Selection
                       </button>
                       <button type="button" onClick={clearSelections} disabled={!selections.length} className="rounded-md border border-black/10 bg-white px-3 py-2 text-sm font-black text-black hover:border-black disabled:opacity-40">
-                        Clear All Selections
+                        Reset Crop Selections
                       </button>
                     </div>
                   </div>
@@ -616,7 +656,7 @@ export default function BatchImageCropper() {
                       onPointerUp={stopPointerAction}
                       onPointerCancel={stopPointerAction}
                     >
-                      <img src={activeImage.url} alt={activeImage.file.name} className="max-h-[72vh] max-w-full rounded object-contain" draggable="false" />
+                      <img src={activeImage.url} alt={activeImage.file.name} title={activeImage.file.name} loading="lazy" decoding="async" className="max-h-[72vh] max-w-full rounded object-contain" draggable="false" />
                       {selections.map((selection, index) => {
                         const isActive = activeSelection?.id === selection.id;
                         return (
@@ -640,9 +680,9 @@ export default function BatchImageCropper() {
                               <span
                                 key={handle}
                                 onPointerDown={(event) => startPointerAction(event, selection, handle)}
-                                className={`absolute h-4 w-4 rounded-full border-2 border-white bg-brand-red ${
-                                  handle.includes('n') ? '-top-2' : '-bottom-2'
-                                } ${handle.includes('w') ? '-left-2' : '-right-2'}`}
+                                className={`absolute h-6 w-6 rounded-full border-2 border-white bg-brand-red sm:h-4 sm:w-4 ${
+                                  handle.includes('n') ? '-top-3 sm:-top-2' : '-bottom-3 sm:-bottom-2'
+                                } ${handle.includes('w') ? '-left-3 sm:-left-2' : '-right-3 sm:-right-2'}`}
                               />
                             ))}
                           </div>
@@ -706,11 +746,11 @@ export default function BatchImageCropper() {
                   <button
                     type="button"
                     onClick={cropAllSelections}
-                    disabled={!selections.length || isExporting}
+                    disabled={!images.some((image) => (selectionsByImage[image.id] ?? []).length) || isExporting}
                     className="inline-flex items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-black text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:bg-black/25"
                   >
                     {isExporting ? <Loader2 className="h-4 w-4 animate-spin text-brand-red" /> : <Plus className="h-4 w-4 text-brand-red" />}
-                    {isExporting ? `Cropping ${progress.current} / ${progress.total} selections...` : 'Crop All Selections'}
+                    {isExporting ? `Processing ${progress.current} / ${progress.total} crops...` : 'Crop All Images'}
                   </button>
                   <button
                     type="button"
@@ -754,7 +794,7 @@ export default function BatchImageCropper() {
                 {results.map((result, index) => (
                   <div key={result.id} className="rounded-md border border-black/10 bg-white p-3">
                     <button type="button" onClick={() => openLightbox(index)} className="block w-full">
-                      <img src={result.url} alt={result.fileName} className="h-44 w-full rounded-md border border-black/10 object-contain" />
+                      <img src={result.url} alt={result.fileName} title={result.fileName} loading="lazy" decoding="async" className="h-44 w-full rounded-md border border-black/10 object-contain" />
                     </button>
                     <h3 className="mt-3 truncate text-sm font-black text-black">{result.cropName}</h3>
                     <p className="truncate text-sm text-black/60">{result.fileName}</p>
@@ -772,6 +812,8 @@ export default function BatchImageCropper() {
           )}
         </div>
       </div>
+
+      <ToolSeoSections seo={cropperSeo} activeTab="Image Tools" />
 
       {activeLightboxResult && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-3 sm:p-5">
@@ -815,6 +857,9 @@ export default function BatchImageCropper() {
               <img
                 src={activeLightboxResult.url}
                 alt={activeLightboxResult.fileName}
+                title={activeLightboxResult.fileName}
+                loading="lazy"
+                decoding="async"
                 className="mx-auto max-h-[72vh] origin-center rounded-md object-contain transition-transform duration-150"
                 style={{ transform: `scale(${lightboxZoom})` }}
               />

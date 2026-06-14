@@ -368,7 +368,7 @@ function PreviewCard({ title, url, size, dimensions }) {
         <span className="text-xs font-bold text-black/50">{formatFileSize(size || 0)}</span>
       </div>
       <div className="mt-3 flex min-h-72 items-center justify-center rounded-md border border-dashed border-black/15 bg-black/[0.015] p-3">
-        {url ? <img src={url} alt={`${title} preview`} className="max-h-[420px] max-w-full rounded-md object-contain" /> : <p className="text-center text-sm font-semibold text-black/45">{text.image.previewHint}</p>}
+        {url ? <img src={url} alt={`${title} preview`} title={`${title} preview`} loading="lazy" decoding="async" className="max-h-[420px] max-w-full rounded-md object-contain" /> : <p className="text-center text-sm font-semibold text-black/45">{text.image.previewHint}</p>}
       </div>
       {dimensions?.width && dimensions?.height && (
         <p className="mt-3 text-sm font-bold text-black/55">{dimensions.width} x {dimensions.height}px</p>

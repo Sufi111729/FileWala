@@ -147,7 +147,7 @@ export default function CropperPanel({
                 index === activeIndex ? 'border-brand-red ring-2 ring-brand-red/20' : 'border-black/10'
               }`}
             >
-              <img src={image.url} alt={image.file.name} className="h-16 w-full object-cover" />
+              <img src={image.url} alt={image.file.name} title={image.file.name} loading="lazy" decoding="async" className="h-16 w-full object-cover" />
               <span className="block truncate px-2 py-1 text-xs font-bold text-black/65">{image.file.name}</span>
             </button>
           ))}

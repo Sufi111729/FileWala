@@ -7,14 +7,19 @@ export const BRAND_ICON_URL = `${SITE_URL}/favicon-32x32.png?v=${BRAND_ASSET_VER
 export const BRAND_ALIASES = [
   'FileWalaTool',
   'File Wala Tool',
-  'filewalatool',
+  'FileWala',
+  'File Wala',
+  'filewala tool',
   'file wala tool',
-  'Filewala',
-  'file wala',
-  'File Tool',
-  'File Tools',
-  'Online File Tool',
-  'Free File Tool',
+  'file waala tool',
+  'filewaala tool',
+  'online file tool',
+  'free file tool',
+  'file converter tool',
+  'file compressor tool',
+  'file resizer tool',
+  'PDF file tool',
+  'image file tool',
 ];
 
 const TOOL_IMAGE_BY_PATH = {

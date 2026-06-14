@@ -1,5 +1,5 @@
 export const passportPhotoConfig = {
-  title: 'Passport Photo Maker',
+  title: 'Passport Photo',
   description: 'Create passport-size photos for online applications.',
   editorType: 'fixed-frame',
   requirementsTitle: 'Passport Photo Requirements',
@@ -51,7 +51,7 @@ export const signatureResizeConfig = {
 };
 
 export const aadhaarPhotoConfig = {
-  title: 'Aadhaar Photo Resize',
+  title: 'Aadhaar Photo',
   description: 'Resize Aadhaar card photos for online upload.',
   editorType: 'fixed-frame',
   requirementsTitle: 'Aadhaar Photo Requirements',
@@ -72,7 +72,7 @@ export const aadhaarPhotoConfig = {
 };
 
 export const panPhotoConfig = {
-  title: 'PAN Photo Resize',
+  title: 'PAN Photo',
   description: 'Resize PAN card photos for online upload.',
   editorType: 'fixed-frame',
   requirementsTitle: 'PAN Photo Requirements',
@@ -93,7 +93,7 @@ export const panPhotoConfig = {
 };
 
 export const documentScannerConfig = {
-  title: 'Document Scanner',
+  title: 'Doc Scanner',
   description: 'Scan, clean, resize, and download documents.',
   fields: [
     { name: 'documentType', label: 'Document Type', options: ['Aadhaar', 'PAN', 'Passport', 'General Document'] },

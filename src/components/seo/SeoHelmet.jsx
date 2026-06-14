@@ -47,10 +47,13 @@ export default function SeoHelmet({
   description,
   canonical = SITE_URL,
   keywords = [],
-  robots = 'index, follow',
+  robots = 'index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1',
   image,
+  imageAlt,
   ogTitle,
   ogDescription,
+  twitterTitle,
+  twitterDescription,
   type = 'website',
   jsonLd = [],
   schema,
@@ -75,18 +78,18 @@ export default function SeoHelmet({
     if (description || ogDescription) upsertMeta('meta[property="og:description"]', { property: 'og:description', content: ogDescription ?? description });
     upsertMeta('meta[property="og:url"]', { property: 'og:url', content: canonical });
     upsertMeta('meta[property="og:image"]', { property: 'og:image', content: resolvedImage });
-    upsertMeta('meta[property="og:image:alt"]', { property: 'og:image:alt', content: ogTitle ?? title });
+    upsertMeta('meta[property="og:image:alt"]', { property: 'og:image:alt', content: imageAlt ?? ogTitle ?? title });
     upsertMeta('meta[property="og:logo"]', { property: 'og:logo', content: BRAND_ICON_URL });
 
     upsertMeta('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' });
-    upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: title });
-    if (description) upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: description });
+    upsertMeta('meta[name="twitter:title"]', { name: 'twitter:title', content: twitterTitle ?? ogTitle ?? title });
+    if (description || twitterDescription) upsertMeta('meta[name="twitter:description"]', { name: 'twitter:description', content: twitterDescription ?? ogDescription ?? description });
     upsertMeta('meta[name="twitter:image"]', { name: 'twitter:image', content: resolvedImage });
-    upsertMeta('meta[name="twitter:image:alt"]', { name: 'twitter:image:alt', content: ogTitle ?? title });
+    upsertMeta('meta[name="twitter:image:alt"]', { name: 'twitter:image:alt', content: imageAlt ?? ogTitle ?? title });
 
     removeManagedSchemas();
     schemaItems.forEach(appendSchema);
-  }, [canonical, description, image, jsonLd, keywords, ogDescription, ogTitle, robots, schema, title, type]);
+  }, [canonical, description, image, imageAlt, jsonLd, keywords, ogDescription, ogTitle, robots, schema, title, twitterDescription, twitterTitle, type]);
 
   return null;
 }

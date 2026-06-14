@@ -3,7 +3,7 @@ import PhotoResizeTool from '../../components/tools/PhotoResizeTool.jsx';
 export default function AadhaarPhotoResize() {
   return (
     <PhotoResizeTool
-      title="Aadhaar Photo Resize"
+      title="Aadhaar Photo"
       description="Resize Aadhaar card photos for online upload."
       requirementTitle="Aadhaar Photo Requirements"
       requirements={[

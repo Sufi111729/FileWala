@@ -268,8 +268,10 @@ export default function AboutUs() {
                 <img
                   src={founderImage}
                   alt="Muhammad Sufiyan, Founder and Developer of FileWalaTool"
+                  title="Muhammad Sufiyan - Founder of FileWalaTool"
                   className="h-full w-full object-cover object-top"
                   loading="lazy"
+                  decoding="async"
                 />
               </div>
               <div>

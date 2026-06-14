@@ -13,7 +13,7 @@ export default function ToolSeoSections({ seo, activeTab }) {
   const relatedTools = (Array.isArray(seo.relatedTools) ? seo.relatedTools : [])
     .map((slug) => allTools.find((tool) => tool.slug === slug))
     .filter((tool) => tool && tool.slug !== seo.slug)
-    .slice(0, 4);
+    .slice(0, seo.relatedToolsLimit ?? 4);
 
   return (
     <>
@@ -77,7 +77,7 @@ export default function ToolSeoSections({ seo, activeTab }) {
           <section className="mt-10 rounded-md border border-black/10 bg-white p-5 shadow-sm sm:p-6">
             <div className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-blue-700" />
-              <h2 className="text-xl font-black text-black">{text.sections.benefits}</h2>
+              <h2 className="text-xl font-black text-black">{seo.benefitsTitle ?? text.sections.benefits}</h2>
             </div>
             <div className="mt-4 grid gap-3 sm:grid-cols-3">
               {seo.benefits.map((benefit) => (
@@ -105,7 +105,7 @@ export default function ToolSeoSections({ seo, activeTab }) {
         </section>
       </div>
 
-      <RelatedTools tools={relatedTools} activeTab={activeTab} currentSlug={seo.slug} />
+      <RelatedTools tools={relatedTools} activeTab={activeTab} currentSlug={seo.slug} maxItems={seo.relatedToolsLimit ?? 4} />
     </>
   );
 }

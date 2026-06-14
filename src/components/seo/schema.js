@@ -18,7 +18,7 @@ export function organizationSchema() {
     '@type': 'Organization',
     name: BRAND_NAME,
     alternateName: BRAND_ALIASES,
-    url: SITE_URL,
+    url: absoluteUrl('/'),
     logo: BRAND_LOGO_URL,
     founder: {
       '@type': 'Person',
@@ -33,7 +33,16 @@ export function websiteSchema() {
     '@type': 'WebSite',
     name: BRAND_NAME,
     alternateName: BRAND_ALIASES,
-    url: SITE_URL,
+    url: absoluteUrl('/'),
+    inLanguage: 'en-IN',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: {
+        '@type': 'EntryPoint',
+        urlTemplate: `${SITE_URL}/?q={search_term_string}`,
+      },
+      'query-input': 'required name=search_term_string',
+    },
   };
 }
 
@@ -141,24 +150,24 @@ export function toolSchemas(seo) {
   const schemas = [
     {
       '@context': 'https://schema.org',
-      '@type': 'WebApplication',
+      '@type': seo.schema?.type ?? seo.schemaType ?? 'WebApplication',
       name: seo.title,
       alternateName: seo.alternateNames,
       applicationCategory: seo.schema?.applicationCategory ?? 'UtilitiesApplication',
-      operatingSystem: 'Web Browser',
+      operatingSystem: 'Web',
       url,
-      description: seo.metaDescription,
+      description: seo.schema?.description ?? seo.metaDescription,
       image: seo.imageUrl ?? toolImageUrl(seo.route),
-      keywords: [
+      keywords: [...new Set([
         seo.primaryKeyword,
         ...seo.secondaryKeywords,
         ...seo.longTailKeywords,
         ...seo.indiaKeywords,
-      ].filter(Boolean).join(', '),
+      ].filter(Boolean))].join(', '),
       offers: {
         '@type': 'Offer',
         price: '0',
-        priceCurrency: 'USD',
+        priceCurrency: seo.schema?.priceCurrency ?? 'USD',
       },
       publisher: {
         '@type': 'Organization',
@@ -197,7 +206,7 @@ export function toolSchemas(seo) {
     },
   ];
 
-  if (faqs.length > 0) {
+  if (faqs.length > 0 && seo.includeFaqSchema !== false) {
     schemas.splice(1, 0, {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
