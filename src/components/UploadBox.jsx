@@ -1,15 +1,19 @@
 import {
   AlertCircle,
+  ArrowDown,
+  ArrowUp,
   CheckCircle2,
   Cloud,
   Download,
   FileUp,
   HardDrive,
   Loader2,
+  RotateCcw,
   Settings,
+  Trash2,
   UploadCloud,
 } from 'lucide-react';
-import { useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguage } from '../i18n.jsx';
 
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -20,7 +24,12 @@ const GOOGLE_DRIVE_SCOPE = 'https://www.googleapis.com/auth/drive.readonly';
 const converterConfig = {
   'image-to-pdf': {
     accept: 'image/jpeg,image/png,image/webp,image/bmp',
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/bmp'],
+    extensions: ['jpg', 'jpeg', 'png', 'webp', 'bmp'],
     multiple: true,
+    maxFiles: 30,
+    maxSize: 20 * 1024 * 1024,
+    maxTotalSize: 100 * 1024 * 1024,
     outputName: 'images-filewalatool.pdf',
     outputType: 'application/pdf',
   },
@@ -35,10 +44,10 @@ const converterConfig = {
     outputType: 'image/jpeg',
   },
   'pdf-to-jpg': {
-    accept: 'application/pdf',
-    outputName: 'pdf-to-jpg-filewalatool.jpg',
-    outputType: 'image/jpeg',
-    needsLibrary: 'PDF to JPG needs a frontend PDF renderer such as pdf.js.',
+    accept: 'application/pdf,.pdf',
+    extensions: ['pdf'],
+    maxSize: 50 * 1024 * 1024,
+    maxPages: 50,
   },
   'batch-image-cropper': {
     accept: 'image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp',
@@ -57,7 +66,7 @@ const converterConfig = {
     outputName: 'converted.pdf',
     outputType: 'application/pdf',
     extensions: ['docx'],
-    maxSize: 50 * 1024 * 1024,
+    maxSize: 20 * 1024 * 1024,
     rejectedMessages: { doc: 'DOC format is not supported in browser-only mode. Please upload DOCX.' },
   },
   'protect-pdf': {
@@ -164,25 +173,6 @@ function qualityForMode(mode) {
   return 0.86;
 }
 
-function blobToDataUrl(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = () => reject(new Error('Unable to read file.'));
-    reader.readAsDataURL(blob);
-  });
-}
-
-function dataUrlToBytes(dataUrl) {
-  const base64 = dataUrl.split(',')[1] ?? '';
-  const binary = atob(base64);
-  const bytes = new Uint8Array(binary.length);
-  for (let index = 0; index < binary.length; index += 1) {
-    bytes[index] = binary.charCodeAt(index);
-  }
-  return bytes;
-}
-
 function textBytes(text) {
   return new TextEncoder().encode(text);
 }
@@ -280,15 +270,20 @@ async function fetchDropboxFile(file) {
 
 async function imageToCanvas(file, background = null) {
   const image = await loadImage(file);
+  const sourceWidth = image.naturalWidth || image.width;
+  const sourceHeight = image.naturalHeight || image.height;
+  const dimensionScale = Math.min(1, 4096 / sourceWidth, 4096 / sourceHeight);
+  const pixelScale = Math.min(1, Math.sqrt(16_000_000 / (sourceWidth * sourceHeight)));
+  const scale = Math.min(dimensionScale, pixelScale);
   const canvas = document.createElement('canvas');
-  canvas.width = image.naturalWidth || image.width;
-  canvas.height = image.naturalHeight || image.height;
+  canvas.width = Math.max(1, Math.round(sourceWidth * scale));
+  canvas.height = Math.max(1, Math.round(sourceHeight * scale));
   const context = canvas.getContext('2d');
   if (background) {
     context.fillStyle = background;
     context.fillRect(0, 0, canvas.width, canvas.height);
   }
-  context.drawImage(image, 0, 0);
+  context.drawImage(image, 0, 0, canvas.width, canvas.height);
   return canvas;
 }
 
@@ -313,11 +308,14 @@ async function convertImageFormat(file, type, mode) {
 async function imageFileToPdfImage(file, mode) {
   const canvas = await imageToCanvas(file, '#ffffff');
   const blob = await canvasToBlob(canvas, 'image/jpeg', qualityForMode(mode));
-  return {
+  const image = {
     width: canvas.width,
     height: canvas.height,
-    bytes: dataUrlToBytes(await blobToDataUrl(blob)),
+    bytes: new Uint8Array(await blob.arrayBuffer()),
   };
+  canvas.width = 1;
+  canvas.height = 1;
+  return image;
 }
 
 function createPdf(images) {
@@ -411,12 +409,95 @@ function previewType(contentType) {
   return '';
 }
 
+function canvasToJpegBlob(canvas, quality = 0.9) {
+  return canvasToBlob(canvas, 'image/jpeg', quality);
+}
+
+async function loadPdfDocument(file) {
+  const [pdfjs, worker] = await Promise.all([
+    import('pdfjs-dist/build/pdf.mjs'),
+    import('pdfjs-dist/build/pdf.worker.min.mjs?url'),
+  ]);
+  pdfjs.GlobalWorkerOptions.workerSrc = worker.default;
+
+  try {
+    return await pdfjs.getDocument({
+      data: await file.arrayBuffer(),
+      disableFontFace: true,
+      useSystemFonts: true,
+    }).promise;
+  } catch (error) {
+    if (error?.name === 'PasswordException') {
+      throw new Error('This PDF is password-protected. Unlock it before converting pages to JPG.');
+    }
+    throw new Error('This PDF could not be opened. It may be corrupted or unsupported.');
+  }
+}
+
+function renderScaleForPage(page, targetScale, maxPixels) {
+  const viewport = page.getViewport({ scale: targetScale });
+  const pixels = viewport.width * viewport.height;
+  return pixels <= maxPixels ? targetScale : targetScale * Math.sqrt(maxPixels / pixels);
+}
+
+async function renderPdfPage(page, { targetScale, maxPixels, quality }) {
+  const scale = renderScaleForPage(page, targetScale, maxPixels);
+  const viewport = page.getViewport({ scale });
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.max(1, Math.floor(viewport.width));
+  canvas.height = Math.max(1, Math.floor(viewport.height));
+  const context = canvas.getContext('2d', { alpha: false });
+  context.fillStyle = '#ffffff';
+  context.fillRect(0, 0, canvas.width, canvas.height);
+  await page.render({ canvasContext: context, viewport, background: 'white' }).promise;
+  const blob = await canvasToJpegBlob(canvas, quality);
+  canvas.width = 1;
+  canvas.height = 1;
+  page.cleanup();
+  return blob;
+}
+
+function parsePageSelection(value, pageCount) {
+  const input = value.trim();
+  if (!input) return Array.from({ length: pageCount }, (_, index) => index + 1);
+
+  const pages = new Set();
+  for (const token of input.split(',')) {
+    const cleanToken = token.trim();
+    if (!cleanToken) continue;
+    const range = cleanToken.match(/^(\d+)\s*-\s*(\d+)$/);
+    if (range) {
+      const start = Number(range[1]);
+      const end = Number(range[2]);
+      if (start < 1 || end > pageCount || start > end) throw new Error(`Use page numbers from 1 to ${pageCount}.`);
+      for (let pageNumber = start; pageNumber <= end; pageNumber += 1) pages.add(pageNumber);
+      continue;
+    }
+    if (!/^\d+$/.test(cleanToken)) throw new Error('Use page ranges such as 1-3,5.');
+    const pageNumber = Number(cleanToken);
+    if (pageNumber < 1 || pageNumber > pageCount) throw new Error(`Use page numbers from 1 to ${pageCount}.`);
+    pages.add(pageNumber);
+  }
+  if (pages.size === 0) throw new Error('Select at least one PDF page.');
+  return [...pages].sort((a, b) => a - b);
+}
+
 function fileExtension(fileName) {
   return fileName.split('.').pop()?.toLowerCase() ?? '';
 }
 
 function validateFiles(files, config) {
   if (files.length === 0) return '';
+  if (config.maxFiles && files.length > config.maxFiles) {
+    return `Select up to ${config.maxFiles} images at a time.`;
+  }
+  if (config.maxTotalSize && totalFileSize(files) > config.maxTotalSize) {
+    return `Total selected size must be ${formatUploadSize(config.maxTotalSize)} or smaller.`;
+  }
+  const invalidMimeFile = config.mimeTypes?.length > 0
+    ? files.find((file) => file.type && !config.mimeTypes.includes(file.type))
+    : null;
+  if (invalidMimeFile) return 'Please upload a supported image file.';
   const invalidFile = config.extensions
     ? files.find((file) => !config.extensions.includes(fileExtension(file.name)))
     : null;
@@ -443,11 +524,36 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
   const [error, setError] = useState('');
   const [importSource, setImportSource] = useState('');
   const [cloudStatus, setCloudStatus] = useState('');
+  const [filePreviewUrls, setFilePreviewUrls] = useState([]);
+  const [pdfPreviewPages, setPdfPreviewPages] = useState([]);
+  const [pdfPageCount, setPdfPageCount] = useState(0);
+  const [pdfPageSelection, setPdfPageSelection] = useState('');
+  const [pdfProgress, setPdfProgress] = useState('');
 
   const fileLabel = files.length > 1 ? `${files.length} ${text.upload.filesSelected}` : joinFileNames(files);
-  const isWorking = status === 'processing';
+  const isWorking = status === 'processing' || status === 'loading-preview';
   const canConvert = !isWorking && files.length > 0;
   const preview = previewType(result?.contentType);
+
+  useEffect(() => {
+    if (tool.slug !== 'image-to-pdf') {
+      setFilePreviewUrls([]);
+      return undefined;
+    }
+
+    const urls = files.map((file) => URL.createObjectURL(file));
+    setFilePreviewUrls(urls);
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [files, tool.slug]);
+
+  useEffect(() => () => {
+    if (result?.downloadUrl?.startsWith('blob:')) URL.revokeObjectURL(result.downloadUrl);
+    result?.pages?.forEach((page) => URL.revokeObjectURL(page.url));
+  }, [result]);
+
+  useEffect(() => () => {
+    pdfPreviewPages.forEach((page) => URL.revokeObjectURL(page.url));
+  }, [pdfPreviewPages]);
 
   const resetResult = () => {
     if (result?.downloadUrl?.startsWith('blob:')) {
@@ -457,9 +563,18 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
     setError('');
     setStatus('idle');
     setCloudStatus('');
+    setPdfProgress('');
   };
 
-  const handleFiles = (fileList) => {
+  const resetPdfPreview = () => {
+    pdfPreviewPages.forEach((page) => URL.revokeObjectURL(page.url));
+    setPdfPreviewPages([]);
+    setPdfPageCount(0);
+    setPdfPageSelection('');
+    setPdfProgress('');
+  };
+
+  const handleFiles = async (fileList) => {
     const selectedFiles = Array.from(fileList ?? []);
     const nextFiles = config.multiple ? selectedFiles : selectedFiles.slice(0, 1);
     const validationError = validateFiles(nextFiles, config);
@@ -472,9 +587,42 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
     }
+    if (tool.slug === 'pdf-to-jpg') resetPdfPreview();
     setFiles(nextFiles);
     onFilesSelected?.(nextFiles);
     resetResult();
+
+    if (tool.slug === 'pdf-to-jpg' && nextFiles[0]) {
+      setStatus('loading-preview');
+      setPdfProgress('Loading PDF pages...');
+      const previewPages = [];
+      try {
+        const pdfDocument = await loadPdfDocument(nextFiles[0]);
+        if (pdfDocument.numPages > config.maxPages) {
+          await pdfDocument.destroy();
+          throw new Error(`This tool supports up to ${config.maxPages} PDF pages at a time.`);
+        }
+        for (let pageNumber = 1; pageNumber <= pdfDocument.numPages; pageNumber += 1) {
+          setPdfProgress(`Preparing page preview ${pageNumber} of ${pdfDocument.numPages}...`);
+          const page = await pdfDocument.getPage(pageNumber);
+          const blob = await renderPdfPage(page, { targetScale: 0.7, maxPixels: 500_000, quality: 0.72 });
+          previewPages.push({ pageNumber, url: URL.createObjectURL(blob) });
+        }
+        setPdfPageCount(pdfDocument.numPages);
+        setPdfPreviewPages(previewPages);
+        await pdfDocument.destroy();
+        setPdfProgress('');
+        setStatus('idle');
+      } catch (caughtError) {
+        previewPages.forEach((page) => URL.revokeObjectURL(page.url));
+        setFiles([]);
+        onFilesSelected?.([]);
+        setPdfProgress('');
+        setError(caughtError.message);
+        setStatus('error');
+        if (fileInputRef.current) fileInputRef.current.value = '';
+      }
+    }
   };
 
   const handleFileChange = (event) => {
@@ -491,6 +639,37 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
     event.stopPropagation();
     setFiles([]);
     onFilesSelected?.([]);
+    if (tool.slug === 'pdf-to-jpg') resetPdfPreview();
+    resetResult();
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const updateFiles = (nextFiles) => {
+    setFiles(nextFiles);
+    onFilesSelected?.(nextFiles);
+    resetResult();
+  };
+
+  const moveFile = (index, direction) => {
+    const nextIndex = index + direction;
+    if (nextIndex < 0 || nextIndex >= files.length) return;
+    const nextFiles = [...files];
+    [nextFiles[index], nextFiles[nextIndex]] = [nextFiles[nextIndex], nextFiles[index]];
+    updateFiles(nextFiles);
+  };
+
+  const removeFileAt = (index) => {
+    const nextFiles = files.filter((_, fileIndex) => fileIndex !== index);
+    updateFiles(nextFiles);
+    if (nextFiles.length === 0 && fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const resetTool = () => {
+    setFiles([]);
+    onFilesSelected?.([]);
+    setMode(modeValues[1]);
+    setImportSource('');
+    if (tool.slug === 'pdf-to-jpg') resetPdfPreview();
     resetResult();
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
@@ -502,10 +681,39 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
     setResult(null);
     setStatus('processing');
 
+    let activePdfDocument = null;
+    let pendingPdfPages = [];
     try {
       let blob;
-      if (config.needsLibrary) {
-        throw new Error(`${config.needsLibrary} Java/backend is not used in this frontend-only flow.`);
+      if (tool.slug === 'pdf-to-jpg') {
+        const selectedPages = parsePageSelection(pdfPageSelection, pdfPageCount);
+        const pdfDocument = await loadPdfDocument(files[0]);
+        activePdfDocument = pdfDocument;
+        const pages = [];
+        for (let index = 0; index < selectedPages.length; index += 1) {
+          const pageNumber = selectedPages[index];
+          setPdfProgress(`Converting page ${index + 1} of ${selectedPages.length}...`);
+          const page = await pdfDocument.getPage(pageNumber);
+          const pageBlob = await renderPdfPage(page, {
+            targetScale: mode === 'best-quality' ? 2 : mode === 'fast-export' ? 1.25 : 1.6,
+            maxPixels: mode === 'best-quality' ? 10_000_000 : 7_000_000,
+            quality: qualityForMode(mode),
+          });
+          pages.push({
+            pageNumber,
+            blob: pageBlob,
+            fileName: `pdf-page-${pageNumber}.jpg`,
+            url: URL.createObjectURL(pageBlob),
+          });
+          pendingPdfPages = pages;
+        }
+        await pdfDocument.destroy();
+        activePdfDocument = null;
+        setResult({ pages, pageCount: pages.length });
+        pendingPdfPages = [];
+        setPdfProgress('');
+        setStatus('done');
+        return;
       } else if (tool.slug === 'image-to-pdf') {
         blob = await convertImagesToPdf(files, mode);
       } else if (tool.slug === 'jpg-to-png') {
@@ -525,8 +733,32 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
       });
       setStatus('done');
     } catch (caughtError) {
+      pendingPdfPages.forEach((page) => URL.revokeObjectURL(page.url));
+      if (activePdfDocument) await activePdfDocument.destroy().catch(() => {});
+      setPdfProgress('');
       setError(caughtError.message);
       setStatus('error');
+    }
+  };
+
+  const downloadPdfPagesZip = async () => {
+    if (!result?.pages?.length) return;
+    setPdfProgress('Creating ZIP file...');
+    try {
+      const { default: JSZip } = await import('jszip');
+      const zip = new JSZip();
+      result.pages.forEach((page) => zip.file(page.fileName, page.blob));
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const url = URL.createObjectURL(zipBlob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = 'pdf-to-jpg-filewalatool.zip';
+      anchor.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
+    } catch {
+      setError('The ZIP file could not be created. Download the JPG images individually.');
+    } finally {
+      setPdfProgress('');
     }
   };
 
@@ -720,6 +952,74 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
           />
         </label>
 
+        {tool.slug === 'image-to-pdf' && files.length > 0 && (
+          <div className="border-t border-black/5 p-4 sm:p-6">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-lg font-black text-black">Selected images</h2>
+                <p className="text-sm text-black/55">Arrange images in the order they should appear in the PDF.</p>
+              </div>
+              <span className="text-sm font-bold text-black/60">{files.length} file{files.length === 1 ? '' : 's'}</span>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {files.map((file, index) => (
+                <article key={`${file.name}-${file.lastModified}-${index}`} className="flex min-w-0 items-center gap-3 rounded-md border border-black/10 bg-white p-3">
+                  <img
+                    src={filePreviewUrls[index]}
+                    alt={`${file.name} preview`}
+                    title={`${file.name} preview`}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-16 w-16 flex-none rounded-md border border-black/10 object-cover"
+                  />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-black text-black">{index + 1}. {file.name}</p>
+                    <p className="mt-1 text-xs font-semibold text-black/50">{formatUploadSize(file.size)}</p>
+                    <div className="mt-2 flex gap-2">
+                      <button type="button" onClick={() => moveFile(index, -1)} disabled={index === 0} aria-label={`Move ${file.name} up`} className="focus-ring rounded-md border border-black/10 p-2 text-black/65 disabled:text-black/20">
+                        <ArrowUp className="h-4 w-4" />
+                      </button>
+                      <button type="button" onClick={() => moveFile(index, 1)} disabled={index === files.length - 1} aria-label={`Move ${file.name} down`} className="focus-ring rounded-md border border-black/10 p-2 text-black/65 disabled:text-black/20">
+                        <ArrowDown className="h-4 w-4" />
+                      </button>
+                      <button type="button" onClick={() => removeFileAt(index)} aria-label={`Remove ${file.name}`} className="focus-ring rounded-md border border-red-100 p-2 text-red-700 hover:bg-red-50">
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {tool.slug === 'pdf-to-jpg' && (pdfPreviewPages.length > 0 || status === 'loading-preview') && (
+          <div className="border-t border-black/5 p-4 sm:p-6">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <h2 className="text-lg font-black text-black">PDF page preview</h2>
+                <p className="text-sm text-black/55">Review the pages before converting them into JPG images.</p>
+              </div>
+              {pdfPageCount > 0 && <span className="text-sm font-bold text-black/60">{pdfPageCount} pages</span>}
+            </div>
+            {status === 'loading-preview' ? (
+              <p className="mt-4 flex items-center gap-2 text-sm font-semibold text-black/60">
+                <Loader2 className="h-4 w-4 animate-spin text-brand-red" />
+                {pdfProgress}
+              </p>
+            ) : (
+              <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+                {pdfPreviewPages.map((page) => (
+                  <article key={page.pageNumber} className="min-w-0 rounded-md border border-black/10 bg-white p-2">
+                    <img src={page.url} alt={`PDF page ${page.pageNumber} preview`} title={`PDF page ${page.pageNumber} preview`} loading="lazy" decoding="async" className="aspect-[3/4] w-full rounded border border-black/10 object-contain" />
+                    <p className="mt-2 text-center text-xs font-black text-black/60">Page {page.pageNumber}</p>
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {!uploadOnly && (
         <div className="grid gap-6 border-t border-black/5 p-5 sm:p-6 lg:grid-cols-[1fr_280px]">
           <div className="rounded-md border border-black/10 bg-white p-5">
@@ -751,6 +1051,21 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
               ))}
             </div>
 
+            {tool.slug === 'pdf-to-jpg' && pdfPageCount > 0 && (
+              <label className="mt-5 block max-w-md text-sm font-bold text-black/70">
+                Pages to convert
+                <input
+                  type="text"
+                  value={pdfPageSelection}
+                  onChange={(event) => setPdfPageSelection(event.target.value)}
+                  placeholder={`All pages or 1-${Math.min(pdfPageCount, 3)},5`}
+                  inputMode="numeric"
+                  className="focus-ring mt-2 w-full rounded-md border border-black/15 bg-white px-4 py-3 text-base font-semibold text-black placeholder:text-black/35"
+                />
+                <span className="mt-2 block text-xs font-semibold text-black/45">Leave blank for all {pdfPageCount} pages.</span>
+              </label>
+            )}
+
             <button
               type="button"
               onClick={handleProcess}
@@ -760,10 +1075,21 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
               {isWorking && <Loader2 className="h-4 w-4 animate-spin text-brand-red" />}
               {text.upload.process}
             </button>
+            {(tool.slug === 'image-to-pdf' || tool.slug === 'pdf-to-jpg') && (
+              <button
+                type="button"
+                onClick={resetTool}
+                disabled={files.length === 0 && !result}
+                className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-2.5 text-sm font-bold text-black disabled:cursor-not-allowed disabled:text-black/25 sm:w-auto"
+              >
+                <RotateCcw className="h-4 w-4 text-brand-red" />
+                Reset
+              </button>
+            )}
 
             {isWorking && (
               <p className="mt-3 text-sm font-semibold text-black/60">
-                {text.upload.processingBrowser}
+                {pdfProgress || text.upload.processingBrowser}
               </p>
             )}
             {error && (
@@ -803,7 +1129,34 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
         )}
       </div>
 
-      {!uploadOnly && result && (
+      {!uploadOnly && result?.pages?.length > 0 && tool.slug === 'pdf-to-jpg' && (
+        <div className="mt-6 rounded-md border border-black/10 bg-white p-5 sm:p-6">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-black text-black">{result.pageCount} JPG image{result.pageCount === 1 ? '' : 's'} ready</p>
+              <p className="mt-1 text-sm text-black/50">Download pages separately or together as one ZIP file.</p>
+            </div>
+            <button type="button" onClick={downloadPdfPagesZip} className="focus-ring inline-flex items-center justify-center gap-2 rounded-md bg-black px-5 py-2.5 text-sm font-bold text-white hover:bg-black/85">
+              <Download className="h-5 w-5 text-brand-red" />
+              Download all as ZIP
+            </button>
+          </div>
+          {pdfProgress && <p className="mt-3 text-sm font-semibold text-black/60">{pdfProgress}</p>}
+          <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {result.pages.map((page) => (
+              <article key={page.pageNumber} className="rounded-md border border-black/10 bg-white p-3 text-center">
+                <img src={page.url} alt={`Converted JPG for PDF page ${page.pageNumber}`} title={`PDF page ${page.pageNumber} JPG`} loading="lazy" decoding="async" className="mx-auto max-h-72 w-full rounded border border-black/10 object-contain" />
+                <a href={page.url} download={page.fileName} className="focus-ring mt-3 inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-black hover:border-black/35">
+                  <Download className="h-4 w-4 text-brand-red" />
+                  Download page {page.pageNumber}
+                </a>
+              </article>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {!uploadOnly && result && !result.pages && (
         <div className="mt-6 rounded-md border border-black/10 bg-white p-5 text-center">
           <CheckCircle2 className="mx-auto h-8 w-8 text-brand-red" />
           <p className="mt-2 font-black text-black">{text.upload.ready}</p>

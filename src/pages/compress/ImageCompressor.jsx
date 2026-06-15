@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, Download, Loader2, UploadCloud, Wand2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Download, Loader2, RotateCcw, UploadCloud, Wand2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   calculateCompression,
@@ -7,6 +7,7 @@ import {
   downloadBlob,
   formatFileSize,
 } from '../../utils/compressUtils.js';
+import { getImageDimensions } from '../../utils/imagePreview.js';
 import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
 import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../../components/seo/schema.js';
@@ -41,6 +42,7 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
   const [originalUrl, setOriginalUrl] = useState('');
   const [compressedUrl, setCompressedUrl] = useState('');
   const [result, setResult] = useState(null);
+  const [originalDimensions, setOriginalDimensions] = useState(null);
   const [mode, setMode] = useState('balanced');
   const [target, setTarget] = useState(targetKB || 80);
   const [status, setStatus] = useState('');
@@ -60,8 +62,11 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
 
   useEffect(() => () => {
     if (originalUrl) URL.revokeObjectURL(originalUrl);
+  }, [originalUrl]);
+
+  useEffect(() => () => {
     if (compressedUrl) URL.revokeObjectURL(compressedUrl);
-  }, [originalUrl, compressedUrl]);
+  }, [compressedUrl]);
 
   const resetResult = () => {
     if (compressedUrl) URL.revokeObjectURL(compressedUrl);
@@ -71,26 +76,40 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
     setError('');
   };
 
-  const handleFile = (selectedFile) => {
+  const clearOriginal = () => {
+    if (originalUrl) URL.revokeObjectURL(originalUrl);
+    setOriginalUrl('');
+    setFile(null);
+    setOriginalDimensions(null);
+  };
+
+  const handleFile = async (selectedFile) => {
     resetResult();
     setWarning('');
 
     if (!selectedFile) return;
     if (!['image/jpeg', 'image/png', 'image/webp'].includes(selectedFile.type)) {
       setError(text.image.invalidType);
-      setFile(null);
+      clearOriginal();
       return;
     }
 
     if (selectedFile.size > 20 * 1024 * 1024) {
       setError(text.image.tooLarge);
-      setFile(null);
+      clearOriginal();
       return;
     }
 
-    if (originalUrl) URL.revokeObjectURL(originalUrl);
-    setFile(selectedFile);
-    setOriginalUrl(previewUrl(selectedFile));
+    try {
+      const dimensions = await getImageDimensions(selectedFile);
+      if (originalUrl) URL.revokeObjectURL(originalUrl);
+      setFile(selectedFile);
+      setOriginalDimensions(dimensions);
+      setOriginalUrl(previewUrl(selectedFile));
+    } catch (caughtError) {
+      clearOriginal();
+      setError(caughtError.message || text.image.invalidType);
+    }
   };
 
   const handleDrop = (event) => {
@@ -105,6 +124,16 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
     if (originalUrl) URL.revokeObjectURL(originalUrl);
     setOriginalUrl('');
     setFile(null);
+    setOriginalDimensions(null);
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
+  const resetTool = () => {
+    resetResult();
+    clearOriginal();
+    setMode('balanced');
+    setTarget(targetKB || 80);
+    setWarning('');
     if (inputRef.current) inputRef.current.value = '';
   };
 
@@ -201,8 +230,8 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
             </label>
 
             <div className="grid gap-4 lg:grid-cols-2">
-              <PreviewCard title={text.image.original} url={originalUrl} size={file?.size} />
-              <PreviewCard title={text.image.compressed} url={compressedUrl} size={result?.blob?.size} />
+              <PreviewCard title={text.image.original} url={originalUrl} size={file?.size} dimensions={originalDimensions} />
+              <PreviewCard title={text.image.compressed} url={compressedUrl} size={result?.blob?.size} dimensions={result} />
             </div>
           </div>
 
@@ -243,6 +272,8 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
                 <span>{text.image.original}: {formatFileSize(file.size)}</span>
                 <span>{text.image.compressed}: {formatFileSize(result?.blob?.size || 0)}</span>
                 <span>{text.image.reduction}: {reduction}%</span>
+                <span>{text.image.original}: {originalDimensions?.width || 0} x {originalDimensions?.height || 0}px</span>
+                <span>{text.image.compressed}: {result?.width || 0} x {result?.height || 0}px</span>
               </div>
             )}
 
@@ -266,6 +297,16 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
               {text.common.download}
             </button>
 
+            <button
+              type="button"
+              onClick={resetTool}
+              disabled={!file && !result?.blob}
+              className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black hover:border-black/35 disabled:cursor-not-allowed disabled:text-black/30"
+            >
+              <RotateCcw className="h-4 w-4 text-green-700" />
+              Reset
+            </button>
+
             {warning && <p className="mt-3 text-sm font-bold text-orange-700">{warning}</p>}
             {error && (
               <p className="mt-3 flex gap-2 text-sm font-bold text-red-700">
@@ -287,7 +328,7 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
   );
 }
 
-function PreviewCard({ title, url, size }) {
+function PreviewCard({ title, url, size, dimensions }) {
   const { text } = useLanguage();
   return (
     <div className="rounded-md border border-black/10 bg-white p-4">
@@ -298,6 +339,9 @@ function PreviewCard({ title, url, size }) {
       <div className="mt-3 flex min-h-72 items-center justify-center rounded-md border border-dashed border-black/15 bg-black/[0.015] p-3">
         {url ? <img src={url} alt={`${title} preview`} title={`${title} preview`} loading="lazy" decoding="async" className="max-h-[420px] max-w-full rounded-md object-contain" /> : <p className="text-center text-sm font-semibold text-black/45">{text.image.previewHint}</p>}
       </div>
+      {dimensions?.width && dimensions?.height && (
+        <p className="mt-3 text-sm font-bold text-black/55">{dimensions.width} x {dimensions.height}px</p>
+      )}
     </div>
   );
 }

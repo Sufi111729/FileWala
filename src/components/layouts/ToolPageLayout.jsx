@@ -28,6 +28,10 @@ export default function ToolPageLayout({
         title={localizedSeo?.seoTitle ?? `${localizedTitle} - FileWalaTool`}
         description={localizedSeo?.metaDescription ?? localizedDescription}
         canonical={localizedSeo?.canonicalUrl ?? absoluteUrl(localizedSeo?.route ?? '/documents')}
+        image={localizedSeo?.imageUrl}
+        imageAlt={localizedSeo?.imageAlt}
+        ogDescription={localizedSeo?.ogDescription}
+        twitterDescription={localizedSeo?.twitterDescription}
         keywords={localizedSeo ? [localizedSeo.primaryKeyword, ...localizedSeo.secondaryKeywords, ...localizedSeo.longTailKeywords, ...localizedSeo.questionKeywords, ...localizedSeo.indiaKeywords, ...localizedSeo.brandKeywords, ...localizedSeo.alternateNames] : [localizedTitle, category]}
         jsonLd={localizedSeo ? toolSchemas(localizedSeo) : []}
       />

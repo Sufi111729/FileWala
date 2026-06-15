@@ -11,17 +11,28 @@ export default function RequirementStep({ title = 'Output requirements', fields 
           {fields.map((field) => (
             <label key={field.name} className="grid gap-2 text-sm font-bold text-black/70">
               {tLiteral(field.label)}
-              <select
-                value={values[field.name]}
-                onChange={(event) => onChange(field.name, event.target.value)}
-                className="focus-ring rounded-md border border-black/10 bg-white px-3 py-2.5 text-sm font-semibold text-black"
-              >
-                {field.options.map((option) => (
-                  <option key={option} value={option}>
-                    {tLiteral(option)}
-                  </option>
-                ))}
-              </select>
+              {field.type === 'number' ? (
+                <input
+                  type="number"
+                  min={field.min}
+                  max={field.max}
+                  value={values[field.name]}
+                  onChange={(event) => onChange(field.name, event.target.value)}
+                  className="focus-ring rounded-md border border-black/10 bg-white px-3 py-2.5 text-sm font-semibold text-black"
+                />
+              ) : (
+                <select
+                  value={values[field.name]}
+                  onChange={(event) => onChange(field.name, event.target.value)}
+                  className="focus-ring rounded-md border border-black/10 bg-white px-3 py-2.5 text-sm font-semibold text-black"
+                >
+                  {field.options.map((option) => (
+                    <option key={option} value={option}>
+                      {tLiteral(option)}
+                    </option>
+                  ))}
+                </select>
+              )}
             </label>
           ))}
         </div>

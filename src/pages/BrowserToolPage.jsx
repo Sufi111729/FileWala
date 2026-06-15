@@ -1,5 +1,5 @@
-import { AlertCircle, CheckCircle2, Download, Eye, EyeOff, Loader2, ShieldCheck, Wand2 } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { AlertCircle, CheckCircle2, Download, Eye, EyeOff, Loader2, RotateCcw, ShieldCheck, Wand2 } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import UploadBox from '../components/UploadBox.jsx';
 import SEO from '../components/SEO.jsx';
 import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
@@ -56,7 +56,6 @@ export default function BrowserToolPage({ slug }) {
   const tool = allTools.find((item) => item.slug === slug);
   const definition = definitions[slug];
   const seo = tSeo(getToolSeoBySlug(slug));
-  const wordPreviewRef = useRef(null);
   const [file, setFile] = useState(null);
   const [fileInfo, setFileInfo] = useState(null);
   const [previewUrl, setPreviewUrl] = useState('');
@@ -74,6 +73,7 @@ export default function BrowserToolPage({ slug }) {
   const [imageOptions, setImageOptions] = useState({ width: 800, height: 600, keepRatio: true, format: 'image/jpeg', quality: 0.9 });
   const [originalRatio, setOriginalRatio] = useState(4 / 3);
   const [originalDimensions, setOriginalDimensions] = useState({ width: 0, height: 0 });
+  const [uploadResetKey, setUploadResetKey] = useState(0);
 
   useEffect(() => {
     const url = file && (definition.extensions.includes('pdf') || slug === 'resize-image') ? createObjectUrl(file) : '';
@@ -171,6 +171,7 @@ export default function BrowserToolPage({ slug }) {
     setStatus(selectedFile ? 'Selected and ready.' : '');
     setPassword('');
     setConfirmation('');
+    setUploadResetKey((value) => value + 1);
   };
 
   const changeImageDimension = (key, value) => {
@@ -200,7 +201,7 @@ export default function BrowserToolPage({ slug }) {
       }
       if (slug === 'word-to-pdf') {
         const { convertWordToPdf } = await import('../services/wordToPdfService.js');
-        blob = await convertWordToPdf(file, wordPreviewRef.current);
+        blob = await convertWordToPdf(file, setStatus);
       }
       if (slug === 'protect-pdf') {
         if (password.length < 4) throw new Error('Password must be at least 4 characters.');
@@ -239,6 +240,18 @@ export default function BrowserToolPage({ slug }) {
   const showPdfInput = definition.extensions.includes('pdf') && previewUrl;
   const showOutputPdf = outputUrl && output?.type === 'application/pdf' && slug !== 'protect-pdf';
 
+  const resetTool = () => {
+    setFile(null);
+    setFileInfo(null);
+    setOutput(null);
+    setPreviewHtml('');
+    setTextPreview('');
+    setError('');
+    setStatus('');
+    setPassword('');
+    setConfirmation('');
+  };
+
   return (
     <section className="bg-white py-8 sm:py-12">
       <SEO
@@ -265,7 +278,7 @@ export default function BrowserToolPage({ slug }) {
         </div>
 
         <div className="mt-6">
-          <UploadBox tool={tool} uploadOnly onFilesSelected={selectFiles} />
+          <UploadBox key={uploadResetKey} tool={tool} uploadOnly onFilesSelected={selectFiles} />
         </div>
 
         <form
@@ -316,6 +329,12 @@ export default function BrowserToolPage({ slug }) {
                 </div>
               )}
 
+              {slug === 'word-to-pdf' && file && (
+                <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm font-semibold leading-6 text-amber-800">
+                  Basic text, headings, lists, and images are preserved where possible. Complex Word layouts, fonts, columns, and page breaks may change in browser-based conversion.
+                </p>
+              )}
+
               {file && (
                 <div className="min-h-[300px] w-full rounded-xl border border-black/10 bg-slate-50 p-3 md:min-h-[420px]">
                   <p className="mb-3 text-sm font-black text-black">Preview</p>
@@ -328,7 +347,7 @@ export default function BrowserToolPage({ slug }) {
                     </div>
                   )}
                   {!isPreviewLoading && slug === 'word-to-pdf' && previewHtml && (
-                    <div ref={wordPreviewRef} className="prose max-h-[500px] max-w-none overflow-auto rounded-lg bg-white p-4 text-black" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                    <div className="prose max-h-[500px] max-w-none overflow-auto rounded-lg bg-white p-4 text-black" dangerouslySetInnerHTML={{ __html: previewHtml }} />
                   )}
                   {!isPreviewLoading && slug === 'word-to-pdf' && !previewHtml && <p className="p-4 text-sm font-semibold text-black/60">DOCX preview could not be generated, but you can still try converting.</p>}
                   {!isPreviewLoading && slug === 'resize-image' && previewUrl && <img src={previewUrl} alt="Original preview" title="Original image preview" loading="lazy" decoding="async" className="mx-auto max-h-[420px] max-w-full object-contain" />}
@@ -360,6 +379,11 @@ export default function BrowserToolPage({ slug }) {
             <button type="button" onClick={() => output && downloadBlob(output, filename)} disabled={!output} className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-black text-black hover:border-black/40 disabled:cursor-not-allowed disabled:text-black/30">
               <Download className="h-4 w-4 text-brand-red" /> Download
             </button>
+            {slug === 'word-to-pdf' && (
+              <button type="button" onClick={resetTool} disabled={!file && !output} className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-black text-black hover:border-black/40 disabled:cursor-not-allowed disabled:text-black/30">
+                <RotateCcw className="h-4 w-4 text-brand-red" /> Reset
+              </button>
+            )}
             {error && <p className="mt-4 flex gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm font-bold text-red-700"><AlertCircle className="h-4 w-4 flex-none" />{error}</p>}
             {status && !error && <p className="mt-4 flex gap-2 rounded-md border border-green-200 bg-green-50 p-3 text-sm font-bold text-green-700"><CheckCircle2 className="h-4 w-4 flex-none" />{status}</p>}
             {showOutputPdf && <iframe title="Output PDF preview" src={outputUrl} className="mt-4 min-h-[300px] w-full rounded-lg border border-black/10 md:min-h-[420px]" />}

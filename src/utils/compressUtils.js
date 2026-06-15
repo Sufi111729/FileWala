@@ -1,3 +1,6 @@
+const maxCanvasDimension = 4096;
+const maxCanvasPixels = 16_000_000;
+
 export function formatFileSize(bytes) {
   if (!bytes) return '0 KB';
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
@@ -61,7 +64,9 @@ function hasTransparency(image) {
 function drawImageToCanvas(image, maxWidth, maxHeight, outputType) {
   const sourceWidth = image.naturalWidth || image.width;
   const sourceHeight = image.naturalHeight || image.height;
-  const scale = Math.min(1, maxWidth / sourceWidth, maxHeight / sourceHeight);
+  const dimensionScale = Math.min(1, maxCanvasDimension / sourceWidth, maxCanvasDimension / sourceHeight);
+  const pixelScale = Math.min(1, Math.sqrt(maxCanvasPixels / (sourceWidth * sourceHeight)));
+  const scale = Math.min(1, maxWidth / sourceWidth, maxHeight / sourceHeight, dimensionScale, pixelScale);
   const width = Math.max(1, Math.round(sourceWidth * scale));
   const height = Math.max(1, Math.round(sourceHeight * scale));
   const canvas = document.createElement('canvas');

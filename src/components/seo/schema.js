@@ -3,6 +3,7 @@ import { absoluteUrl, BRAND_ALIASES, BRAND_FOUNDER, BRAND_LOGO_URL, BRAND_NAME, 
 const categoryPathByName = {
   'PDF Tools': '/pdf-tools',
   'Image Tools': '/image-tools',
+  Convert: '/image-tools',
   'Passport Tools': '/documents',
   Documents: '/documents',
   Compress: '/compress',

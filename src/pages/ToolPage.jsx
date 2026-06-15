@@ -36,6 +36,9 @@ export default function ToolPage({ slugOverride }) {
         canonical={seo?.canonicalUrl ?? absoluteUrl(seo?.route ?? `/tools/${tool.slug}`)}
         keywords={keywords}
         image={tool.imageUrl}
+        imageAlt={seo?.imageAlt ?? tool.imageAlt}
+        ogDescription={seo?.ogDescription}
+        twitterDescription={seo?.twitterDescription}
         schema={seo ? toolSchemas({ ...seo, imageUrl: tool.imageUrl }) : []}
       />
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

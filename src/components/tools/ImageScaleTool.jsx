@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, Download, ImagePlus, Loader2, Wand2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Download, ImagePlus, Loader2, RotateCcw, Wand2 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import SeoHelmet from '../seo/SeoHelmet.jsx';
 import ToolSeoSections from '../seo/ToolSeoSections.jsx';
@@ -15,6 +15,7 @@ import { useLanguage } from '../../i18n.jsx';
 
 const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const maxSize = 10 * 1024 * 1024;
+const maxPixels = 25_000_000;
 
 function makePreviewUrl(fileOrBlob) {
   return fileOrBlob ? URL.createObjectURL(fileOrBlob) : '';
@@ -56,8 +57,11 @@ export default function ImageScaleTool({
 
   useEffect(() => () => {
     if (originalUrl) URL.revokeObjectURL(originalUrl);
+  }, [originalUrl]);
+
+  useEffect(() => () => {
     if (resultUrl) URL.revokeObjectURL(resultUrl);
-  }, [originalUrl, resultUrl]);
+  }, [resultUrl]);
 
   const clearResult = () => {
     if (resultUrl) URL.revokeObjectURL(resultUrl);
@@ -87,6 +91,12 @@ export default function ImageScaleTool({
 
     try {
       const dimensions = await getImageDimensions(selectedFile);
+      if (dimensions.width * dimensions.height > maxPixels) {
+        setFile(null);
+        setOriginalDimensions(null);
+        setError(tLiteral('This image is too large to process safely. Please use an image under 25 megapixels.'));
+        return;
+      }
       if (originalUrl) URL.revokeObjectURL(originalUrl);
       setFile(selectedFile);
       setOriginalDimensions(dimensions);
@@ -106,6 +116,21 @@ export default function ImageScaleTool({
     setOriginalUrl('');
     setFile(null);
     setOriginalDimensions(null);
+    if (inputRef.current) inputRef.current.value = '';
+  };
+
+  const resetTool = () => {
+    clearResult();
+    if (originalUrl) URL.revokeObjectURL(originalUrl);
+    setOriginalUrl('');
+    setFile(null);
+    setOriginalDimensions(null);
+    setSelectedPreset(presets[0]?.id || 'custom');
+    setCustomWidth('');
+    setCustomHeight('');
+    setKeepAspectRatio(true);
+    setOutputType('image/png');
+    setError('');
     if (inputRef.current) inputRef.current.value = '';
   };
 
@@ -162,6 +187,13 @@ export default function ImageScaleTool({
       return;
     }
 
+    if (mode === 'downscale' && originalDimensions && (
+      outputSize.width > originalDimensions.width || outputSize.height > originalDimensions.height
+    )) {
+      setError(tLiteral('Choose width and height values no larger than the original image.'));
+      return;
+    }
+
     setStatus('processing');
     setError('');
 
@@ -194,6 +226,10 @@ export default function ImageScaleTool({
         title={seo?.seoTitle ?? `${localizedTitle || title} - FileWalaTool`}
         description={seo?.metaDescription ?? localizedDescription ?? description}
         canonical={seo?.canonicalUrl ?? absoluteUrl(`/tools/${seoSlug}`)}
+        image={seo?.imageUrl}
+        imageAlt={seo?.imageAlt}
+        ogDescription={seo?.ogDescription}
+        twitterDescription={seo?.twitterDescription}
         keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [localizedTitle || title]}
         jsonLd={seo ? toolSchemas(seo) : []}
       />
@@ -270,6 +306,7 @@ export default function ImageScaleTool({
                 <input
                   type="number"
                   min="1"
+                  max={mode === 'downscale' ? originalDimensions?.width : undefined}
                   value={customWidth}
                   onChange={(event) => syncCustomWidth(event.target.value)}
                   className="rounded-md border border-black/10 px-3 py-2"
@@ -280,6 +317,7 @@ export default function ImageScaleTool({
                 <input
                   type="number"
                   min="1"
+                  max={mode === 'downscale' ? originalDimensions?.height : undefined}
                   value={customHeight}
                   onChange={(event) => syncCustomHeight(event.target.value)}
                   className="rounded-md border border-black/10 px-3 py-2"
@@ -336,6 +374,16 @@ export default function ImageScaleTool({
             >
               <Download className="h-4 w-4 text-green-700" />
               {text.common.download}
+            </button>
+
+            <button
+              type="button"
+              onClick={resetTool}
+              disabled={!file && !result?.blob}
+              className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black hover:border-black/35 disabled:cursor-not-allowed disabled:text-black/30"
+            >
+              <RotateCcw className="h-4 w-4 text-green-700" />
+              {tLiteral('Reset')}
             </button>
 
             {error && (

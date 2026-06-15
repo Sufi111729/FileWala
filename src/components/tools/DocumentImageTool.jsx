@@ -1,4 +1,4 @@
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useLanguage } from '../../i18n.jsx';
 import FixedFrameImageEditor from './FixedFrameImageEditor.jsx';
@@ -38,6 +38,11 @@ export default function DocumentImageTool({ config }) {
     setActiveStep(0);
   };
 
+  const resetTool = () => {
+    removeFile();
+    setValues(config.defaultValues || {});
+  };
+
   const canGoNext = activeStep === 0 ? Boolean(file) : true;
 
   const seoSlug = config.output?.filename
@@ -48,6 +53,12 @@ export default function DocumentImageTool({ config }) {
     .replace('signature', 'signature-resize')
     .replace('scanned-document', 'document-scanner');
   const seo = getToolSeoBySlug(seoSlug);
+  const configuredTargetKB = values.targetKB === '' || values.targetKB == null
+    ? config.targetKB
+    : values.targetKB;
+  const selectedTargetKB = configuredTargetKB
+    ? Math.min(config.targetKBMax ?? 500, Math.max(1, Number(configuredTargetKB) || Number(config.targetKB) || 1))
+    : null;
   const translatedTool = text.tools?.[seoSlug] ?? [config.title, config.description];
   const pageTitle = translatedTool[0];
   const pageDescription = translatedTool[1];
@@ -66,6 +77,7 @@ export default function DocumentImageTool({ config }) {
               dimensions={dimensions}
               onFileReady={handleFileReady}
               onRemove={removeFile}
+              maxPixels={config.maxPixels}
             />
           )}
 
@@ -90,7 +102,7 @@ export default function DocumentImageTool({ config }) {
               cropAspect={config.cropAspect}
               outputWidth={config.outputWidth}
               outputHeight={config.outputHeight}
-              targetKB={config.targetKB}
+              targetKB={selectedTargetKB}
               backgroundColor={config.backgroundColor}
               toolType={config.title}
             />
@@ -105,7 +117,7 @@ export default function DocumentImageTool({ config }) {
               cropAspect={config.cropAspect}
               outputWidth={config.outputWidth}
               outputHeight={config.outputHeight}
-              targetKB={config.targetKB}
+              targetKB={selectedTargetKB}
               showMakeWhite={config.showMakeWhite}
               showScannerFilters={config.showScannerFilters}
             />
@@ -113,15 +125,28 @@ export default function DocumentImageTool({ config }) {
         </div>
 
         <div className="mt-4 flex flex-col-reverse gap-3 sm:flex-row sm:justify-between">
-          <button
-            type="button"
-            onClick={() => setActiveStep((step) => Math.max(0, step - 1))}
-            disabled={activeStep === 0}
-            className="focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-black/70 shadow-sm hover:bg-black/[0.025] disabled:cursor-not-allowed disabled:text-black/25"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            {text.common.previous}
-          </button>
+          <div className="flex flex-col-reverse gap-3 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => setActiveStep((step) => Math.max(0, step - 1))}
+              disabled={activeStep === 0}
+              className="focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-black/70 shadow-sm hover:bg-black/[0.025] disabled:cursor-not-allowed disabled:text-black/25"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              {text.common.previous}
+            </button>
+            {config.showReset && (
+              <button
+                type="button"
+                onClick={resetTool}
+                disabled={!file && activeStep === 0}
+                className="focus-ring inline-flex items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-4 py-2.5 text-sm font-bold text-black/70 shadow-sm hover:bg-black/[0.025] disabled:cursor-not-allowed disabled:text-black/25"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset
+              </button>
+            )}
+          </div>
           <button
             type="button"
             onClick={() => setActiveStep((step) => Math.min(2, step + 1))}

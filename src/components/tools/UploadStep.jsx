@@ -6,7 +6,7 @@ import { formatFileSize, getImageDimensions } from '../../utils/documentImageUti
 const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const maxSize = 10 * 1024 * 1024;
 
-export default function UploadStep({ file, previewUrl, dimensions, onFileReady, onRemove }) {
+export default function UploadStep({ file, previewUrl, dimensions, onFileReady, onRemove, maxPixels }) {
   const { text } = useLanguage();
   const inputRef = useRef(null);
   const [error, setError] = useState('');
@@ -27,6 +27,10 @@ export default function UploadStep({ file, previewUrl, dimensions, onFileReady, 
 
     try {
       const imageSize = await getImageDimensions(selectedFile);
+      if (maxPixels && imageSize.width * imageSize.height > maxPixels) {
+        setError('This image is too large to process safely. Please use an image under 25 megapixels.');
+        return;
+      }
       onFileReady(selectedFile, imageSize);
     } catch (caughtError) {
       setError(caughtError.message || text.documentTool.tryAnotherFile);
