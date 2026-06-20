@@ -3,7 +3,6 @@ import { useLanguage } from '../i18n.jsx';
 
 const quickLinks = [
   ['All Tools', '/#tools'],
-  ['Download Android App', '/#download-app'],
   ['Image Tools', '/image-tools'],
   ['PDF Tools', '/pdf-tools'],
   ['Compress', '/compress'],
@@ -35,7 +34,7 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 sm:py-12 lg:px-8">
         <div className="grid gap-8 md:grid-cols-[1.4fr_1fr_1fr]">
           <div>
-            <Link to="/" className="focus-ring inline-flex rounded-lg" aria-label="FileWalaTool home">
+            <a href="/" className="focus-ring inline-flex rounded-lg" aria-label="FileWalaTool home">
               <picture>
                 <source srcSet="/assets/logofilewalatoo-538.webp" type="image/webp" />
                 <img
@@ -48,7 +47,7 @@ export default function Footer() {
                   className="h-[18px] w-auto max-w-[90px] object-contain"
                 />
               </picture>
-            </Link>
+            </a>
             <p className="mt-4 max-w-md text-sm leading-6 text-slate-600">
               {text.footer.description}
             </p>

@@ -1,5 +1,5 @@
 import { ArrowLeft, ArrowRight, RotateCcw } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useLanguage } from '../../i18n.jsx';
 import FixedFrameImageEditor from './FixedFrameImageEditor.jsx';
 import ImageEditor from './ImageEditor.jsx';
@@ -8,6 +8,7 @@ import StepTabs from './StepTabs.jsx';
 import ToolPageLayout from '../layouts/ToolPageLayout.jsx';
 import UploadStep from './UploadStep.jsx';
 import { getToolSeoBySlug } from '../../data/toolsSeoData.js';
+import { FileSelectedStatus, StickyActionBar } from './ToolWorkflow.jsx';
 
 const steps = ['Upload', 'Requirement', 'Editor'];
 
@@ -18,6 +19,7 @@ export default function DocumentImageTool({ config }) {
   const [imageUrl, setImageUrl] = useState('');
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [values, setValues] = useState(config.defaultValues || {});
+  const uploadInputRef = useRef(null);
 
   useEffect(() => () => {
     if (imageUrl) URL.revokeObjectURL(imageUrl);
@@ -71,14 +73,18 @@ export default function DocumentImageTool({ config }) {
 
         <div className="mt-5">
           {activeStep === 0 && (
-            <UploadStep
-              file={file}
-              previewUrl={imageUrl}
-              dimensions={dimensions}
-              onFileReady={handleFileReady}
-              onRemove={removeFile}
-              maxPixels={config.maxPixels}
-            />
+            <div className="grid gap-4">
+              <UploadStep
+                file={file}
+                previewUrl={imageUrl}
+                dimensions={dimensions}
+                onFileReady={handleFileReady}
+                onRemove={removeFile}
+                maxPixels={config.maxPixels}
+                inputControlRef={uploadInputRef}
+              />
+              <FileSelectedStatus file={file} onRemove={removeFile} meta={file ? `${dimensions.width} x ${dimensions.height} px` : ''} />
+            </div>
           )}
 
           {activeStep === 1 && (
@@ -157,6 +163,16 @@ export default function DocumentImageTool({ config }) {
             <ArrowRight className="h-4 w-4" />
           </button>
         </div>
+        {activeStep < 2 && (
+          <StickyActionBar
+            primaryLabel={activeStep === 0 && !file ? 'Select File' : text.common.next}
+            onPrimary={activeStep === 0 && !file ? () => uploadInputRef.current?.click() : () => setActiveStep((step) => Math.min(2, step + 1))}
+            primaryDisabled={false}
+            helperText={activeStep === 0 && !file ? 'Choose a file to continue.' : file?.name || pageTitle}
+            onReset={config.showReset ? resetTool : undefined}
+            resetDisabled={!file && activeStep === 0}
+          />
+        )}
     </ToolPageLayout>
   );
 }

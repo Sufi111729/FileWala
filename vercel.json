@@ -19,7 +19,14 @@
     { "source": "/pdf-to-jpeg", "destination": "/pdf-to-jpg", "permanent": true },
     { "source": "/docx-to-pdf", "destination": "/word-to-pdf", "permanent": true },
     { "source": "/doc-to-pdf", "destination": "/word-to-pdf", "permanent": true },
+    { "source": "/kb-editor.html", "destination": "/kb-resizer", "permanent": true },
+    { "source": "/kb-editor", "destination": "/kb-resizer", "permanent": true },
+    { "source": "/custom-kb-resizer", "destination": "/kb-resizer", "permanent": true },
+    { "source": "/image-kb-resizer", "destination": "/kb-resizer", "permanent": true },
     { "source": "/compress/custom-image-kb-resizer", "destination": "/kb-resizer", "permanent": true },
+    { "source": "/pan-photo", "destination": "/pan-photo-resize", "permanent": true },
+    { "source": "/pan-photo-resizer", "destination": "/pan-photo-resize", "permanent": true },
+    { "source": "/pan-card-photo-resize", "destination": "/pan-photo-resize", "permanent": true },
     { "source": "/documents/passport-photo-maker", "destination": "/passport-photo-maker", "permanent": true },
     { "source": "/documents/signature-resize", "destination": "/signature-resize", "permanent": true },
     { "source": "/documents/aadhaar-photo-resize", "destination": "/aadhaar-photo-resize", "permanent": true },
@@ -60,12 +67,6 @@
       ],
       "destination": "https://www.filewalatool.com/$1",
       "permanent": true
-    }
-  ],
-  "rewrites": [
-    {
-      "source": "/(.*)",
-      "destination": "/"
     }
   ],
   "headers": [

@@ -1,5 +1,5 @@
 import { AlertCircle, CheckCircle2, Download, Eye, EyeOff, Loader2, RotateCcw, ShieldCheck, Wand2 } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import UploadBox from '../components/UploadBox.jsx';
 import SEO from '../components/SEO.jsx';
 import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
@@ -13,6 +13,7 @@ import formatFileSize from '../utils/formatFileSize.js';
 import { getFileInfo, validateFile } from '../utils/fileValidation.js';
 import { getImageDimensions } from '../utils/imagePreview.js';
 import { extractPdfTextPreview } from '../utils/pdfPreview.js';
+import { FileSelectedStatus, StickyActionBar, ToolResultCard } from '../components/tools/ToolWorkflow.jsx';
 
 const definitions = {
   'pdf-to-word': { extensions: ['pdf'], action: 'Convert to Word', loading: 'Converting...', filename: 'converted.docx' },
@@ -21,6 +22,15 @@ const definitions = {
   'unlock-pdf': { extensions: ['pdf'], action: 'Unlock PDF', loading: 'Unlocking PDF...', filename: 'unlocked.pdf' },
   'watermark-pdf': { extensions: ['pdf'], action: 'Add Watermark', loading: 'Adding watermark...', filename: 'watermarked.pdf' },
   'resize-image': { extensions: ['jpg', 'jpeg', 'png', 'webp'], action: 'Resize Image', loading: 'Resizing image...', filename: 'resized-image.jpg' },
+};
+
+const acceptByExtension = {
+  pdf: 'application/pdf,.pdf',
+  docx: '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  jpg: 'image/jpeg,.jpg,.jpeg',
+  jpeg: 'image/jpeg,.jpg,.jpeg',
+  png: 'image/png,.png',
+  webp: 'image/webp,.webp',
 };
 
 const fieldClass = 'rounded-md border border-black/10 bg-white px-3 py-2 text-sm text-black outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100';
@@ -55,6 +65,7 @@ export default function BrowserToolPage({ slug }) {
   const { tSeo, tToolTitle, tToolDescription } = useLanguage();
   const tool = allTools.find((item) => item.slug === slug);
   const definition = definitions[slug];
+  const directInputRef = useRef(null);
   const seo = tSeo(getToolSeoBySlug(slug));
   const [file, setFile] = useState(null);
   const [fileInfo, setFileInfo] = useState(null);
@@ -252,8 +263,10 @@ export default function BrowserToolPage({ slug }) {
     setConfirmation('');
   };
 
+  const directAccept = [...new Set(definition.extensions.flatMap((extension) => (acceptByExtension[extension] || `.${extension}`).split(',')))].join(',');
+
   return (
-    <section className="bg-white py-8 sm:py-12">
+    <section className="bg-white py-6 sm:py-8">
       <SEO
         title={seo?.seoTitle ?? `${tToolTitle(tool)} - FileWalaTool`}
         description={seo?.metaDescription ?? tToolDescription(tool)}
@@ -265,28 +278,44 @@ export default function BrowserToolPage({ slug }) {
         twitterDescription={seo?.twitterDescription}
         schema={seo ? toolSchemas({ ...seo, imageUrl: tool.imageUrl }) : []}
       />
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <p className="text-xs font-black uppercase tracking-wide text-brand-red">Browser Tool</p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? tToolTitle(tool)}</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-black/60">{seo?.shortIntro ?? tToolDescription(tool)}</p>
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
+        <div className="max-w-3xl">
+          <p className="text-xs font-black uppercase tracking-wide text-blue-700">Browser Tool</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? tToolTitle(tool)}</h1>
+          <p className="mt-3 text-base leading-7 text-black/60">{seo?.shortIntro ?? tToolDescription(tool)}</p>
         </div>
 
-        <div className="mt-8 rounded-md border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800">
+        <div className="mt-5 rounded-md border border-blue-100 bg-blue-50 px-4 py-3 text-sm font-bold text-blue-800">
           Files are processed in your browser and are not uploaded to any server.
           {slug === 'unlock-pdf' && <span className="mt-1 block">Only unlock PDFs you own or have permission to access.</span>}
         </div>
 
-        <div className="mt-6">
+        <div className="mt-5">
           <UploadBox key={uploadResetKey} tool={tool} uploadOnly onFilesSelected={selectFiles} />
+          <input
+            ref={directInputRef}
+            type="file"
+            accept={directAccept}
+            className="sr-only"
+            onChange={(event) => {
+              selectFiles(event.target.files ? Array.from(event.target.files) : []);
+              event.target.value = '';
+            }}
+          />
         </div>
 
+        {fileInfo && (
+          <div className="mt-4">
+            <FileSelectedStatus file={file} onChange={() => directInputRef.current?.click()} meta={`${formatFileSize(fileInfo.size)} - ${fileInfo.type}`} />
+          </div>
+        )}
+
         <form
-          className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]"
+          className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]"
           onSubmit={processFile}
           noValidate
         >
-          <div className="rounded-lg border border-black/10 bg-white p-5 shadow-sm sm:p-6">
+          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm sm:p-5">
             <h2 className="text-lg font-black text-black">Settings</h2>
             <div className="mt-5 grid gap-4">
               {(slug === 'protect-pdf' || slug === 'unlock-pdf') && (
@@ -320,15 +349,6 @@ export default function BrowserToolPage({ slug }) {
                 </>
               )}
 
-              {fileInfo && (
-                <div className="grid gap-1 rounded-md border border-black/10 bg-slate-50 p-4 text-sm font-semibold text-black/65">
-                  <span className="font-black text-green-700">Selected / Ready</span>
-                  <span>File Name: {fileInfo.name}</span>
-                  <span>File Size: {formatFileSize(fileInfo.size)}</span>
-                  <span>File Type: {fileInfo.type}</span>
-                </div>
-              )}
-
               {slug === 'word-to-pdf' && file && (
                 <p className="rounded-md border border-amber-200 bg-amber-50 p-3 text-sm font-semibold leading-6 text-amber-800">
                   Basic text, headings, lists, and images are preserved where possible. Complex Word layouts, fonts, columns, and page breaks may change in browser-based conversion.
@@ -336,12 +356,12 @@ export default function BrowserToolPage({ slug }) {
               )}
 
               {file && (
-                <div className="min-h-[300px] w-full rounded-xl border border-black/10 bg-slate-50 p-3 md:min-h-[420px]">
+                <div className="min-h-[240px] w-full rounded-xl border border-black/10 bg-slate-50 p-3 md:min-h-[360px]">
                   <p className="mb-3 text-sm font-black text-black">Preview</p>
-                  {isPreviewLoading && <div className="flex min-h-[300px] items-center justify-center text-sm font-bold text-black/55 md:min-h-[380px]"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Generating preview...</div>}
+                  {isPreviewLoading && <div className="flex min-h-[240px] items-center justify-center text-sm font-bold text-black/55 md:min-h-[320px]"><Loader2 className="mr-2 h-4 w-4 animate-spin" />Generating preview...</div>}
                   {!isPreviewLoading && showPdfInput && (
                     <div>
-                      <iframe src={previewUrl} title="PDF Preview" className="min-h-[300px] w-full rounded-lg bg-white md:min-h-[420px]" />
+                      <iframe src={previewUrl} title="PDF Preview" className="min-h-[240px] w-full rounded-lg bg-white md:min-h-[360px]" />
                       {slug === 'unlock-pdf' && !output && <p className="mt-2 text-sm font-bold text-amber-700">This PDF is password protected. Enter the password to unlock and preview.</p>}
                       <p className="mt-2 text-xs font-semibold text-black/50">PDF preview is not supported in some browsers. You can still process and download the file.</p>
                     </div>
@@ -372,11 +392,16 @@ export default function BrowserToolPage({ slug }) {
               {slug === 'resize-image' && <span>Original Dimensions: {originalDimensions.width || '-'} x {originalDimensions.height || '-'}</span>}
               {slug === 'resize-image' && <span>New Dimensions: {imageOptions.width} x {imageOptions.height}</span>}
             </div>
-            <button type="submit" disabled={!file || processing} className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-black text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:bg-black/25">
+            {output && (
+              <div className="mt-4">
+                <ToolResultCard title="Output ready" fileName={filename} fileSize={formatFileSize(output.size)} />
+              </div>
+            )}
+            <button type="submit" disabled={!file || processing} className="focus-ring mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300">
               {processing ? <Loader2 className="h-4 w-4 animate-spin text-brand-red" /> : <Wand2 className="h-4 w-4 text-brand-red" />}
               {processing ? definition.loading : definition.action}
             </button>
-            <button type="button" onClick={() => output && downloadBlob(output, filename)} disabled={!output} className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-black text-black hover:border-black/40 disabled:cursor-not-allowed disabled:text-black/30">
+            <button type="button" onClick={() => output && downloadBlob(output, filename)} disabled={!output} className={`focus-ring mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-black transition-colors disabled:cursor-not-allowed ${output ? 'bg-green-700 text-white hover:bg-green-800 disabled:bg-green-200' : 'border border-black/10 bg-white text-black hover:border-black/40 disabled:text-black/30'}`}>
               <Download className="h-4 w-4 text-brand-red" /> Download
             </button>
             {slug === 'word-to-pdf' && (
@@ -393,6 +418,20 @@ export default function BrowserToolPage({ slug }) {
         </form>
       </div>
       <ToolSeoSections seo={seo} />
+      <StickyActionBar
+        primaryLabel={file ? definition.action : 'Select File'}
+        onPrimary={file ? processFile : () => directInputRef.current?.click()}
+        primaryDisabled={false}
+        processing={processing}
+        processingLabel={definition.loading}
+        downloadLabel="Download"
+        onDownload={() => output && downloadBlob(output, filename)}
+        downloadDisabled={!output}
+        onReset={resetTool}
+        resetDisabled={!file && !output}
+        helperText={!file ? 'Choose a file to enable this action.' : output ? 'Output is ready.' : file.name}
+        done={Boolean(output)}
+      />
     </section>
   );
 }

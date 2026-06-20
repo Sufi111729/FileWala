@@ -19,6 +19,7 @@ import SeoHelmet from '../components/seo/SeoHelmet.jsx';
 import ToolSeoSections from '../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../components/seo/schema.js';
 import UploadBox from '../components/UploadBox.jsx';
+import { StickyActionBar } from '../components/tools/ToolWorkflow.jsx';
 import { absoluteUrl } from '../data/siteMetadata.js';
 import { getToolSeoBySlug } from '../data/toolsSeoData.js';
 import { cropImageToBlob, formatFileSize, getImageDimensions, getSafeOutputDimensions, isSupportedImage } from '../utils/imageCropUtils.js';
@@ -120,6 +121,7 @@ export default function BatchImageCropper() {
   const [error, setError] = useState('');
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const imageWrapRef = useRef(null);
+  const batchInputRef = useRef(null);
   const dragRef = useRef(null);
   const imagesRef = useRef([]);
   const resultsRef = useRef([]);
@@ -456,7 +458,7 @@ export default function BatchImageCropper() {
   };
 
   return (
-    <section className="bg-zinc-50 py-10 sm:py-14">
+    <section className="bg-zinc-50 py-6 sm:py-8">
       <SeoHelmet
         title={cropperSeo.seoTitle}
         description={cropperSeo.metaDescription}
@@ -469,10 +471,10 @@ export default function BatchImageCropper() {
         jsonLd={toolSchemas(cropperSeo)}
       />
 
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
         <div className="max-w-3xl">
           <p className="text-xs font-black uppercase tracking-wide text-brand-red">Image Tools / Editor</p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">Batch Image Cropper</h1>
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{cropperSeo.h1}</h1>
           <p className="mt-4 text-base leading-7 text-black/60">
             Batch crop multiple images, preview every result, and download individual crops or one ZIP file.
           </p>
@@ -488,6 +490,17 @@ export default function BatchImageCropper() {
                 uploadOnly
                 onFilesSelected={handleFilesSelected}
                 helperText="Select or drop up to 20 JPG, JPEG, PNG, or WEBP images."
+              />
+              <input
+                ref={batchInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+                multiple
+                className="sr-only"
+                onChange={(event) => {
+                  handleFilesSelected(Array.from(event.target.files || []));
+                  event.target.value = '';
+                }}
               />
             </div>
             {isPreparing && (
@@ -867,6 +880,18 @@ export default function BatchImageCropper() {
           </div>
         </div>
       )}
+      <StickyActionBar
+        primaryLabel={!images.length ? 'Select File' : 'Crop All Images'}
+        onPrimary={!images.length ? () => batchInputRef.current?.click() : cropAllSelections}
+        primaryDisabled={images.length > 0 && !images.some((image) => (selectionsByImage[image.id] ?? []).length)}
+        processing={isExporting}
+        processingLabel={progress.total ? `Processing ${progress.current} / ${progress.total} crops...` : 'Processing crops...'}
+        downloadLabel="Download ZIP"
+        onDownload={downloadAllAsZip}
+        downloadDisabled={!results.length}
+        helperText={!images.length ? 'Choose images to begin.' : results.length ? `${results.length} crops ready.` : `${selections.length} crop selections`}
+        done={results.length > 0}
+      />
     </section>
   );
 }

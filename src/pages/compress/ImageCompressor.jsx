@@ -1,4 +1,4 @@
-import { AlertCircle, CheckCircle2, Download, Loader2, RotateCcw, UploadCloud, Wand2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, UploadCloud } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   calculateCompression,
@@ -13,6 +13,12 @@ import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../../components/seo/schema.js';
 import { absoluteUrl, getToolSeoBySlug } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
+import {
+  FileSelectedStatus,
+  StickyActionBar,
+  StickyDesktopActionPanel,
+  ToolResultCard,
+} from '../../components/tools/ToolWorkflow.jsx';
 
 const modeSettings = {
   best: { label: 'Best quality', quality: 0.9 },
@@ -179,7 +185,7 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
   };
 
   return (
-    <section className="bg-white py-8 sm:py-12">
+    <section className="bg-white py-4 sm:py-6">
       <SeoHelmet
         title={seo?.seoTitle ?? `${localizedTitle || title} - FileWalaTool`}
         description={seo?.metaDescription ?? localizedDescription}
@@ -191,43 +197,35 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
         twitterDescription={seo?.twitterDescription}
         jsonLd={seo ? toolSchemas(seo) : []}
       />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
         <div className="max-w-3xl">
           <p className="text-xs font-black uppercase tracking-wide text-green-700">{text.categories.Compress}</p>
-          <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? localizedTitle ?? title}</h1>
-          <p className="mt-4 text-base leading-7 text-black/60">
+          <h1 className="mt-1 text-2xl font-black tracking-tight text-black sm:text-3xl">{seo?.h1 ?? localizedTitle ?? title}</h1>
+          <p className="mt-2 text-sm leading-6 text-black/60 sm:text-base">
             {seo?.shortIntro ?? localizedDescription}
           </p>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div className="grid gap-6">
-            <label
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={handleDrop}
-              className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-black/20 bg-white px-5 py-10 text-center transition-colors hover:border-green-500"
-            >
-              <UploadCloud className="h-10 w-10 text-green-700" />
-              <span className="mt-4 text-lg font-black text-black">{text.image.uploadImage}</span>
-              <span className="mt-2 text-sm text-black/55">{file?.name || text.image.uploadHint}</span>
-              {file && (
-                <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
-                  <span className="font-black text-green-700">✓ File Selected</span>
-                  <span>File Name: {file.name}</span>
-                  <span>Size: {formatFileSize(file.size)}</span>
-                  <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
-                    Remove
-                  </button>
-                </span>
-              )}
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                onChange={(event) => handleFile(event.target.files?.[0])}
-              />
-            </label>
+            {file ? (
+              <>
+                <FileSelectedStatus file={file} onRemove={removeFile} onChange={() => inputRef.current?.click()} />
+                <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
+              </>
+            ) : (
+              <label
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={handleDrop}
+                className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-black/20 bg-white px-5 py-6 text-center transition-colors hover:border-green-500 sm:py-8"
+              >
+                <UploadCloud className="h-9 w-9 text-green-700" />
+                <span className="mt-3 text-base font-black text-black sm:text-lg">{text.image.uploadImage}</span>
+                <span className="mt-2 text-sm text-black/55">{text.image.uploadHint}</span>
+                <span className="mt-5 inline-flex min-h-12 items-center rounded-md bg-black px-5 py-3 text-sm font-black text-white">Select File</span>
+                <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
+              </label>
+            )}
 
             <div className="grid gap-4 lg:grid-cols-2">
               <PreviewCard title={text.image.original} url={originalUrl} size={file?.size} dimensions={originalDimensions} />
@@ -235,7 +233,21 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
             </div>
           </div>
 
-          <aside className="rounded-md border border-black/10 bg-white p-5 lg:sticky lg:top-28 lg:self-start">
+          <StickyDesktopActionPanel
+            primaryLabel={file ? text.image.compressImage : 'Select File'}
+            onPrimary={file ? processImage : () => inputRef.current?.click()}
+            primaryDisabled={false}
+            processing={isProcessing}
+            processingLabel="Compressing..."
+            downloadLabel={text.common.download}
+            onDownload={download}
+            downloadDisabled={!result?.blob}
+            onReset={resetTool}
+            resetDisabled={!file && !result?.blob}
+            helperText={!file ? 'Choose a file to enable this action.' : result?.blob ? 'Done! Your file is ready.' : file.name}
+            done={Boolean(result?.blob)}
+            tone="green"
+          >
             <h2 className="text-sm font-black uppercase tracking-wide text-black/50">{text.common.settings}</h2>
             <div className="mt-4 grid gap-3">
               {Object.entries(modeSettings).map(([key, item]) => (
@@ -277,35 +289,11 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={processImage}
-              disabled={!file || isProcessing}
-              className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-bold text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:bg-black/25"
-            >
-              {isProcessing ? <Loader2 className="h-4 w-4 animate-spin text-green-400" /> : <Wand2 className="h-4 w-4 text-green-400" />}
-              {text.image.compressImage}
-            </button>
-
-            <button
-              type="button"
-              onClick={download}
-              disabled={!result?.blob}
-              className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black hover:border-black/35 disabled:cursor-not-allowed disabled:text-black/30"
-            >
-              <Download className="h-4 w-4 text-green-700" />
-              {text.common.download}
-            </button>
-
-            <button
-              type="button"
-              onClick={resetTool}
-              disabled={!file && !result?.blob}
-              className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black hover:border-black/35 disabled:cursor-not-allowed disabled:text-black/30"
-            >
-              <RotateCcw className="h-4 w-4 text-green-700" />
-              Reset
-            </button>
+            {result?.blob && (
+              <div className="mt-5">
+                <ToolResultCard title="Output ready" fileName={outputName} fileSize={formatFileSize(result.blob.size)} />
+              </div>
+            )}
 
             {warning && <p className="mt-3 text-sm font-bold text-orange-700">{warning}</p>}
             {error && (
@@ -320,10 +308,24 @@ export default function ImageCompressor({ title = 'Image Compressor', targetKB =
                 {status}
               </p>
             )}
-          </aside>
+          </StickyDesktopActionPanel>
         </div>
         <ToolSeoSections seo={seo} activeTab="Compress" />
       </div>
+      <StickyActionBar
+        primaryLabel={file ? text.image.compressImage : 'Select File'}
+        onPrimary={file ? processImage : () => inputRef.current?.click()}
+        primaryDisabled={false}
+        processing={isProcessing}
+        processingLabel="Compressing..."
+        downloadLabel={text.common.download}
+        onDownload={download}
+        downloadDisabled={!result?.blob}
+        onReset={resetTool}
+        resetDisabled={!file && !result?.blob}
+        helperText={!file ? 'Choose a file to enable this action.' : result?.blob ? 'Output is ready.' : file.name}
+        done={Boolean(result?.blob)}
+      />
     </section>
   );
 }
@@ -336,8 +338,8 @@ function PreviewCard({ title, url, size, dimensions }) {
         <h2 className="text-sm font-black uppercase tracking-wide text-black/50">{title}</h2>
         <span className="text-xs font-bold text-black/50">{formatFileSize(size || 0)}</span>
       </div>
-      <div className="mt-3 flex min-h-72 items-center justify-center rounded-md border border-dashed border-black/15 bg-black/[0.015] p-3">
-        {url ? <img src={url} alt={`${title} preview`} title={`${title} preview`} loading="lazy" decoding="async" className="max-h-[420px] max-w-full rounded-md object-contain" /> : <p className="text-center text-sm font-semibold text-black/45">{text.image.previewHint}</p>}
+      <div className="mt-3 flex min-h-48 items-center justify-center rounded-md border border-dashed border-black/15 bg-black/[0.015] p-3 sm:min-h-56">
+        {url ? <img src={url} alt={`${title} preview`} title={`${title} preview`} loading="lazy" decoding="async" className="max-h-[260px] max-w-full rounded-md object-contain" /> : <p className="text-center text-sm font-semibold text-black/45">{text.image.previewHint}</p>}
       </div>
       {dimensions?.width && dimensions?.height && (
         <p className="mt-3 text-sm font-bold text-black/55">{dimensions.width} x {dimensions.height}px</p>

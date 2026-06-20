@@ -1,12 +1,9 @@
 import {
   AlertCircle,
   CheckCircle2,
-  Download,
   FileText,
-  Loader2,
   SlidersHorizontal,
   UploadCloud,
-  Wand2,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -25,6 +22,12 @@ import { toolSchemas } from '../../components/seo/schema.js';
 import { absoluteUrl, getToolSeoBySlug } from '../../data/toolsSeoData.js';
 import { useLanguage } from '../../i18n.jsx';
 import createObjectUrl, { revokeObjectUrl } from '../../utils/createObjectUrl.js';
+import {
+  FileSelectedStatus,
+  StickyActionBar,
+  StickyDesktopActionPanel,
+  ToolResultCard,
+} from '../../components/tools/ToolWorkflow.jsx';
 
 const actionLabels = {
   split: 'Split PDF',
@@ -240,7 +243,7 @@ export default function PdfToolPanel({ title, description, tool }) {
   };
 
   return (
-    <section className="bg-slate-50 py-8 sm:py-12">
+    <section className="bg-slate-50 py-4 sm:py-6">
       <SeoHelmet
         title={seo?.seoTitle ?? `${localizedTitle || title} - FileWalaTool`}
         description={seo?.metaDescription ?? localizedDescription ?? description}
@@ -248,46 +251,35 @@ export default function PdfToolPanel({ title, description, tool }) {
         keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [localizedTitle || title, 'pdf tools']}
         jsonLd={seo ? toolSchemas(seo) : []}
       />
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
+        <div className="max-w-3xl">
           <p className="text-xs font-black uppercase tracking-wide text-blue-700">{text.categories['PDF Tools']}</p>
-          <h1 className="mt-3 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? localizedTitle ?? title}</h1>
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-black/60">{seo?.shortIntro ?? localizedDescription ?? description}</p>
+          <h1 className="mt-1 text-2xl font-black tracking-tight text-black sm:text-3xl">{seo?.h1 ?? localizedTitle ?? title}</h1>
+          <p className="mt-2 text-sm leading-6 text-black/60 sm:text-base">{seo?.shortIntro ?? localizedDescription ?? description}</p>
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
-          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm sm:p-6">
-            <label
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={handleDrop}
-              className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 px-5 py-10 text-center transition-colors hover:border-blue-500 hover:bg-blue-50/40"
-            >
-              <span className="flex h-14 w-14 items-center justify-center rounded-lg bg-white text-blue-700 ring-1 ring-black/10">
-                <UploadCloud className="h-7 w-7" />
-              </span>
-              <span className="mt-5 text-lg font-black text-black">{text.pdf.uploadPdf}</span>
-              <span className="mt-2 max-w-md text-sm leading-6 text-black/55">
-                {file?.name || text.pdf.uploadFirst}
-              </span>
-              {file && (
-                <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
-                  <span className="font-black text-green-700">Ready: File Selected</span>
-                  <span>File Name: {file.name}</span>
-                  <span>Size: {formatFileSize(file.size)}</span>
-                  <span>Type: {file.type || 'application/pdf'}</span>
-                  <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
-                    Remove
-                  </button>
+        <div className="mt-4 grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
+          <div className="rounded-lg border border-black/10 bg-white p-4 shadow-sm sm:p-5">
+            {file ? (
+              <div>
+                <FileSelectedStatus file={file} onRemove={removeFile} onChange={() => inputRef.current?.click()} meta={pageCount ? `${pageCount} ${pageCount === 1 ? text.pdf.page : text.pdf.pages}` : ''} />
+                <input ref={inputRef} type="file" accept="application/pdf,.pdf" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
+              </div>
+            ) : (
+              <label
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={handleDrop}
+                className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-slate-300 bg-slate-50 px-5 py-6 text-center transition-colors hover:border-blue-500 hover:bg-blue-50/40 sm:py-8"
+              >
+                <span className="flex h-12 w-12 items-center justify-center rounded-lg bg-white text-blue-700 ring-1 ring-black/10">
+                  <UploadCloud className="h-6 w-6" />
                 </span>
-              )}
-              <input
-                ref={inputRef}
-                type="file"
-                accept="application/pdf,.pdf"
-                className="sr-only"
-                onChange={(event) => handleFile(event.target.files?.[0])}
-              />
-            </label>
+                <span className="mt-4 text-base font-black text-black sm:text-lg">{text.pdf.uploadPdf}</span>
+                <span className="mt-2 max-w-md text-sm leading-6 text-black/55">{text.pdf.uploadFirst}</span>
+                <span className="mt-5 inline-flex min-h-12 items-center rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white">Select PDF</span>
+                <input ref={inputRef} type="file" accept="application/pdf,.pdf" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
+              </label>
+            )}
 
             <p className="mt-3 text-sm font-semibold text-black/50">
               {tool === 'compress'
@@ -329,7 +321,18 @@ export default function PdfToolPanel({ title, description, tool }) {
             )}
           </div>
 
-          <aside className="rounded-lg border border-black/10 bg-white p-5 shadow-sm lg:sticky lg:top-28 lg:self-start">
+          <StickyDesktopActionPanel
+            primaryLabel={file ? actionLabel : 'Select File'}
+            onPrimary={file ? processPdf : () => inputRef.current?.click()}
+            primaryDisabled={false}
+            processing={isProcessing}
+            processingLabel={statusMessage || 'Processing PDF...'}
+            downloadLabel={text.pdf.downloadPdf}
+            onDownload={downloadOutput}
+            downloadDisabled={!outputBlob}
+            helperText={!file ? 'Choose a PDF to enable this action.' : outputBlob ? 'Done! Your file is ready.' : file.name}
+            done={Boolean(outputBlob)}
+          >
             <h2 className="text-sm font-black uppercase tracking-wide text-black/50">{text.common.settings}</h2>
 
             {(tool === 'split' || tool === 'delete' || (tool === 'rotate' && rotationMode === 'custom')) && (
@@ -444,25 +447,11 @@ export default function PdfToolPanel({ title, description, tool }) {
               </div>
             )}
 
-            <button
-              type="button"
-              onClick={processPdf}
-              disabled={!file || isProcessing}
-              className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-5 py-3 text-sm font-black text-white transition-colors hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
-            >
-              {isProcessing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Wand2 className="h-4 w-4" />}
-              {isProcessing ? statusMessage : actionLabel}
-            </button>
-
-            <button
-              type="button"
-              onClick={downloadOutput}
-              disabled={!outputBlob}
-              className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-black text-black transition-colors hover:border-blue-400 hover:text-blue-700 disabled:cursor-not-allowed disabled:text-black/30"
-            >
-              <Download className="h-4 w-4" />
-              {text.pdf.downloadPdf}
-            </button>
+            {outputBlob && (
+              <div className="mt-4">
+                <ToolResultCard title="Output ready" fileName={outputName(file, tool === 'compress' ? 'optimized' : tool)} fileSize={formatFileSize(outputSize)} />
+              </div>
+            )}
 
             {warning && (
               <p className="mt-4 flex gap-2 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
@@ -482,10 +471,22 @@ export default function PdfToolPanel({ title, description, tool }) {
                 {statusMessage}
               </p>
             )}
-          </aside>
+          </StickyDesktopActionPanel>
         </div>
       </div>
       <ToolSeoSections seo={seo} activeTab="PDF Tools" />
+      <StickyActionBar
+        primaryLabel={file ? actionLabel : 'Select File'}
+        onPrimary={file ? processPdf : () => inputRef.current?.click()}
+        primaryDisabled={false}
+        processing={isProcessing}
+        processingLabel={statusMessage || 'Processing PDF...'}
+        downloadLabel={text.pdf.downloadPdf}
+        onDownload={downloadOutput}
+        downloadDisabled={!outputBlob}
+        helperText={!file ? 'Choose a PDF to enable this action.' : outputBlob ? 'Output is ready.' : file.name}
+        done={Boolean(outputBlob)}
+      />
     </section>
   );
 }

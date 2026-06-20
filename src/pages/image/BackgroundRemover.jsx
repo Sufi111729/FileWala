@@ -13,6 +13,7 @@ import SeoHelmet from '../../components/seo/SeoHelmet.jsx';
 import ToolSeoSections from '../../components/seo/ToolSeoSections.jsx';
 import { toolSchemas } from '../../components/seo/schema.js';
 import { getToolSeoBySlug } from '../../data/toolsSeoData.js';
+import { FileSelectedStatus, StickyActionBar, ToolResultCard } from '../../components/tools/ToolWorkflow.jsx';
 
 const acceptedTypes = ['image/jpeg', 'image/png', 'image/webp'];
 const maxFileSize = 15 * 1024 * 1024;
@@ -182,7 +183,7 @@ export default function BackgroundRemover() {
   const seo = getToolSeoBySlug('background-remover');
 
   return (
-    <section className="bg-white py-10 sm:py-14">
+    <section className="bg-white py-6 sm:py-8">
       <SeoHelmet
         title={seo.seoTitle}
         description={seo.metaDescription}
@@ -190,18 +191,16 @@ export default function BackgroundRemover() {
         keywords={[seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords]}
         jsonLd={toolSchemas(seo)}
       />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-3xl text-center">
-          <p className="inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 text-xs font-black uppercase tracking-wide text-black">
-            <Sparkles className="h-4 w-4 text-brand-red" /> Image Tool
-          </p>
-          <h1 className="mt-4 text-4xl font-black tracking-tight text-black sm:text-5xl">{seo.h1}</h1>
-          <p className="mt-4 text-base leading-7 text-black/60 sm:text-lg sm:leading-8">
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
+        <div className="max-w-3xl">
+          <p className="text-xs font-black uppercase tracking-wide text-blue-700">Image Tool</p>
+          <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo.h1}</h1>
+          <p className="mt-3 text-base leading-7 text-black/60">
             {seo.shortIntro}
           </p>
         </div>
 
-        <div className="mx-auto mt-9 max-w-6xl rounded-xl border border-black/10 bg-white p-4 shadow-sm sm:p-6 lg:p-8">
+        <div className="mx-auto mt-6 max-w-6xl rounded-xl border border-black/10 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
           {!file ? (
             <div
               onDragOver={(event) => event.preventDefault()}
@@ -219,6 +218,7 @@ export default function BackgroundRemover() {
             </div>
           ) : (
             <div className="grid gap-6">
+              <FileSelectedStatus file={file} onRemove={reset} />
               <div className="flex flex-col gap-3 rounded-lg border border-black/10 bg-black/[0.015] p-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex min-w-0 items-center gap-3">
                   <span className="flex h-10 w-10 flex-none items-center justify-center rounded-lg bg-white text-brand-red ring-1 ring-black/10"><ImageIcon className="h-5 w-5" /></span>
@@ -235,7 +235,7 @@ export default function BackgroundRemover() {
                 {resultUrl && (
                   <figure className="overflow-hidden rounded-xl border border-black/10 bg-white">
                     <figcaption className="flex items-center justify-between border-b border-black/10 px-4 py-3 text-sm font-black text-black"><span>After</span><span className="text-xs font-bold text-green-700">Background removed</span></figcaption>
-                    <div className="flex min-h-72 items-center justify-center p-4" style={checkerboardStyle}>
+                  <div className="flex min-h-72 items-center justify-center p-4" style={checkerboardStyle}>
                       <div className="flex min-h-64 w-full items-center justify-center" style={{ backgroundColor: resultBackground }}><img src={resultUrl} alt="Background removed result" title="Background removed image" loading="lazy" decoding="async" className="max-h-[480px] w-full object-contain" /></div>
                     </div>
                   </figure>
@@ -249,6 +249,7 @@ export default function BackgroundRemover() {
                 </button>
               ) : (
                 <div className="grid gap-5 rounded-xl border border-black/10 bg-black/[0.015] p-4 sm:p-5">
+                  <ToolResultCard title="Background removed" fileName={`${file.name.replace(/\.[^.]+$/, '') || 'image'}-background-removed.png`} />
                   <div>
                     <h2 className="text-base font-black text-black">Background</h2>
                     <div className="mt-3 flex flex-wrap gap-2">
@@ -283,6 +284,20 @@ export default function BackgroundRemover() {
         </div>
         <ToolSeoSections seo={seo} activeTab="Image Tools" />
       </div>
+      <StickyActionBar
+        primaryLabel={file ? 'Remove Background' : 'Select File'}
+        onPrimary={file ? removeBackground : () => inputRef.current?.click()}
+        primaryDisabled={false}
+        processing={isProcessing}
+        processingLabel="Removing background..."
+        downloadLabel="Download PNG"
+        onDownload={downloadResult}
+        downloadDisabled={!resultBlob}
+        onReset={reset}
+        resetDisabled={!file && !resultBlob}
+        helperText={!file ? 'Choose an image to enable this action.' : resultBlob ? 'Output is ready.' : file.name}
+        done={Boolean(resultBlob)}
+      />
     </section>
   );
 }

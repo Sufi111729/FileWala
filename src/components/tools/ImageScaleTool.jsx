@@ -12,6 +12,7 @@ import {
   resizeImageWithCanvas,
 } from '../../utils/imageResizeUtils.js';
 import { useLanguage } from '../../i18n.jsx';
+import { FileSelectedStatus, StickyActionBar, ToolResultCard } from './ToolWorkflow.jsx';
 
 const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const maxSize = 10 * 1024 * 1024;
@@ -221,7 +222,7 @@ export default function ImageScaleTool({
   };
 
   return (
-    <section className="bg-white py-8 sm:py-12">
+    <section className="bg-white py-6 sm:py-8">
       <SeoHelmet
         title={seo?.seoTitle ?? `${localizedTitle || title} - FileWalaTool`}
         description={seo?.metaDescription ?? localizedDescription ?? description}
@@ -233,7 +234,7 @@ export default function ImageScaleTool({
         keywords={seo ? [seo.primaryKeyword, ...seo.secondaryKeywords, ...seo.longTailKeywords, ...seo.questionKeywords, ...seo.indiaKeywords, ...seo.brandKeywords, ...seo.alternateNames] : [localizedTitle || title]}
         jsonLd={seo ? toolSchemas(seo) : []}
       />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
         <div className="max-w-3xl">
           <p className="text-xs font-black uppercase tracking-wide text-green-700">{text.categories['Image Tools']}</p>
           <h1 className="mt-2 text-3xl font-black tracking-tight text-black sm:text-4xl">{seo?.h1 ?? localizedTitle ?? title}</h1>
@@ -245,37 +246,29 @@ export default function ImageScaleTool({
           )}
         </div>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_340px]">
+        <div className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
           <div className="grid gap-6">
-            <label
-              onDragOver={(event) => event.preventDefault()}
-              onDrop={(event) => {
-                event.preventDefault();
-                handleFile(event.dataTransfer.files?.[0]);
-              }}
-              className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-black/20 bg-white px-5 py-10 text-center transition-colors hover:border-green-500"
-            >
-              <ImagePlus className="h-10 w-10 text-green-700" />
-              <span className="mt-4 text-lg font-black text-black">{text.image.uploadImage}</span>
-              <span className="mt-2 text-sm text-black/55">{file?.name || tLiteral('JPG, JPEG, PNG, or WEBP up to 10MB')}</span>
-              {file && (
-                <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
-                  <span className="font-black text-green-700">✓ File Selected</span>
-                  <span>File Name: {file.name}</span>
-                  <span>Size: {formatFileSize(file.size)}</span>
-                  <button type="button" onClick={removeFile} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
-                    Remove
-                  </button>
-                </span>
-              )}
-              <input
-                ref={inputRef}
-                type="file"
-                accept="image/jpeg,image/png,image/webp"
-                className="sr-only"
-                onChange={(event) => handleFile(event.target.files?.[0])}
-              />
-            </label>
+            {file ? (
+              <>
+                <FileSelectedStatus file={file} onRemove={removeFile} onChange={() => inputRef.current?.click()} />
+                <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
+              </>
+            ) : (
+              <label
+                onDragOver={(event) => event.preventDefault()}
+                onDrop={(event) => {
+                  event.preventDefault();
+                  handleFile(event.dataTransfer.files?.[0]);
+                }}
+                className="flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-black/20 bg-white px-5 py-7 text-center transition-colors hover:border-green-500 sm:py-9"
+              >
+                <ImagePlus className="h-10 w-10 text-green-700" />
+                <span className="mt-4 text-lg font-black text-black">{text.image.uploadImage}</span>
+                <span className="mt-2 text-sm text-black/55">{tLiteral('JPG, JPEG, PNG, or WEBP up to 10MB')}</span>
+                <span className="mt-5 inline-flex min-h-12 items-center rounded-md bg-black px-5 py-3 text-sm font-black text-white">Select File</span>
+                <input ref={inputRef} type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(event) => handleFile(event.target.files?.[0])} />
+              </label>
+            )}
 
             <div className="grid gap-4 lg:grid-cols-2">
               <PreviewCard title={text.image.original} url={originalUrl} size={file?.size} dimensions={originalDimensions} />
@@ -283,7 +276,7 @@ export default function ImageScaleTool({
             </div>
           </div>
 
-          <aside className="rounded-md border border-black/10 bg-white p-5 lg:sticky lg:top-28 lg:self-start">
+          <aside className="rounded-md border border-black/10 bg-white p-5 lg:sticky lg:top-[90px] lg:self-start">
             <h2 className="text-sm font-black uppercase tracking-wide text-black/50">{text.common.settings}</h2>
             <div className="mt-4 grid gap-3">
               {presets.map((preset) => (
@@ -356,21 +349,27 @@ export default function ImageScaleTool({
               </div>
             )}
 
+            {result?.blob && (
+              <div className="mt-5">
+                <ToolResultCard title={tLiteral('Output ready')} fileName={outputName} fileSize={formatFileSize(result.blob.size)} />
+              </div>
+            )}
+
             <button
               type="button"
-              onClick={processImage}
-              disabled={!file || isProcessing}
-              className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-bold text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:bg-black/25"
+              onClick={file ? processImage : () => inputRef.current?.click()}
+              disabled={isProcessing}
+              className="focus-ring mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-bold text-white hover:bg-black/85 disabled:cursor-not-allowed disabled:bg-black/25"
             >
               {isProcessing ? <Loader2 className="h-4 w-4 animate-spin text-green-400" /> : <Wand2 className="h-4 w-4 text-green-400" />}
-              {tLiteral('Process image')}
+              {file ? tLiteral('Process image') : 'Select File'}
             </button>
 
             <button
               type="button"
               onClick={download}
               disabled={!result?.blob}
-              className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black hover:border-black/35 disabled:cursor-not-allowed disabled:text-black/30"
+              className={`focus-ring mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-5 py-3 text-sm font-bold transition-colors disabled:cursor-not-allowed ${result?.blob ? 'bg-green-700 text-white hover:bg-green-800 disabled:bg-green-200' : 'border border-black/10 bg-white text-black hover:border-black/35 disabled:text-black/30'}`}
             >
               <Download className="h-4 w-4 text-green-700" />
               {text.common.download}
@@ -380,7 +379,7 @@ export default function ImageScaleTool({
               type="button"
               onClick={resetTool}
               disabled={!file && !result?.blob}
-              className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black hover:border-black/35 disabled:cursor-not-allowed disabled:text-black/30"
+              className="focus-ring mt-3 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-3 text-sm font-bold text-black hover:border-black/35 disabled:cursor-not-allowed disabled:text-black/30"
             >
               <RotateCcw className="h-4 w-4 text-green-700" />
               {tLiteral('Reset')}
@@ -402,6 +401,20 @@ export default function ImageScaleTool({
         </div>
         <ToolSeoSections seo={seo} />
       </div>
+      <StickyActionBar
+        primaryLabel={file ? tLiteral('Process image') : 'Select File'}
+        onPrimary={file ? processImage : () => inputRef.current?.click()}
+        primaryDisabled={false}
+        processing={isProcessing}
+        processingLabel={tLiteral('Processing...')}
+        downloadLabel={text.common.download}
+        onDownload={download}
+        downloadDisabled={!result?.blob}
+        onReset={resetTool}
+        resetDisabled={!file && !result?.blob}
+        helperText={!file ? tLiteral('Choose a file to enable this action.') : result?.blob ? tLiteral('Output is ready.') : file.name}
+        done={Boolean(result?.blob)}
+      />
     </section>
   );
 }

@@ -8,13 +8,19 @@ import {
   FileUp,
   HardDrive,
   Loader2,
-  RotateCcw,
   Settings,
   Trash2,
   UploadCloud,
 } from 'lucide-react';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useLanguage } from '../i18n.jsx';
+import {
+  FileSelectedStatus,
+  StickyActionBar,
+  StickyDesktopActionPanel,
+  ToolResultCard,
+  ToolSettingsAccordion,
+} from './tools/ToolWorkflow.jsx';
 
 const GOOGLE_API_KEY = import.meta.env.VITE_GOOGLE_API_KEY;
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID;
@@ -674,6 +680,24 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const openFilePicker = () => {
+    fileInputRef.current?.click();
+  };
+
+  const downloadResult = async () => {
+    if (result?.pages?.length) {
+      await downloadPdfPagesZip();
+      return;
+    }
+    if (!result?.downloadUrl) return;
+    const anchor = document.createElement('a');
+    anchor.href = result.downloadUrl;
+    anchor.download = result.fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+  };
+
   const handleProcess = async () => {
     if (!canConvert) return;
 
@@ -901,56 +925,53 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
   };
 
   return (
-    <div className="mx-auto max-w-5xl">
+    <div className="mx-auto max-w-6xl pb-24 lg:pb-0">
       <div className="overflow-hidden rounded-lg border border-black/10 bg-white">
-        <label
-          htmlFor="file-upload"
-          onDragOver={(event) => event.preventDefault()}
-          onDrop={handleDrop}
-          className="group m-4 flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-black/20 bg-white px-5 py-9 text-center transition-colors duration-150 hover:border-black/50 sm:m-6 sm:px-8 sm:py-12"
-        >
-          <span className="flex h-14 w-14 items-center justify-center rounded-md bg-white text-brand-red ring-1 ring-black/10">
-            <UploadCloud className="h-7 w-7 text-brand-red" />
-          </span>
-          <span className="mt-5 text-xl font-black tracking-tight text-black">{text.upload.drop}</span>
-          <span className="mt-2 max-w-md text-sm leading-6 text-black/50">
-            {fileLabel || helperText || `${text.upload.choose} ${tToolTitle(tool)}.`}
-          </span>
-          {importSource && (
-            <span className="mt-2 text-xs font-bold text-black/50">{text.upload.selectedFrom} {importSource}</span>
-          )}
-          <span className="mt-5 inline-flex items-center gap-2 rounded-md bg-black px-5 py-2.5 text-sm font-bold text-white transition-colors duration-150 hover:bg-black/85">
-            <FileUp className="h-5 w-5 text-brand-red" />
-            {text.upload.select}
-          </span>
-          {files.length > 0 && (
-            <span className="mt-4 grid gap-1 text-sm font-semibold text-black/60">
-              <span className="font-black text-green-700">
-                Ready: {files.length > 1 ? `${files.length} Files Selected` : 'File Selected'}
-              </span>
-              {files.length === 1 ? (
-                <>
-                  <span>File Name: {files[0].name}</span>
-                  <span>Size: {formatUploadSize(files[0].size)}</span>
-                </>
-              ) : (
-                <span>Total Size: {formatUploadSize(totalFileSize(files))}</span>
-              )}
-              <button type="button" onClick={removeFiles} className="mt-1 text-sm font-bold text-red-700 underline underline-offset-2">
-                Remove
-              </button>
+        {files.length === 0 ? (
+          <label
+            htmlFor="file-upload"
+            onDragOver={(event) => event.preventDefault()}
+            onDrop={handleDrop}
+            className="group m-3 flex cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-black/20 bg-white px-5 py-6 text-center transition-colors duration-150 hover:border-black/50 sm:m-4 sm:px-8 sm:py-8"
+          >
+            <span className="flex h-12 w-12 items-center justify-center rounded-md bg-white text-brand-red ring-1 ring-black/10">
+              <UploadCloud className="h-6 w-6 text-brand-red" />
             </span>
-          )}
-          <input
-            ref={fileInputRef}
-            id="file-upload"
-            type="file"
-            accept={config.accept}
-            multiple={config.multiple}
-            className="sr-only"
-            onChange={handleFileChange}
-          />
-        </label>
+            <span className="mt-4 text-lg font-black tracking-tight text-black">{text.upload.drop}</span>
+            <span className="mt-2 max-w-md text-sm leading-6 text-black/50">
+              {helperText || `${text.upload.choose} ${tToolTitle(tool)}.`}
+            </span>
+            {importSource && (
+              <span className="mt-2 text-xs font-bold text-black/50">{text.upload.selectedFrom} {importSource}</span>
+            )}
+            <span className="mt-5 inline-flex min-h-12 items-center gap-2 rounded-md bg-black px-5 py-3 text-sm font-bold text-white transition-colors duration-150 hover:bg-black/85">
+              <FileUp className="h-5 w-5 text-brand-red" />
+              {text.upload.select}
+            </span>
+            <input
+              ref={fileInputRef}
+              id="file-upload"
+              type="file"
+              accept={config.accept}
+              multiple={config.multiple}
+              className="sr-only"
+              onChange={handleFileChange}
+            />
+          </label>
+        ) : (
+          <div className="p-4 sm:p-5">
+            <FileSelectedStatus files={files} onRemove={removeFiles} onChange={openFilePicker} />
+            <input
+              ref={fileInputRef}
+              id="file-upload"
+              type="file"
+              accept={config.accept}
+              multiple={config.multiple}
+              className="sr-only"
+              onChange={handleFileChange}
+            />
+          </div>
+        )}
 
         {tool.slug === 'image-to-pdf' && files.length > 0 && (
           <div className="border-t border-black/5 p-4 sm:p-6">
@@ -1021,8 +1042,8 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
         )}
 
         {!uploadOnly && (
-        <div className="grid gap-6 border-t border-black/5 p-5 sm:p-6 lg:grid-cols-[1fr_280px]">
-          <div className="rounded-md border border-black/10 bg-white p-5">
+        <div className="grid gap-5 border-t border-black/5 p-4 sm:p-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <ToolSettingsAccordion title={text.upload.settings} defaultOpen>
             <div className="flex items-center gap-3">
               <span className="flex h-9 w-9 items-center justify-center rounded-md bg-white text-brand-red ring-1 ring-black/10">
                 <Settings className="h-5 w-5 text-brand-red" />
@@ -1066,27 +1087,6 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
               </label>
             )}
 
-            <button
-              type="button"
-              onClick={handleProcess}
-              disabled={!canConvert}
-              className="focus-ring mt-5 inline-flex w-full items-center justify-center gap-2 rounded-md bg-black px-5 py-2.5 text-sm font-bold text-white transition-colors duration-150 hover:bg-black/85 disabled:cursor-not-allowed disabled:bg-black/25 sm:w-auto"
-            >
-              {isWorking && <Loader2 className="h-4 w-4 animate-spin text-brand-red" />}
-              {text.upload.process}
-            </button>
-            {(tool.slug === 'image-to-pdf' || tool.slug === 'pdf-to-jpg') && (
-              <button
-                type="button"
-                onClick={resetTool}
-                disabled={files.length === 0 && !result}
-                className="focus-ring mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-black/10 bg-white px-5 py-2.5 text-sm font-bold text-black disabled:cursor-not-allowed disabled:text-black/25 sm:w-auto"
-              >
-                <RotateCcw className="h-4 w-4 text-brand-red" />
-                Reset
-              </button>
-            )}
-
             {isWorking && (
               <p className="mt-3 text-sm font-semibold text-black/60">
                 {pdfProgress || text.upload.processingBrowser}
@@ -1098,9 +1098,23 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
                 {error}
               </p>
             )}
-          </div>
+          </ToolSettingsAccordion>
 
-          <aside className="rounded-md border border-black/10 bg-white p-5">
+          <StickyDesktopActionPanel
+            primaryLabel={files.length === 0 ? text.upload.select : text.upload.process}
+            onPrimary={files.length === 0 ? openFilePicker : handleProcess}
+            primaryDisabled={files.length > 0 && !canConvert}
+            processing={isWorking}
+            processingLabel={pdfProgress || text.upload.processingBrowser}
+            downloadLabel={result?.pages ? 'Download all as ZIP' : text.upload.download}
+            onDownload={downloadResult}
+            downloadDisabled={!result}
+            onReset={resetTool}
+            resetDisabled={files.length === 0 && !result}
+            helperText={!files.length ? 'Choose a file to enable this action.' : status === 'done' && result ? 'Done! Your file is ready.' : fileLabel}
+            done={status === 'done' && Boolean(result)}
+            tone="green"
+          >
             <h3 className="text-sm font-black uppercase tracking-wide text-black/50">{text.upload.importFrom}</h3>
             <div className="mt-4 grid gap-3">
               <button
@@ -1124,7 +1138,7 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
               {text.upload.cloudHint}
             </div>
             {cloudStatus && <p className="mt-3 text-sm font-semibold text-black/60">{cloudStatus}</p>}
-          </aside>
+          </StickyDesktopActionPanel>
         </div>
         )}
       </div>
@@ -1158,9 +1172,7 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
 
       {!uploadOnly && result && !result.pages && (
         <div className="mt-6 rounded-md border border-black/10 bg-white p-5 text-center">
-          <CheckCircle2 className="mx-auto h-8 w-8 text-brand-red" />
-          <p className="mt-2 font-black text-black">{text.upload.ready}</p>
-          <p className="mt-1 text-sm text-black/50">{result.fileName}</p>
+          <ToolResultCard title={text.upload.ready} fileName={result.fileName} fileSize={formatUploadSize(result.size)} />
           {preview === 'image' && (
             <img src={result.downloadUrl} alt="Converted preview" title="Converted file preview" loading="lazy" decoding="async" className="mx-auto mt-4 max-h-64 rounded-md border border-black/10 object-contain" />
           )}
@@ -1176,6 +1188,22 @@ export default function UploadBox({ tool, onFilesSelected, uploadOnly = false, h
             {text.upload.download}
           </a>
         </div>
+      )}
+      {!uploadOnly && (
+        <StickyActionBar
+          primaryLabel={files.length === 0 ? 'Select File' : text.upload.process}
+          onPrimary={files.length === 0 ? openFilePicker : handleProcess}
+          primaryDisabled={files.length > 0 && !canConvert}
+          processing={isWorking}
+          processingLabel={pdfProgress || text.upload.processingBrowser}
+          downloadLabel={result?.pages ? 'Download all as ZIP' : text.upload.download}
+          onDownload={downloadResult}
+          downloadDisabled={!result}
+          onReset={resetTool}
+          resetDisabled={files.length === 0 && !result}
+          helperText={!files.length ? 'Choose a file to enable this action.' : fileLabel}
+          done={status === 'done' && Boolean(result)}
+        />
       )}
     </div>
   );

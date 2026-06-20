@@ -7,6 +7,7 @@ import {
   loadImage,
 } from '../../utils/documentImageUtils.js';
 import { useLanguage } from '../../i18n.jsx';
+import { StickyActionBar, ToolResultCard } from './ToolWorkflow.jsx';
 
 function getInitialCrop(aspect) {
   const width = aspect >= 1 ? 72 : 44;
@@ -176,7 +177,7 @@ export default function ImageEditor({
   };
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px]">
+    <div className="grid gap-5 pb-24 lg:grid-cols-[minmax(0,1fr)_300px] lg:pb-0">
       <div className="rounded-md border border-black/10 bg-white p-4 shadow-sm sm:p-5">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
           <div>
@@ -302,11 +303,16 @@ export default function ImageEditor({
               <p className="text-center text-sm font-semibold text-black/55">{text.documentTool.processedPreviewHint}</p>
             )}
           </div>
+          {result?.blob && (
+            <div className="mt-4">
+              <ToolResultCard title={text.documentTool.previewReady} fileName={output.filename} fileSize={formatFileSize(result.blob.size)} />
+            </div>
+          )}
           <button
             type="button"
             disabled={!canDownload}
             onClick={() => downloadBlob(result.blob, output.filename)}
-            className="focus-ring mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-800 disabled:cursor-not-allowed disabled:bg-blue-300"
+            className={`focus-ring mt-4 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-bold shadow-sm disabled:cursor-not-allowed ${canDownload ? 'bg-green-700 text-white hover:bg-green-800 disabled:bg-green-200' : 'bg-blue-700 text-white hover:bg-blue-800 disabled:bg-blue-300'}`}
           >
             <Download className="h-4 w-4" />
             {text.common.download}
@@ -315,6 +321,18 @@ export default function ImageEditor({
           {status && status !== 'processing' && <p className="mt-3 text-sm font-bold text-green-700">{status}</p>}
         </div>
       </aside>
+      <StickyActionBar
+        primaryLabel={text.upload.process}
+        onPrimary={processImage}
+        primaryDisabled={!image}
+        processing={status === 'processing'}
+        processingLabel={text.upload.processingBrowser || 'Processing...'}
+        downloadLabel={text.common.download}
+        onDownload={() => canDownload && downloadBlob(result.blob, output.filename)}
+        downloadDisabled={!canDownload}
+        helperText={canDownload ? text.documentTool.previewReady : title}
+        done={canDownload}
+      />
     </div>
   );
 }

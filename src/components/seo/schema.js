@@ -1,18 +1,5 @@
 import { absoluteUrl, BRAND_ALIASES, BRAND_FOUNDER, BRAND_LOGO_URL, BRAND_NAME, SITE_URL, toolImageUrl } from '../../data/siteMetadata.js';
 
-const categoryPathByName = {
-  'PDF Tools': '/pdf-tools',
-  'Image Tools': '/image-tools',
-  Convert: '/image-tools',
-  'Passport Tools': '/documents',
-  Documents: '/documents',
-  Compress: '/compress',
-};
-
-function categoryUrl(category) {
-  return absoluteUrl(categoryPathByName[category] ?? '/');
-}
-
 export function organizationSchema() {
   return {
     '@context': 'https://schema.org',
@@ -194,13 +181,7 @@ export function toolSchemas(seo) {
         {
           '@type': 'ListItem',
           position: 2,
-          name: seo.category,
-          item: categoryUrl(seo.category),
-        },
-        {
-          '@type': 'ListItem',
-          position: 3,
-          name: seo.title,
+          name: seo.h1 ?? seo.title,
           item: url,
         },
       ],

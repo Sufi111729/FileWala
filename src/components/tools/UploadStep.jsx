@@ -6,9 +6,10 @@ import { formatFileSize, getImageDimensions } from '../../utils/documentImageUti
 const acceptedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 const maxSize = 10 * 1024 * 1024;
 
-export default function UploadStep({ file, previewUrl, dimensions, onFileReady, onRemove, maxPixels }) {
+export default function UploadStep({ file, previewUrl, dimensions, onFileReady, onRemove, maxPixels, inputControlRef }) {
   const { text } = useLanguage();
-  const inputRef = useRef(null);
+  const localInputRef = useRef(null);
+  const inputRef = inputControlRef || localInputRef;
   const [error, setError] = useState('');
 
   const handleFile = async (selectedFile) => {

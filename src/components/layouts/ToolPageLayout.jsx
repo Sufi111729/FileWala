@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, Sparkles } from 'lucide-react';
+import { ArrowRight, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import CategoryTabs from '../navigation/CategoryTabs.jsx';
 import SeoHelmet from '../seo/SeoHelmet.jsx';
@@ -23,7 +23,7 @@ export default function ToolPageLayout({
   const localizedDescription = currentTool ? tToolDescription(currentTool) : description;
 
   return (
-    <section className="bg-white py-10 sm:py-14">
+    <section className="bg-white py-4 sm:py-6">
       <SeoHelmet
         title={localizedSeo?.seoTitle ?? `${localizedTitle} - FileWalaTool`}
         description={localizedSeo?.metaDescription ?? localizedDescription}
@@ -35,31 +35,24 @@ export default function ToolPageLayout({
         keywords={localizedSeo ? [localizedSeo.primaryKeyword, ...localizedSeo.secondaryKeywords, ...localizedSeo.longTailKeywords, ...localizedSeo.questionKeywords, ...localizedSeo.indiaKeywords, ...localizedSeo.brandKeywords, ...localizedSeo.alternateNames] : [localizedTitle, category]}
         jsonLd={localizedSeo ? toolSchemas(localizedSeo) : []}
       />
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
-          <div className="mb-5 inline-flex items-center gap-2 rounded-md border border-black/10 bg-white px-3 py-2 text-sm font-semibold text-black">
-            <Sparkles className="h-4 w-4 text-brand-red" />
-            {text.toolsLibrary.label}
-          </div>
-          <h1 className="max-w-3xl text-4xl font-black leading-tight tracking-tight text-black sm:text-5xl">
+      <div className="mx-auto max-w-7xl px-4 pb-24 sm:px-6 lg:px-8 lg:pb-0">
+        <div className="max-w-3xl">
+          <p className="text-xs font-black uppercase tracking-wide text-blue-700">{tCategory(category)}</p>
+          <h1 className="mt-1 text-2xl font-black tracking-tight text-black sm:text-3xl">
             {localizedSeo?.h1 ?? localizedTitle ?? text.toolsLibrary.title}
           </h1>
-          <p className="mt-4 max-w-2xl text-base leading-7 text-black/60 sm:text-lg sm:leading-8">{localizedSeo?.shortIntro ?? localizedDescription}</p>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-black/60 sm:text-base">{localizedSeo?.shortIntro ?? localizedDescription}</p>
         </div>
 
-        <div className="mt-7">
+        <div className="mt-4">
           <CategoryTabs activeTab={activeTab} />
         </div>
 
-        <div className="mt-7 rounded-md border border-black/10 bg-white p-4 shadow-sm sm:p-5 lg:p-6">
-          <div className="mb-5">
-            <p className="text-xs font-black uppercase tracking-wide text-blue-700">{tCategory(category)}</p>
-            <h2 className="mt-2 text-2xl font-black tracking-tight text-black sm:text-3xl">{localizedTitle}</h2>
-          </div>
+        <div className="mt-4 rounded-md border border-black/10 bg-white p-3 shadow-sm sm:p-4">
           {children}
         </div>
 
-        <section className="mx-auto mt-10 grid max-w-5xl gap-4 lg:grid-cols-3">
+        <section className="mx-auto mt-8 grid max-w-5xl gap-4 lg:grid-cols-3">
           {text.documentTool.workflow.map((item) => (
             <div key={item} className="rounded-md border border-black/10 bg-white p-5 shadow-sm">
               <CheckCircle2 className="h-5 w-5 text-brand-red" />
@@ -68,7 +61,7 @@ export default function ToolPageLayout({
           ))}
         </section>
 
-        <section className="mx-auto mt-10 grid max-w-5xl gap-6 rounded-md border border-black/10 bg-white p-6 shadow-sm lg:grid-cols-[1fr_0.85fr] lg:p-7">
+        <section className="mx-auto mt-8 grid max-w-5xl gap-6 rounded-md border border-black/10 bg-white p-6 shadow-sm lg:grid-cols-[1fr_0.85fr] lg:p-7">
           <div>
             <p className="text-xs font-black uppercase tracking-wide text-black/70">{text.documentTool.about}</p>
             <h2 className="mt-2 text-2xl font-black tracking-tight text-black">

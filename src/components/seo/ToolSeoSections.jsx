@@ -18,21 +18,29 @@ export default function ToolSeoSections({ seo, activeTab }) {
   return (
     <>
       <div className="mx-auto mt-10 w-full max-w-6xl px-4 sm:px-6 lg:px-8">
-        <section className="grid gap-6 lg:grid-cols-[1fr_0.8fr]">
+        <nav className="mb-5 flex flex-wrap items-center gap-2 text-sm font-semibold text-black/55" aria-label="Breadcrumb">
+          <a href="/" className="hover:text-black">Home</a>
+          <span aria-hidden="true">/</span>
+          <a href={seo.route} className="text-black hover:underline" aria-current="page">{seo.h1}</a>
+        </nav>
+
+        <section className={`grid gap-6 ${seo.privacyStatement ? 'lg:grid-cols-[1fr_0.8fr]' : ''}`}>
           <div>
             <p className="text-xs font-black uppercase tracking-wide text-black/60">{text.sections.aboutThisTool}</p>
             <h2 className="mt-2 text-2xl font-black tracking-tight text-black">{seo.h1}</h2>
             <p className="mt-3 text-base leading-7 text-black/65">{seo.detailedIntro ?? seo.intro}</p>
           </div>
-          <div className="rounded-md border border-black/10 bg-white p-5 shadow-sm">
-            <div className="flex items-center gap-2">
-              <LockKeyhole className="h-5 w-5 text-blue-700" />
-              <h2 className="text-base font-black text-black">{text.sections.trustPrivacy}</h2>
+          {seo.privacyStatement && (
+            <div className="rounded-md border border-black/10 bg-white p-5 shadow-sm">
+              <div className="flex items-center gap-2">
+                <LockKeyhole className="h-5 w-5 text-blue-700" />
+                <h2 className="text-base font-black text-black">{text.sections.trustPrivacy}</h2>
+              </div>
+              <p className="mt-3 text-sm leading-6 text-black/60">
+                {seo.privacyStatement}
+              </p>
             </div>
-            <p className="mt-3 text-sm leading-6 text-black/60">
-              {text.toolPage.aboutText}
-            </p>
-          </div>
+          )}
         </section>
 
         <section className="mt-8 rounded-md border border-dashed border-black/15 bg-black/[0.015] px-4 py-6 text-center text-xs font-bold uppercase tracking-wide text-black/35">
@@ -89,6 +97,16 @@ export default function ToolSeoSections({ seo, activeTab }) {
           </section>
         )}
 
+        {seo.supportedFormats && (
+          <section className="mt-10 rounded-md border border-black/10 bg-white p-5 shadow-sm sm:p-6">
+            <div className="flex items-center gap-2">
+              <CheckCircle2 className="h-5 w-5 text-blue-700" />
+              <h2 className="text-xl font-black text-black">Supported formats / output</h2>
+            </div>
+            <p className="mt-3 text-sm leading-6 text-black/65">{seo.supportedFormats}</p>
+          </section>
+        )}
+
         <section className="mt-10 rounded-md border border-black/10 bg-white p-5 shadow-sm sm:p-6">
           <div className="flex items-center gap-2">
             <HelpCircle className="h-5 w-5 text-blue-700" />
@@ -105,7 +123,13 @@ export default function ToolSeoSections({ seo, activeTab }) {
         </section>
       </div>
 
-      <RelatedTools tools={relatedTools} activeTab={activeTab} currentSlug={seo.slug} maxItems={seo.relatedToolsLimit ?? 4} />
+      <RelatedTools
+        tools={relatedTools}
+        activeTab={activeTab}
+        currentSlug={seo.slug}
+        maxItems={seo.relatedToolsLimit ?? 4}
+        title={`Related tools for ${seo.h1}`}
+      />
     </>
   );
 }

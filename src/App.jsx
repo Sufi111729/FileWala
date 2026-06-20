@@ -36,6 +36,7 @@ const PdfRotate = lazyPage(() => import('./pages/pdf/PdfRotate.jsx'));
 const SplitPdf = lazyPage(() => import('./pages/pdf/SplitPdf.jsx'));
 const ToolPage = lazyPage(() => import('./pages/ToolPage.jsx'));
 const BrowserToolPage = lazyPage(() => import('./pages/BrowserToolPage.jsx'));
+const NotFound = lazyPage(() => import('./pages/NotFound.jsx'));
 
 function RouteView({ children }) {
   const location = useLocation();
@@ -128,6 +129,7 @@ export default function App() {
         <Route path="/tools/watermark-pdf" element={<RouteView><BrowserToolPage slug="watermark-pdf" /></RouteView>} />
         <Route path="/tools/resize-image" element={<RouteView><BrowserToolPage slug="resize-image" /></RouteView>} />
         <Route path="/tools/:slug" element={<RouteView><ToolPage /></RouteView>} />
+        <Route path="*" element={<RouteView><NotFound /></RouteView>} />
       </Route>
     </Routes>
   );
